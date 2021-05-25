@@ -1,0 +1,26 @@
+{
+  "name": "web3-accounts-provider-middleware",
+  "version": "1.0.0",
+  "description": "A Web3 provider that handles accounts on its own but delegates chain queries to a 3rd party service",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/witnet/web3-accounts-provider-middleware.git"
+  },
+  "keywords": [
+    "ethereum",
+    "web3",
+    "account",
+    "wallet",
+    "middleware"
+  ],
+  "author": "Witnet Foundation and contributors",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/witnet/web3-accounts-provider-middleware/issues"
+  },
+  "homepage": "https://github.com/witnet/web3-accounts-provider-middleware#readme"
+}
