@@ -30,6 +30,7 @@
     "@types/cors": "^2.8.10",
     "@types/express": "^4.17.11",
     "@types/node": "^15.6.1",
+    "dotenv": "^10.0.0",
     "jest": "^27.0.1",
     "prettier-standard": "^16.4.1",
     "tslint": "^6.1.3",

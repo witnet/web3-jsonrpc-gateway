@@ -1,6 +1,8 @@
 import { WalletMiddlewareServer } from './walletMiddlewareServer'
 import { ethers } from 'ethers'
 
+require('dotenv').config()
+
 let port
 if (process.argv.length >= 3) {
   port = parseInt(process.argv[2])
@@ -35,7 +37,6 @@ if (projectId.length < 1) {
 
 console.log("Port:\t", port)
 console.log("Network:", network)
-console.log("Project:", projectId)
 console.log()
 
 const destinationProvider = new ethers.providers.InfuraProvider(
