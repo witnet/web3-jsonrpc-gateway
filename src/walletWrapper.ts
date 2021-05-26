@@ -1,13 +1,4 @@
-import { Wallet } from 'ethers'
-import { JsonRpcRequest } from 'json-rpc-engine'
-
-interface TransactionParams {
-  from: string
-}
-
-interface MessageParams extends TransactionParams {
-  data: string
-}
+import { ethers, Wallet } from 'ethers'
 
 /**
  * Wraps the `ether` wallet / signer abstraction so it's compatible with the wallet middleware of
@@ -15,9 +6,14 @@ interface MessageParams extends TransactionParams {
  */
 class WalletWrapper {
   wallet: Wallet
+  provider: ethers.providers.JsonRpcProvider
 
-  constructor (seed_phrase: string) {
-    this.wallet = Wallet.fromMnemonic(seed_phrase)
+  constructor (
+    seed_phrase: string,
+    provider: ethers.providers.JsonRpcProvider
+  ) {
+    this.wallet = Wallet.fromMnemonic(seed_phrase).connect(provider)
+    this.provider = provider
   }
 
   /**
@@ -32,11 +28,9 @@ class WalletWrapper {
    *
    * @remark Return type is made `any` here because the result needs to be a String, not a `Record`.
    */
-  async processEthSignMessage (
-    msgParams: MessageParams,
-    _req: JsonRpcRequest<unknown>
-  ): Promise<any> {
-    return await this.wallet.signMessage(msgParams.data)
+  async processEthSignMessage (address: string, message: string): Promise<any> {
+    console.log('Signing message', address, message)
+    return await this.wallet.signMessage(message)
   }
 }
 

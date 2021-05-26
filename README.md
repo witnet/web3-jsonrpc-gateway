@@ -1,7 +1,7 @@
 # ethersjs-jsonrpc-middleware-server
 
-A Web3 JSON-RPC provider that handles accounts on its own using EthersJS but delegates chain queries to a 3rd party
- "destination provider", e.g. Infura.
+A Web3 JSON-RPC provider that handles accounts on its own using Ethers.js but delegates chain queries to a 3rd party
+"destination provider", e.g. Infura, Alchemy, Cloudflare, etc.
 
 ## Compilation
 
@@ -24,18 +24,20 @@ The following environment variables are required:
 
 ## How to create a server for any other provider
 
-To use a different provider (Ganache, etc.), you can create your own script that creates the provider and then build a
-server around it like this:
+To use a different provider, you can create your own script that creates the provider and then build a server around
+it. Here's an example for using Cloudflare as the destination provider:
+
 ```js
-const destinationProvider = new MyOwnProvider()
+const destinationProvider = new CloudflareProvider()
 
 new WalletMiddlewareServer(port, seed_phrase, destinationProvider)
   .initialize()
   .listen()
 ```
 
-Destination providers need to comply with the [JsonRpcMiddleware] type from the [JsonRpcEngine] library.
+Destination providers need to comply with the [JsonRpcProvider] type from the [Ethers.js] library.
 
+[jsonrpcprovider]: https://github.com/ethers-io/ethers.js/blob/d395d16fa357ec5dda9b59922cf21c39dc34c071/packages
 
-[JsonRpcMiddleware]: https://github.com/MetaMask/json-rpc-engine/blob/0e57ecd678296d62a98b10775ff5c91351ccc9c6/src/JsonRpcEngine.ts#L82-L87
-[JsonRpcEngine]: https://github.com/MetaMask/json-rpc-engine/
+/providers/src.ts/json-rpc-provider.ts#L279-L612
+[Ether.js]: https://github.com/ethers-io/ethers.js

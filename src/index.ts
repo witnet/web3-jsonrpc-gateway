@@ -1,5 +1,5 @@
 import { WalletMiddlewareServer } from './walletMiddlewareServer'
-import createInfuraMiddleware from 'eth-json-rpc-infura'
+import { ethers } from 'ethers'
 
 let port
 if (process.env.PORT) {
@@ -31,10 +31,10 @@ if (projectId.length < 1) {
   )
 }
 
-const destinationProvider = createInfuraMiddleware({
+const destinationProvider = new ethers.providers.InfuraProvider(
   network,
   projectId
-})
+)
 
 new WalletMiddlewareServer(port, seed_phrase, destinationProvider)
   .initialize()
