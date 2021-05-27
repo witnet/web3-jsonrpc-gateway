@@ -62,8 +62,10 @@ class WalletMiddlewareServer {
             response = {...header, result}
           } catch (error) {
             console.log("[!]", error.error.reason)
-          } else {
-            console.log(`[=] Forwarding unhandled method: ${request.method}(${request.params ? request.params.length : 0} args)`)
+            response = {...header, error: JSON.parse(error.error.body).error}
+          }
+        } else {
+          console.log(`[=] Forwarding unhandled method: ${request.method}(${request.params ? request.params.length : 0} args)`)
           try {
             result = await this.wallet.provider.send(
               request.method,
@@ -73,6 +75,8 @@ class WalletMiddlewareServer {
           }
           catch(error) {
             console.log("[!]", JSON.stringify(error.reason))
+            response = {...header, error: JSON.parse(error.body).error}
+          }
         }
         
         console.log('[>] Response:', response)
