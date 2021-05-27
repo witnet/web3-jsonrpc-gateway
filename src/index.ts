@@ -2,7 +2,9 @@ import { WalletMiddlewareServer } from './walletMiddlewareServer'
 import { ethers } from 'ethers'
 
 let port
-if (process.env.PORT) {
+if (process.argv.length >= 3) {
+  port = parseInt(process.argv[2])
+} else if (process.env.PORT) {
   port = parseInt(process.env.PORT)
 } else {
   throw Error(
@@ -10,7 +12,7 @@ if (process.env.PORT) {
   )
 }
 
-const network = process.env.NETWORK
+const network = process.argv[3] || process.env.NETWORK
 if (!network) {
   throw Error(
     'No network specified. Please set the `NETWORK` environment variable.'
