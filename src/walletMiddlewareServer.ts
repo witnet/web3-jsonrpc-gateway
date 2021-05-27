@@ -38,19 +38,22 @@ class WalletMiddlewareServer {
       '*',
       async (req: express.Request, res: express.Response) => {
         const request = req.body
-        console.log('[<] Request', request)
+        console.log('[<] Request:', request)
 
         const handlers: { [K: string]: any } = {
           eth_accounts: this.wallet.getAccounts,
+          eth_sendTransaction: this.wallet.processTransaction,
           eth_sign: this.wallet.processEthSignMessage
         }
 
         let result
         if (request.method in handlers) {
+          console.log(`Intercepting method: ${request.method}...`)
           result = await handlers[request.method].bind(this.wallet)(
             ...(request.params || [])
           )
         } else {
+          console.log(`Forward unhandled method: ${request.method}(${JSON.stringify(request.params)})`)
           result = await this.wallet.provider.send(
             request.method,
             request.params
@@ -62,7 +65,7 @@ class WalletMiddlewareServer {
           result
         }
 
-        console.log('[>] Response', response)
+        console.log('[>] Response:', response)
         res.status(200).json(response)
       }
     )
