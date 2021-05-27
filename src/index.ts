@@ -31,6 +31,11 @@ if (projectId.length < 1) {
   )
 }
 
+console.log("Port:\t", port)
+console.log("Network:", network)
+console.log("Project:", projectId)
+console.log()
+
 const destinationProvider = new ethers.providers.InfuraProvider(
   network,
   projectId
