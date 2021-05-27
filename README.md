@@ -19,7 +19,7 @@ The following environment variables are required:
 
 - `PORT`: listening port for the server.
 - `NETWORK`: network name. Infura supports `mainnet`, `ropsten`, `rinkeby`, `kovan` and `goerli`.
-- `SEED_PHRARE`: the seed phrase to use for the wrapped Ether.js wallet, in BIP-39 mnemonics format.
+- `SEED_PHRASE`: the seed phrase to use for the wrapped Ether.js wallet, in BIP-39 mnemonics format.
 - `PROJECT_ID`: your Infura project ID.
 
 ## How to create a server for any other provider
