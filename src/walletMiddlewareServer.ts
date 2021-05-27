@@ -53,24 +53,26 @@ class WalletMiddlewareServer {
 
         let result
         let response
-        try {
-          if (request.method in handlers) {
-            console.log(`[x] Intercepting method: ${request.method}...`)
+        if (request.method in handlers) {
+          console.log(`[x] Intercepting method: ${request.method}...`)
+          try {
             result = await handlers[request.method].bind(this.wallet)(
               ...(request.params || [])
             )
+            response = {...header, result}
+          } catch (error) {
+            console.log("[!]", error.error.reason)
           } else {
             console.log(`[=] Forwarding unhandled method: ${request.method}(${request.params ? request.params.length : 0} args)`)
+          try {
             result = await this.wallet.provider.send(
               request.method,
               request.params
             )
+            response = {...header, result}
           }
-          response = {...header, result}
-        }
-        catch (error) {
-          console.log("[!]", JSON.stringify(error.error))
-          response = {...header, error: error.error}  
+          catch(error) {
+            console.log("[!]", JSON.stringify(error.reason))
         }
         
         console.log('[>] Response:', response)
