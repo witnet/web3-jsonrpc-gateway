@@ -46,25 +46,33 @@ class WalletMiddlewareServer {
           eth_sign: this.wallet.processEthSignMessage
         }
 
-        let result
-        if (request.method in handlers) {
-          console.log(`Intercepting method: ${request.method}...`)
-          result = await handlers[request.method].bind(this.wallet)(
-            ...(request.params || [])
-          )
-        } else {
-          console.log(`Forward unhandled method: ${request.method}(${JSON.stringify(request.params)})`)
-          result = await this.wallet.provider.send(
-            request.method,
-            request.params
-          )
-        }
-        const response = {
+        const header = {
           jsonrpc: request.jsonrpc,
-          id: request.id,
-          result
+          id: request.id
         }
 
+        let result
+        let response
+        try {
+          if (request.method in handlers) {
+            console.log(`[x] Intercepting method: ${request.method}...`)
+            result = await handlers[request.method].bind(this.wallet)(
+              ...(request.params || [])
+            )
+          } else {
+            console.log(`[=] Forwarding unhandled method: ${request.method}(${request.params ? request.params.length : 0} args)`)
+            result = await this.wallet.provider.send(
+              request.method,
+              request.params
+            )
+          }
+          response = {...header, result}
+        }
+        catch (error) {
+          console.log("[!]", JSON.stringify(error.error))
+          response = {...header, error: error.error}  
+        }
+        
         console.log('[>] Response:', response)
         res.status(200).json(response)
       }

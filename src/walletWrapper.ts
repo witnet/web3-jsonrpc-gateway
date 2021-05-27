@@ -59,7 +59,7 @@ class WalletWrapper {
       data: params.data,
       nonce: await this.wallet.getTransactionCount(),
     }
-    console.log(`Transaction => (from: ${tx.from} to: ${tx.to || ''} gas: ${tx.gasLimit} value: ${tx.value || 0} nonce: ${tx.nonce} data: ${tx.data.length/2 - 1} bytes)`)
+    console.log(`Transaction => (from: ${tx.from} to: ${tx.to || '(create)'} gas: ${tx.gasLimit} value: ${tx.value || 0} nonce: ${tx.nonce} data: ${tx.data.length/2 - 1} bytes)`)
     
     // Sign transaction:
     const signedTx = await this.wallet.signTransaction(tx)
