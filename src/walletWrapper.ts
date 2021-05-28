@@ -53,8 +53,8 @@ class WalletWrapper {
     const tx = {    
       from: params.from,  
       to: params.to,
-      gasLimit: params.gas,
-      gasPrice: params.gasPrice,
+      gasLimit: params.gas || 1e6,
+      gasPrice: params.gasPrice || 2e10,
       value: params.value,
       data: params.data,
       nonce: await this.wallet.getTransactionCount(),
