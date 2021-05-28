@@ -53,30 +53,25 @@ class WalletMiddlewareServer {
 
         let result
         let response
-        if (request.method in handlers) {
-          console.log(`[x] Intercepting method: ${request.method}...`)
-          try {
+        try {
+          if (request.method in handlers) {
+            console.log(`[x] Intercepting method: ${request.method}...`)
             result = await handlers[request.method].bind(this.wallet)(
               ...(request.params || [])
             )
-            response = {...header, result}
-          } catch (error) {
-            console.log("[!]", error.error.reason)
-            response = {...header, error: JSON.parse(error.error.body).error}
-          }
-        } else {
-          console.log(`[=] Forwarding unhandled method: ${request.method}(${request.params ? request.params.length : 0} args)`)
-          try {
+          } else {
+            console.log(`[=] Forwarding method: ${request.method}(${request.params ? request.params.length : 0} args)`)
             result = await this.wallet.provider.send(
               request.method,
               request.params
             )
-            response = {...header, result}
           }
-          catch(error) {
-            console.log("[!]", JSON.stringify(error.reason))
-            response = {...header, error: JSON.parse(error.body).error}
-          }
+          response = { ...header, result }
+        } catch (roger) {
+          const message = roger.reason || roger.error.reason || roger || "unhandled response exception"
+          console.log("[!]", message)
+          const body = roger.body || roger.error.body || { error: { code: -32000, message } }
+          response = { ...header, error: JSON.parse(body).error }
         }
         
         console.log('[>] Response:', response)
