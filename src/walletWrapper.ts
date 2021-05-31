@@ -17,13 +17,18 @@ interface TransactionParams {
 class WalletWrapper {
   wallet: Wallet
   provider: ethers.providers.JsonRpcProvider
+  defaultGasPrice!: number
+  defaultGasLimit!: number
 
   constructor (
     seed_phrase: string,
-    provider: ethers.providers.JsonRpcProvider
+    gas_price: number,
+    gas_limit: number
   ) {
     this.wallet = Wallet.fromMnemonic(seed_phrase).connect(provider)
     this.provider = provider
+    this.defaultGasPrice = gas_price
+    this.defaultGasLimit = gas_limit
   }
 
   /**
@@ -53,8 +58,8 @@ class WalletWrapper {
     const tx = {    
       from: params.from,  
       to: params.to,
-      gasLimit: params.gas || 1e6,
-      gasPrice: params.gasPrice || 2e10,
+      gasLimit: params.gas || this.defaultGasLimit,
+      gasPrice: params.gasPrice || this.defaultGasPrice,
       value: params.value,
       data: params.data,
       nonce: await this.wallet.getTransactionCount(),

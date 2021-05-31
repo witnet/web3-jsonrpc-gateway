@@ -15,9 +15,11 @@ class WalletMiddlewareServer {
   constructor (
     port: number,
     seed_phrase: string,
-    provider: ethers.providers.JsonRpcProvider
+    gas_price: number,
+    gas_limit: number
   ) {
     this.port = port
+    this.wallet = new WalletWrapper(seed_phrase, provider, gas_price, gas_limit)
 
     this.wallet = new WalletWrapper(seed_phrase, provider)
 

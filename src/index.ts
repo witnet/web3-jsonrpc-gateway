@@ -35,8 +35,20 @@ if (projectId.length < 1) {
   )
 }
 
-console.log("Port:\t", port)
-console.log("Network:", network)
+let gas_price
+if (process.env.DEFAULT_GAS_PRICE) {
+  gas_price = parseInt(process.env.DEFAULT_GAS_PRICE)
+} else {
+  gas_price = 20e9
+}
+
+let gas_limit
+if (process.env.DEFAULT_GAS_LIMIT) {
+  gas_limit = parseInt(process.env.DEFAULT_GAS_LIMIT)
+} else {
+  gas_limit = 6721975
+}
+
 console.log()
 
 const destinationProvider = new ethers.providers.InfuraProvider(
