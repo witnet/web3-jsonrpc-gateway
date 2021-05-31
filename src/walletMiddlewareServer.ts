@@ -61,7 +61,11 @@ class WalletMiddlewareServer {
           rpcid: request.id
         }
 
-        logger.log({level: 'info', socket, message: `>> ${zeroPad(this.wallet.provider._nextId, 4)}::${request.method}`})
+        logger.log({
+          level: 'info',
+          socket,
+          message: `>> ${zeroPad(this.wallet.provider._nextId, 4)}::${request.method}`
+        })
 
         const handlers: { [K: string]: any } = {
           eth_accounts: this.wallet.getAccounts,
@@ -96,10 +100,17 @@ class WalletMiddlewareServer {
         }
         
         if (response.error) {
+          console.log(response.error)
           logger.log({
             level: 'warn',
             socket,
-            message: `<= (${JSON.parse(response.error).code}) ${JSON.parse(response.error).message}`
+            message: `<= ${response.error}`
+          })
+        } else {
+          logger.log({
+            level: 'debug',
+            socket,
+            message: `<< ${result}`
           })
         }
         res.status(200).json(response)
