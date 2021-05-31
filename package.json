@@ -1,5 +1,5 @@
 {
-  "name": "web3-accounts-provider-middleware",
+  "name": "eth-json-rpc-gateway",
   "version": "1.0.0",
   "description": "A Web3 provider that handles accounts on its own but delegates chain queries to a 3rd party service",
   "main": "index.js",
@@ -15,10 +15,11 @@
   },
   "keywords": [
     "ethereum",
+    "json-rpc",
+    "middleware",
     "web3",
-    "account",
     "wallet",
-    "middleware"
+    "gateway"
   ],
   "author": "Witnet Foundation and contributors",
   "license": "MIT",
