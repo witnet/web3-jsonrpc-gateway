@@ -1,4 +1,5 @@
 import { ethers, Wallet } from 'ethers'
+import { logger, SocketParams } from './Logger'
 
 interface TransactionParams {
   from: string,
@@ -22,6 +23,7 @@ class WalletWrapper {
 
   constructor (
     seed_phrase: string,
+    provider: ethers.providers.JsonRpcProvider,
     gas_price: number,
     gas_limit: number
   ) {
@@ -43,8 +45,17 @@ class WalletWrapper {
    *
    * @remark Return type is made `any` here because the result needs to be a String, not a `Record`.
    */
-  async processEthSignMessage (address: string, message: string): Promise<any> {
-    console.log('Signing message:', address, message)
+  async processEthSignMessage (
+      address: string,
+      message: string,
+      socket: SocketParams
+    ): Promise<any>
+  {
+    logger.log({
+      level: 'debug',
+      socket,
+      message: `>>   Signing message: ${address} ${message}`
+    })
     return this.wallet.signMessage(message)
   }
 
@@ -53,7 +64,11 @@ class WalletWrapper {
    *
    * @remark Return type is made `any` here because the result needs to be a String, not a `Record`.
    */
-  async processTransaction (params: TransactionParams): Promise<any> {
+  async processTransaction (
+      params: TransactionParams,
+      socket: SocketParams
+    ): Promise<any>
+  {
     // Compose actual transaction:
     const tx = {    
       from: params.from,  
@@ -64,13 +79,21 @@ class WalletWrapper {
       data: params.data,
       nonce: await this.wallet.getTransactionCount(),
     }
-    console.log(`Transaction => (from: ${tx.from} to: ${tx.to || '(create)'} gas: ${tx.gasLimit} value: ${tx.value || 0} nonce: ${tx.nonce} data: ${tx.data.length/2 - 1} bytes)`)
+
+    await logger.log({level: 'verbose', socket, message: `> To:\t\t${tx.to || '(deploy)'}`})
+    await logger.log({level: 'verbose', socket, message: `> From:\t${tx.from}`})
+    await logger.log({level: 'verbose', socket, message: `> Nonce:\t${tx.nonce}`})
+    await logger.log({level: 'verbose', socket, message: `> Value:\t${tx.value || 0} wei`})
+    await logger.log({level: 'verbose', socket, message: `> Gas limit:\t${tx.gasLimit}`})
+    await logger.log({level: 'verbose', socket, message: `> Gas price:\t${tx.gasPrice}`})
     
     // Sign transaction:
     const signedTx = await this.wallet.signTransaction(tx)
+    await logger.log({level: 'debug', socket, message: `> Signed tx:  ${signedTx}`})
     
     // Await transaction to be sent:
     const res = await this.provider.sendTransaction(signedTx)
+    await logger.log({level: 'http', socket, message: `${res.hash}`})
     
     // Return transaction hash:
     return res.hash

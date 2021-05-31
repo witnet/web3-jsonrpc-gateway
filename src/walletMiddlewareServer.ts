@@ -1,7 +1,9 @@
 import express, { Express } from 'express'
-import { WalletWrapper } from './walletWrapper'
 import cors from 'cors'
 import ethers from 'ethers'
+
+import { logger, traceKeyValue, zeroPad } from './Logger'
+import { WalletWrapper } from './walletWrapper'
 
 /**
  * Leverages `JsonRpcEngine` to intercept account-related calls, and pass any other calls down to a destination
@@ -15,15 +17,27 @@ class WalletMiddlewareServer {
   constructor (
     port: number,
     seed_phrase: string,
+    provider: ethers.providers.JsonRpcProvider,
     gas_price: number,
     gas_limit: number
+    
   ) {
+    this.expressServer = express()
     this.port = port
     this.wallet = new WalletWrapper(seed_phrase, provider, gas_price, gas_limit)
 
-    this.wallet = new WalletWrapper(seed_phrase, provider)
-
-    this.expressServer = express()
+    traceKeyValue("Network", [
+      ["Chain id", provider.network.chainId],
+      ["Known as", provider.network.name],
+      ["ENS addr", provider.network.ensAddress]
+    ])
+    
+    traceKeyValue("Provider", [
+      [null, `${provider.connection.url} ${provider.connection.allowGzip ? "(gzip)" : ""}`]
+    ])
+    
+    traceKeyValue("Default gas price", [[null, gas_price]])
+    traceKeyValue("Default gas limit", [[null, gas_limit]])
 
     return this
   }
@@ -39,8 +53,15 @@ class WalletMiddlewareServer {
     this.expressServer.post(
       '*',
       async (req: express.Request, res: express.Response) => {
+
         const request = req.body
-        console.log('[<] Request:', request)
+        const socket = {
+          addr: req.connection.remoteAddress,
+          port: req.connection.remotePort,
+          rpcid: request.id
+        }
+
+        logger.log({level: 'info', socket, message: `>> ${zeroPad(this.wallet.provider._nextId, 4)}::${request.method}`})
 
         const handlers: { [K: string]: any } = {
           eth_accounts: this.wallet.getAccounts,
@@ -53,16 +74,15 @@ class WalletMiddlewareServer {
           id: request.id
         }
 
+        let response: {id: number, jsonrpc: string, result?: string, error?:string}
         let result
-        let response
         try {
           if (request.method in handlers) {
-            console.log(`[x] Intercepting method: ${request.method}...`)
             result = await handlers[request.method].bind(this.wallet)(
-              ...(request.params || [])
+              ...(request.params || []),
+              socket
             )
           } else {
-            console.log(`[=] Forwarding method: ${request.method}(${request.params ? request.params.length : 0} args)`)
             result = await this.wallet.provider.send(
               request.method,
               request.params
@@ -71,25 +91,32 @@ class WalletMiddlewareServer {
           response = { ...header, result }
         } catch (roger) {
           const message = roger.reason || roger.error.reason || roger || "unhandled response exception"
-          console.log("[!]", message)
-          const body = roger.body || roger.error.body || { error: { code: -32000, message } }
+          const body = roger.body || ((roger.error && roger.error.body) ? roger.error.body : `{ "error": { "code": -32000, "message": "${message}" }}`)
           response = { ...header, error: JSON.parse(body).error }
         }
         
-        console.log('[>] Response:', response)
+        if (response.error) {
+          logger.log({
+            level: 'warn',
+            socket,
+            message: `<= (${JSON.parse(response.error).code}) ${JSON.parse(response.error).message}`
+          })
+        }
         res.status(200).json(response)
       }
     )
-
     return this
   }
 
   /**
    * Tells the Express server to start listening.
    */
-  listen (port?: number, hostname?: string) {
+  async listen (port?: number, hostname?: string) {
     this.expressServer.listen(port || this.port, hostname || '0.0.0.0')
 
+    traceKeyValue("Address", [[null, await this.wallet.wallet.getAddress()],])
+    console.log(`Listening on ${hostname || '0.0.0.0'}:${port || this.port}`)
+    console.log()
     return this
   }
 }

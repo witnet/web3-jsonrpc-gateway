@@ -1,5 +1,5 @@
-import { WalletMiddlewareServer } from './walletMiddlewareServer'
 import { ethers } from 'ethers'
+import { WalletMiddlewareServer } from './walletMiddlewareServer'
 
 require('dotenv').config()
 
@@ -49,6 +49,8 @@ if (process.env.DEFAULT_GAS_LIMIT) {
   gas_limit = 6721975
 }
 
+console.log("=".repeat(120))
+console.log(`${process.env.npm_package_name} v${process.env.npm_package_version} (ethers: ${process.env.npm_package_dependencies_ethers})`)
 console.log()
 
 const destinationProvider = new ethers.providers.InfuraProvider(
@@ -56,6 +58,12 @@ const destinationProvider = new ethers.providers.InfuraProvider(
   projectId
 )
 
-new WalletMiddlewareServer(port, seed_phrase, destinationProvider)
+new WalletMiddlewareServer(
+    port,
+    seed_phrase,
+    destinationProvider,
+    gas_price,
+    gas_limit
+  )
   .initialize()
   .listen()
