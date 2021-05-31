@@ -21,7 +21,9 @@ The following environment variables are required:
 - `NETWORK`: network name. Infura supports `mainnet`, `ropsten`, `rinkeby`, `kovan` and `goerli`.
 - `SEED_PHRASE`: the seed phrase to use for the wrapped Ether.js wallet, in BIP-39 mnemonics format.
 - `PROJECT_ID`: your Infura project ID.
-
+- `DEFAULT_GAS_LIMIT`: default gas limit if not specified by caller.
+- `DEFAULT_GAS_PRICE`: default gas price if not specified by caller.
+- `LOG_LEVEL`: max log level to be traced, can be any of the following: `error`, `warn`, `info`, `http`, `verbose`, `debug`, `silly`.
 ## How to create a server for any other provider
 
 To use a different provider, you can create your own script that creates the provider and then build a server around
