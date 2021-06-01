@@ -2,6 +2,7 @@ import { ethers } from 'ethers'
 import { WalletMiddlewareServer } from './walletMiddlewareServer'
 
 require('dotenv').config()
+const packageData = require('../package.json')
 
 let port
 if (process.argv.length >= 3) {
@@ -50,7 +51,7 @@ if (process.env.DEFAULT_GAS_LIMIT) {
 }
 
 console.log("=".repeat(120))
-console.log(`${process.env.npm_package_name} v${process.env.npm_package_version} (ethers: ${process.env.npm_package_dependencies_ethers})`)
+console.log(`${packageData.name} v${packageData.version} (ethers: ${packageData.dependencies.ethers})`)
 console.log()
 
 const destinationProvider = new ethers.providers.InfuraProvider(

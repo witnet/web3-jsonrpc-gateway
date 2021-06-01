@@ -1,6 +1,6 @@
 {
   "name": "eth-jsonrpc-gateway",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A Web3 provider that handles accounts on its own but delegates chain queries to a 3rd party service",
   "main": "index.js",
   "scripts": {
