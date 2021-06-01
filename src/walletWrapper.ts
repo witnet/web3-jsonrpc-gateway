@@ -69,7 +69,7 @@ class WalletWrapper {
       socket: SocketParams
     ): Promise<any>
   {
-    // Compose actual transaction:
+    // Compose actual transactio  n:
     const tx = {    
       from: params.from,  
       to: params.to,
@@ -80,12 +80,12 @@ class WalletWrapper {
       nonce: await this.wallet.getTransactionCount(),
     }
 
-    await logger.log({level: 'verbose', socket, message: `> To:\t\t${tx.to || '(deploy)'}`})
-    await logger.log({level: 'verbose', socket, message: `> From:\t${tx.from}`})
-    await logger.log({level: 'verbose', socket, message: `> Nonce:\t${tx.nonce}`})
-    await logger.log({level: 'verbose', socket, message: `> Value:\t${tx.value || 0} wei`})
-    await logger.log({level: 'verbose', socket, message: `> Gas limit:\t${tx.gasLimit}`})
-    await logger.log({level: 'verbose', socket, message: `> Gas price:\t${tx.gasPrice}`})
+    await logger.log({level: 'verbose', socket, message: `> To:        ${tx.to || '(deploy)'}`})
+    await logger.log({level: 'verbose', socket, message: `> From:      ${tx.from}`})
+    await logger.log({level: 'verbose', socket, message: `> Nonce:     ${tx.nonce}`})
+    await logger.log({level: 'verbose', socket, message: `> Value:     ${tx.value || 0} wei`})
+    await logger.log({level: 'verbose', socket, message: `> Gas limit: ${tx.gasLimit}`})
+    await logger.log({level: 'verbose', socket, message: `> Gas price: ${tx.gasPrice}`})
     
     // Sign transaction:
     const signedTx = await this.wallet.signTransaction(tx)
@@ -93,8 +93,8 @@ class WalletWrapper {
     
     // Await transaction to be sent:
     const res = await this.provider.sendTransaction(signedTx)
-    await logger.log({level: 'http', socket, message: `${res.hash}`})
-    
+    await logger.log({level: 'http', socket, message: `<< ${res.hash}`})
+        
     // Return transaction hash:
     return res.hash
   }
