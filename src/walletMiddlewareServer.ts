@@ -104,13 +104,13 @@ class WalletMiddlewareServer {
           logger.log({
             level: 'warn',
             socket,
-            message: `<= ${response.error}`
+            message: `<= ${JSON.stringify(response.error)}`
           })
         } else {
           logger.log({
             level: 'debug',
             socket,
-            message: `<< ${result}`
+            message: `<< ${JSON.stringify(result)}`
           })
         }
         res.status(200).json(response)
