@@ -94,24 +94,24 @@ class WalletMiddlewareServer {
           }
           response = { ...header, result }
         } catch (roger) {
-          const message = roger.reason || roger.error.reason || roger || "unhandled response exception"
-          const body = roger.body || ((roger.error && roger.error.body) ? roger.error.body : `{ "error": { "code": -32000, "message": "${message}" }}`)
-          response = { ...header, error: JSON.parse(body).error }
+          const message = roger.reason || (roger.error && roger.error.reason) || roger|| "null exception"
+          let body = roger.body || (
+            (roger.error && roger.error.body)
+              ? roger.error.body
+              : `{ "error": { "code": -32000, "message" : "${message.replace("\"", "'")}"}}`
+          )
+          body = typeof body !== "string" ? JSON.stringify(body) : body
+          try {
+            response = { ...header, error: JSON.parse(body).error }
+          } catch (e) {
+            logger.log({ level: 'error', socket, message: `<= Invalid JSON: ${e}`})
+            response = { ...header, error: `{ "code": -32700, "message": "Invalid JSON" }`}
+          }
         }
-        
         if (response.error) {
-          console.log(response.error)
-          logger.log({
-            level: 'warn',
-            socket,
-            message: `<= ${JSON.stringify(response.error)}`
-          })
+          logger.log({ level: 'warn', socket, message: `<= Error: ${JSON.stringify(response.error)}` })
         } else {
-          logger.log({
-            level: 'debug',
-            socket,
-            message: `<< ${JSON.stringify(result)}`
-          })
+          logger.log({ level: 'debug', socket, message: `<< ${JSON.stringify(result)}` })
         }
         res.status(200).json(response)
       }
@@ -124,7 +124,6 @@ class WalletMiddlewareServer {
    */
   async listen (port?: number, hostname?: string) {
     this.expressServer.listen(port || this.port, hostname || '0.0.0.0')
-
     traceKeyValue("Address", [[null, await this.wallet.wallet.getAddress()],])
     console.log(`Listening on ${hostname || '0.0.0.0'}:${port || this.port}`)
     console.log()
