@@ -80,8 +80,9 @@ class WalletWrapper {
       nonce: await this.wallet.getTransactionCount(),
     }
 
-    await logger.log({level: 'verbose', socket, message: `> To:        ${tx.to || '(deploy)'}`})
     await logger.log({level: 'verbose', socket, message: `> From:      ${tx.from}`})
+    await logger.log({level: 'verbose', socket, message: `> To:        ${tx.to || '(deploy)'}`})
+    await logger.log({level: 'verbose', socket, message: `> Data:      ${tx.data ? tx.data.substring(0, 10) + "..." : "(transfer)"}`})
     await logger.log({level: 'verbose', socket, message: `> Nonce:     ${tx.nonce}`})
     await logger.log({level: 'verbose', socket, message: `> Value:     ${tx.value || 0} wei`})
     await logger.log({level: 'verbose', socket, message: `> Gas limit: ${tx.gasLimit}`})
