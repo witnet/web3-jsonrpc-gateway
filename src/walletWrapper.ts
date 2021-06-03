@@ -1,5 +1,5 @@
 import { ethers, Wallet } from 'ethers'
-import { logger, SocketParams } from './Logger'
+import { logger, SocketParams, zeroPad } from './Logger'
 
 interface TransactionParams {
   from: string,
@@ -94,7 +94,7 @@ class WalletWrapper {
     
     // Await transaction to be sent:
     const res = await this.provider.sendTransaction(signedTx)
-    await logger.log({level: 'http', socket, message: `<< ${res.hash}`})
+    await logger.log({level: 'http', socket, message: `<< ${zeroPad(socket.rpcid,4)}::${res.hash}`})
         
     // Return transaction hash:
     return res.hash

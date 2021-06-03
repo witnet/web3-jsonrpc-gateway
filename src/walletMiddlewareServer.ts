@@ -95,7 +95,7 @@ class WalletMiddlewareServer {
           }
           response = { ...header, result }
         } catch (roger) {
-          const message = roger.reason || (roger.error && roger.error.reason) || roger|| "null exception"
+          const message = roger.reason || (roger.error && roger.error.reason) || roger || "null exception"
           let body = roger.body || (
             (roger.error && roger.error.body)
               ? roger.error.body
@@ -105,7 +105,7 @@ class WalletMiddlewareServer {
           try {
             response = { ...header, error: JSON.parse(body).error }
           } catch (e) {
-            logger.log({ level: 'error', socket, message: `<= ${zeroPad(currId, 4)}::Invalid JSON: ${body}`})
+            logger.log({ level: 'error', socket, message: `<= ${zeroPad(nextId, 4)}::Invalid JSON: ${body}`})
             response = { ...header, error: `{ "code": -32700, "message": "Invalid JSON" }`}
           }
         }
