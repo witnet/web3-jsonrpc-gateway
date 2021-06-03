@@ -54,7 +54,7 @@ class WalletWrapper {
     logger.log({
       level: 'debug',
       socket,
-      message: `>>   Signing message: ${address} ${message}`
+      message: `=> Signing message: ${address} ${message}`
     })
     return this.wallet.signMessage(message)
   }
@@ -69,7 +69,7 @@ class WalletWrapper {
       socket: SocketParams
     ): Promise<any>
   {
-    // Compose actual transactio  n:
+    // Compose actual transaction:
     const tx = {    
       from: params.from,  
       to: params.to,
@@ -90,11 +90,11 @@ class WalletWrapper {
     
     // Sign transaction:
     const signedTx = await this.wallet.signTransaction(tx)
-    await logger.log({level: 'debug', socket, message: `> Signed tx:  ${signedTx}`})
+    await logger.log({level: 'debug', socket, message: `=> Signed tx:  ${signedTx}`})
     
     // Await transaction to be sent:
     const res = await this.provider.sendTransaction(signedTx)
-    await logger.log({level: 'http', socket, message: `<< ${zeroPad(socket.rpcid,4)}::${res.hash}`})
+    await logger.log({level: 'http', socket, message: `<< ${zeroPad(socket.serverId,4)}::${res.hash}`})
         
     // Return transaction hash:
     return res.hash
