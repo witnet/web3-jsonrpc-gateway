@@ -54,6 +54,7 @@ class WalletMiddlewareServer {
       '*',
       async (req: express.Request, res: express.Response) => {
 
+        const nextId = this.wallet.provider._nextId
         const request = req.body
         const socket = {
           addr: req.connection.remoteAddress,
@@ -64,7 +65,7 @@ class WalletMiddlewareServer {
         logger.log({
           level: 'info',
           socket,
-          message: `>> ${zeroPad(this.wallet.provider._nextId, 4)}::${request.method}`
+          message: `>> ${zeroPad(nextId, 4)}::${request.method}`
         })
 
         const handlers: { [K: string]: any } = {
@@ -104,14 +105,14 @@ class WalletMiddlewareServer {
           try {
             response = { ...header, error: JSON.parse(body).error }
           } catch (e) {
-            logger.log({ level: 'error', socket, message: `<= Invalid JSON: ${e}`})
+            logger.log({ level: 'error', socket, message: `<= ${zeroPad(currId, 4)}::Invalid JSON: ${body}`})
             response = { ...header, error: `{ "code": -32700, "message": "Invalid JSON" }`}
           }
         }
         if (response.error) {
-          logger.log({ level: 'warn', socket, message: `<= Error: ${JSON.stringify(response.error)}` })
+          logger.log({ level: 'warn', socket, message: `<= ${zeroPad(nextId, 4)}::Error: ${JSON.stringify(response.error)}` })
         } else {
-          logger.log({ level: 'debug', socket, message: `<< ${JSON.stringify(result)}` })
+          logger.log({ level: 'debug', socket, message: `<< ${zeroPad(nextId, 4)}::${JSON.stringify(result)}` })
         }
         res.status(200).json(response)
       }
