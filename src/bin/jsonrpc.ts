@@ -1,8 +1,10 @@
+#!/usr/bin/env node
+
 import { ethers } from 'ethers'
-import { WalletMiddlewareServer } from './walletMiddlewareServer'
+import { WalletMiddlewareServer } from '../walletMiddlewareServer'
 
 require('dotenv').config()
-const packageData = require('../package.json')
+const packageData = require('../../package.json')
 
 let port
 if (process.argv.length >= 3) {
@@ -29,10 +31,10 @@ if (!seed_phrase) {
   )
 }
 
-const projectId = process.env.PROJECT_ID || ''
-if (projectId.length < 1) {
+const providerUrl = process.env.PROVIDER_URL || ''
+if (providerUrl.length < 1) {
   throw Error(
-    'No provider URL provided. Please set the `PROJECT_ID` environment variable.'
+    'No provider URL provided. Please set the `PROVIDER_URL` environment variable.'
   )
 }
 
@@ -54,9 +56,9 @@ console.log("=".repeat(120))
 console.log(`${packageData.name} v${packageData.version} (ethers: ${packageData.dependencies.ethers})`)
 console.log()
 
-const destinationProvider = new ethers.providers.InfuraProvider(
-  network,
-  projectId
+const destinationProvider = new ethers.providers.JsonRpcProvider(
+    providerUrl,
+    network
 )
 
 new WalletMiddlewareServer(

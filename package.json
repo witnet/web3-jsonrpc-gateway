@@ -3,10 +3,13 @@
   "version": "1.0.5",
   "description": "A Web3 provider that handles accounts on its own but delegates chain queries to a 3rd party service",
   "main": "index.js",
+  "bin": {
+    "w3gw-infura": "dist/src/bin/infura.js",
+    "w3gw-jsonrpc": "dist/src/bin/jsonrpc.js"
+  },
   "scripts": {
     "lint": "prettier-standard --format",
     "build": "tsc",
-    "start": "npm run build && node dist/src/index.js",
     "test": "jest"
   },
   "repository": {
