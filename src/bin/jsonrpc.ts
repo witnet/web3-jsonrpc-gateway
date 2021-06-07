@@ -18,11 +18,6 @@ if (process.argv.length >= 3) {
 }
 
 const network = process.argv[3] || process.env.NETWORK
-if (!network) {
-  throw Error(
-    'No network specified. Please set the `NETWORK` environment variable.'
-  )
-}
 
 const seed_phrase = process.env.SEED_PHRASE
 if (!seed_phrase) {
