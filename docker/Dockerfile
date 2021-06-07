@@ -25,8 +25,10 @@ WORKDIR /data/source
 RUN npm install yarn
 RUN yarn
 RUN yarn build
+RUN chmod +x dist/src/bin/*
+RUN yarn link
 
 # Set the entrypoint and main command
 # Runs the bot by default, but CMD can be overriden when running a container so it runs the reactions monitor server
-ENTRYPOINT ["node"]
-CMD ["./dist/src/index.js"]
+ENTRYPOINT ["npx"]
+CMD ["w3gw-infura"]
