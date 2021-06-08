@@ -1,4 +1,4 @@
-# eth-jsonrpc-gateway
+# web3-jsonrpc-gateway
 
 A Web3 JSON-RPC provider that handles accounts on its own using Ethers.js but delegates chain queries to a 3rd party
 "destination provider", e.g. Infura, Alchemy, Cloudflare, etc.
