@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 
 import { ethers } from 'ethers'
-import { WalletMiddlewareServer } from '../walletMiddlewareServer'
+import { WalletMiddlewareServer } from '../../ethers/server'
 
 require('dotenv').config()
-const packageData = require('../../package.json')
+const packageData = require('../../../package.json')
 
 let port
 if (process.argv.length >= 3) {

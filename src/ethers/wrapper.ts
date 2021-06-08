@@ -1,5 +1,5 @@
 import { ethers, Wallet } from 'ethers'
-import { logger, SocketParams, zeroPad } from './Logger'
+import { logger, SocketParams, zeroPad } from '../Logger'
 
 interface TransactionParams {
   from: string,

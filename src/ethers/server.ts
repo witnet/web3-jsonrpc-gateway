@@ -2,8 +2,8 @@ import express, { Express } from 'express'
 import cors from 'cors'
 import ethers from 'ethers'
 
-import { logger, traceKeyValue, zeroPad } from './Logger'
-import { WalletWrapper } from './walletWrapper'
+import { logger, traceKeyValue, zeroPad } from '../Logger'
+import { WalletWrapper } from './wrapper'
 
 /**
  * Leverages `JsonRpcEngine` to intercept account-related calls, and pass any other calls down to a destination

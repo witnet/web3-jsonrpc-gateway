@@ -2,15 +2,17 @@
   "name": "eth-jsonrpc-gateway",
   "version": "1.0.5",
   "description": "A Web3 provider that handles accounts on its own but delegates chain queries to a 3rd party service",
-  "main": "index.js",
+  "main": "src/bin/jsonrpc.js",
   "bin": {
-    "w3gw-infura": "dist/src/bin/infura.js",
-    "w3gw-jsonrpc": "dist/src/bin/jsonrpc.js"
+    "w3gw-ethers": "dist/src/bin/ethers/",
+    "w3gw-infura": "dist/src/bin/ethers/infura.js",
+    "w3gw-conflux": "dist/src/bin/conflux/"
   },
   "scripts": {
     "lint": "prettier-standard --format",
     "build": "tsc",
-    "test": "jest"
+    "test": "jest",
+    "start": "yarn build && node dist/src/bin/conflux"
   },
   "repository": {
     "type": "git",
