@@ -60,9 +60,10 @@ export class WalletMiddlewareServer {
     )
 
     this.rpcParamsHandlers = {
-      eth_getBlockByNumber: this.paramsAppendTrue,
       eth_estimateGas: this.paramsTranslateTag,
       eth_getCode: this.paramsTranslateTag,
+      eth_getBalance: this.paramsTranslateTag,
+      eth_getBlockByNumber: this.paramsAppendTrue,
     }
 
     this.rpcMethodHandlers = {          
