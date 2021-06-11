@@ -63,7 +63,7 @@ export class WalletMiddlewareServer {
       eth_estimateGas: this.paramsTranslateTag,
       eth_getCode: this.paramsTranslateTag,
       eth_getBalance: this.paramsTranslateTag,
-      eth_getBlockByNumber: this.paramsAppendTrue,
+      eth_getBlockByNumber: this.paramsTranslateTag,
     }
 
     this.rpcMethodHandlers = {          
@@ -215,20 +215,10 @@ export class WalletMiddlewareServer {
   }
 
   async paramsTranslateTag(params:any[], socket:SocketParams) {
-    if (params.length > 1) {
-      let index = params.length - 1
-      let tag = params[index]
-      switch (tag) {
-        case "latest": 
-          params[index] = "latest_state"
-          break
-        case "pending":
-          params[index] = "latest_checkpoint"
-          break
-        case "earliest": 
-          break
-        default:
-          if (!tag.startsWith("0x")) params.pop()
+    params.forEach((param, index) => {
+      switch (param) {
+        case "latest" : params[index] = "latest_state" ; break
+        case "pending" : params[index] = "latest_checkpoint"; break
       }
     }
     return this.traceParams(params, socket)
