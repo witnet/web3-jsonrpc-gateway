@@ -39,6 +39,8 @@ export class WalletMiddlewareServer {
     eth_getTransactionCount: "cfx_getNextNonce",
     eth_getTransactionReceipt: "cfx_getTransactionReceipt",
   }
+
+  rpcMethodHandlers: { [K: string]: any }
   rpcParamsHandlers: { [K: string]: any }
 
   constructor (
@@ -59,6 +61,9 @@ export class WalletMiddlewareServer {
   
     this.rpcParamsHandlers = {
     }
+    this.rpcMethodHandlers = {          
+    }
+  
     traceKeyValue("Conflux provider", [
       ["Network id", networkId],
       ["Provider URL", url],
@@ -111,8 +116,8 @@ export class WalletMiddlewareServer {
         let response: {id: number, jsonrpc: string, result?: string, error?:string}
         let result
         try {
-          if (request.method in handlers) {
-            result = await handlers[request.method].bind(this.wrapper)(
+          if (request.method in this.rpcMethodHandlers) {
+            result = await this.rpcMethodHandlers[request.method].bind(this.wrapper)(
               ...(request.params || []),
               socket
             )
