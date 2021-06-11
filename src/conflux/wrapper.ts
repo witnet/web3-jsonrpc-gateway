@@ -44,11 +44,11 @@ export class WalletWrapper {
   }
 
   /**
-   * Gets the addresses of the wallet.
+   * Gets addresses of the wallet.
    */
   getAccounts () {
     let accounts:string[] = []
-    this.provider.wallet.forEach((key) => accounts.push(key.address))
+    this.conflux.wallet.forEach((key) => accounts.push(key.account))
     return accounts
   }
 
