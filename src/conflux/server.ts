@@ -34,7 +34,7 @@ class WalletMiddlewareServer {
     this.expressServer = express()
 
     this.wrapper = new WalletWrapper(
-      seedPhrase,
+      privateKey,
       defaultGas,
       new Conflux({ url, networkId, defaultGasPrice })
     )

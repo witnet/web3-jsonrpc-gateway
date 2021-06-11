@@ -16,23 +16,13 @@ interface TransactionParams {
  * Wraps the `ether` wallet / signer abstraction so it's compatible with the wallet middleware of
  * `eth-json-rpc-middleware`.
  */
-class WalletWrapper {
-  address: string
-  defaultGas: number
-  provider: Conflux
+  account: Account
   
   constructor (
-    _seedPhrase: string,
-    defaultGas: number,
-    provider: Conflux
+    privateKey: string,
   ) {
     this.defaultGas = defaultGas
-
-    let privateKey = "0xd28edbdb7bbe75787b84c5f525f47666a3274bb06561581f00839645f3c26f66"
-    // console.log("privatKey =>", privateKey)
-
-    this.provider = provider
-    this.address = this.provider.wallet.addPrivateKey(privateKey).toString()
+    this.account = this.conflux.wallet.addPrivateKey(privateKey)
   }
 
   /**

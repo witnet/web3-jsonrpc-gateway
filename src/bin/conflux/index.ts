@@ -27,8 +27,8 @@ if (process.argv.length >= 4) {
   )
 }
 
-const seedPhrase = process.env.SEED_PHRASE
-if (!seedPhrase) {
+const privateKey = process.env.PRIVATE_KEY
+if (!privateKey) {
   throw Error(
     'No mnemonic phrase provided. Please set the `SEED_PHRASE` environment variable.'
   )
@@ -62,7 +62,7 @@ console.log()
 new WalletMiddlewareServer(
     providerUrl,
     networkId,
-    seedPhrase,
+    privateKey,
     defaultGasLimit,
     defaultGasPrice
   )
