@@ -27,13 +27,14 @@ class WalletMiddlewareServer {
   constructor (
     url: string,
     networkId: number,
-    seedPhrase: string,
-    defaultGas: number,
+    privateKey: string,
+    defaultGas: BigInt,
     defaultGasPrice: number
   ) {
     this.expressServer = express()
 
     this.wrapper = new WalletWrapper(
+      networkId,
       privateKey,
       defaultGas,
       new Conflux({ url, networkId, defaultGasPrice })
@@ -143,19 +144,28 @@ class WalletMiddlewareServer {
    * Tells the Express server to start listening.
    */
   async listen (port: number, hostname?: string) {
-    this.expressServer.listen(port, hostname || '0.0.0.0')
 
-    let info = (await this.wrapper.getInfo()) as WalletWrapperInfo
+    let info
+    try {
+      info = (await this.wrapper.getInfo()) as WalletWrapperInfo
+    } catch (e) {
+      console.error("Service provider seems to be down or rejecting connections !!!")
+      console.error(e)
+      process.exit(-1)
+    }
 
     traceKeyValue("Conflux wallet", [
       ["Address", info.address.toLowerCase()],
-      ["Nonce  ", info.nonce],
+      ["Admin  ", info.admin.toLowerCase()],
       ["Balance", info.balance],
-      ["Admin  ", info.admin.toLowerCase()]
+      ["Nonce  ", info.nonce]
     ])
 
-    console.log(`Listening on ${hostname || '0.0.0.0'}:${port}`)
+    console.log(`Listening on ${hostname || '0.0.0.0'}:${port} [${logger.level.toUpperCase()}]`)
     console.log()    
+
+    this.expressServer.listen(port, hostname || '0.0.0.0')
+
     return this
   }
 }

@@ -48,11 +48,11 @@ if (process.env.DEFAULT_GAS_PRICE) {
   defaultGasPrice = 20e9
 }
 
-let defaultGasLimit
+let defaultGasLimit:BigInt
 if (process.env.DEFAULT_GAS_LIMIT) {
-  defaultGasLimit = parseInt(process.env.DEFAULT_GAS_LIMIT)
+  defaultGasLimit = BigInt(process.env.DEFAULT_GAS_LIMIT)
 } else {
-  defaultGasLimit = 6721975
+  defaultGasLimit = BigInt(6721975)
 }
 
 console.log("=".repeat(120))

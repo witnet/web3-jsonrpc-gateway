@@ -16,12 +16,23 @@ interface TransactionParams {
  * Wraps the `ether` wallet / signer abstraction so it's compatible with the wallet middleware of
  * `eth-json-rpc-middleware`.
  */
+
+type JSBI = BigInt
+export class WalletWrapper {
   account: Account
+  defaultGas: JSBI
+  conflux: Conflux
+  networkId: number
   
   constructor (
+    networkId: number,
     privateKey: string,
+    defaultGas: JSBI,
+    conflux: Conflux
   ) {
+    this.networkId = networkId
     this.defaultGas = defaultGas
+    this.conflux = conflux
     this.account = this.conflux.wallet.addPrivateKey(privateKey)
   }
 
