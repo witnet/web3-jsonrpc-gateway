@@ -4,9 +4,7 @@ import {
     EpochNumber,
     TransactionOption
   } from 'js-conflux-sdk'
-
 import { logger, SocketParams } from '../Logger'
-
 
 /**
  * Wraps the `ether` wallet / signer abstraction so it's compatible with the wallet middleware of
@@ -14,6 +12,7 @@ import { logger, SocketParams } from '../Logger'
  */
 
 type JSBI = BigInt
+
 export class WalletWrapper {
   account: Account
   defaultGas: JSBI
@@ -124,40 +123,35 @@ export class WalletWrapper {
    * @remark Return type is made `any` here because the result needs to be a String, not a `Record`.
    */
   async processTransaction (
-      _params: TransactionParams,
-      _socket: SocketParams
+      params: TransactionOption,
+      socket: SocketParams
     ): Promise<any>
   {
-    // // Compose actual transaction:
-    // const tx = {    
-    //   from: params.from,  
-    //   to: params.to,
-    //   gasLimit: params.gas || this.defaultGasLimit,
-    //   gasPrice: params.gasPrice || this.defaultGasPrice,
-    //   value: params.value,
-    //   data: params.data,
-    //   nonce: await this.wallet.getTransactionCount(),
-    // }
+    let gasPrice:BigInt = params.gasPrice || BigInt(this.conflux.defaultGasPrice)
+    let gas:BigInt = params.gas || this.defaultGas
 
-    // await logger.log({level: 'verbose', socket, message: `> From:      ${tx.from}`})
-    // await logger.log({level: 'verbose', socket, message: `> To:        ${tx.to || '(deploy)'}`})
-    // await logger.log({level: 'verbose', socket, message: `> Data:      ${tx.data ? tx.data.substring(0, 10) + "..." : "(transfer)"}`})
-    // await logger.log({level: 'verbose', socket, message: `> Nonce:     ${tx.nonce}`})
-    // await logger.log({level: 'verbose', socket, message: `> Value:     ${tx.value || 0} wei`})
-    // await logger.log({level: 'verbose', socket, message: `> Gas limit: ${tx.gasLimit}`})
-    // await logger.log({level: 'verbose', socket, message: `> Gas price: ${tx.gasPrice}`})
-    
-    // // Sign transaction:
-    // const signedTx = await this.wallet.signTransaction(tx)
-    // await logger.log({level: 'debug', socket, message: `=> Signed tx:  ${signedTx}`})
-    
-    // // Await transaction to be sent:
-    // const res = await this.provider.sendTransaction(signedTx)
-    // await logger.log({level: 'http', socket, message: `<< ${zeroPad(socket.serverId,4)}::${res.hash}`})
-        
-    // // Return transaction hash:
-    // return res.hash
+    // Compose actual transaction:
+    const tx:TransactionOption = {    
+      from: this.account.toString(),  
+      to: params.to,
+      gas,
+      gasPrice,
+      storageLimit: BigInt(Math.floor(this.conflux.defaultStorageRatio * Number(gas))),
+      value: params.value || BigInt(1),
+      data: params.data || '0x',
+      nonce: await this.conflux.getNextNonce(this.account.toString())
+    }
+    if (params.gasPrice) tx.gasPrice = params.gasPrice
+
+    await logger.log({level: 'verbose', socket, message: `> From: ${tx.from}`})
+    await logger.log({level: 'verbose', socket, message: `> To: ${tx.to || '(deploy)'}`})
+    await logger.log({level: 'verbose', socket, message: `> Data: ${tx.data ? tx.data.toString().substring(0, 10) + "..." : "(transfer)"}`})
+    await logger.log({level: 'verbose', socket, message: `> Nonce: ${tx.nonce}`})
+    await logger.log({level: 'verbose', socket, message: `> Value: ${tx.value || 0} drips`})
+    if (tx.gas) await logger.log({level: 'verbose', socket, message: `> Gas limit: ${tx.gas}`})
+    if (tx.gasPrice) await logger.log({level: 'verbose', socket, message: `> Gas price: ${tx.gasPrice}`})
+
+    return this.conflux.sendTransaction(tx)
   }
-}
 
-export { WalletWrapper }
+}

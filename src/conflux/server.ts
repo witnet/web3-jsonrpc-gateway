@@ -66,6 +66,8 @@ export class WalletMiddlewareServer {
 
     this.rpcMethodHandlers = {          
       eth_accounts: this.wrapper.getAccounts,
+      eth_sendTransaction: this.wrapper.processTransaction,
+      eth_sign: this.wrapper.processEthSignMessage,
       cfx_call: this.wrapper.call,
       net_version: this.wrapper.getNetworkId
     }
