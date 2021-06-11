@@ -20,10 +20,25 @@ interface WalletWrapperInfo {
  * Leverages `JsonRpcEngine` to intercept account-related calls, and pass any other calls down to a destination
  * provider, e.g. Infura.
  */
-class WalletMiddlewareServer {
+export class WalletMiddlewareServer {
   expressServer: Express
   wrapper: WalletWrapper
 
+  dictionaryEthCfx: { [K: string]: string } = {
+    eth_blockNumber: "cfx_epochNumber",
+    eth_call: "cfx_call",
+    eth_estimateGas: "cfx_estimateGasAndCollateral",
+    eth_gasPrice: "cfx_gasPrice",
+    eth_getBalance: "cfx_getBalance",
+    eth_getBlockByHash: "cfx_getBlockByHash",
+    eth_getBlockByNumber: "cfx_getBlockByEpochNumber",
+    eth_getCode: "cfx_getCode",
+    eth_getLogs: "cfx_getLogs",
+    eth_getStorageAt: "cfx_getStorageAt",
+    eth_getTransactionByHash: "cfx_getTransactionByHash",
+    eth_getTransactionCount: "cfx_getNextNonce",
+    eth_getTransactionReceipt: "cfx_getTransactionReceipt",
+  }
   constructor (
     url: string,
     networkId: number,
@@ -74,10 +89,12 @@ class WalletMiddlewareServer {
           message: `>> ${zeroPad(socket.serverId, 4)}::${request.method}`
         })
 
-        const handlers: { [K: string]: any } = {
-          eth_accounts: this.wrapper.getAccounts,
-          eth_sendTransaction: this.wrapper.processTransaction,
-          eth_sign: this.wrapper.processEthSignMessage
+        if (method in this.dictionaryEthCfx) {
+          request.method = this.dictionaryEthCfx[request.method]
+          logger.log({level: 'info', socket, message: `>> ${method} >> ${request.method}`})
+        } else {
+          logger.log({level: 'info', socket, message: `>> ${method}`})
+        }
         }
 
         const header = {
