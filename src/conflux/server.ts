@@ -66,6 +66,7 @@ export class WalletMiddlewareServer {
 
     this.rpcMethodHandlers = {          
       eth_accounts: this.wrapper.getAccounts,
+      cfx_call: this.wrapper.call,
     }
   
     traceKeyValue("Conflux provider", [

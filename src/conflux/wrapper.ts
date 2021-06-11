@@ -37,10 +37,27 @@ export class WalletWrapper {
   }
 
   /**
-   * Gets wallet's master address info.
+   * Sends raw call to provider.
+   * @param method JSON-RPC method
+   * @param params JSON-RPC parameters
+   * @returns 
    */
-  async getInfo() {
-    return this.provider.getAccount(this.address)
+  async call(
+      tx: TransactionOption,
+      epoch: EpochNumber,
+      socket: SocketParams
+    ) : Promise<any>
+  {
+    if (!epoch) epoch = "latest_state"
+    if (!tx.from) tx.from = this.account.toString()
+    if (tx.from)  await logger.log({level: 'verbose', socket, message: `> From: ${tx.from}`})
+    if (tx.to)    await logger.log({level: 'verbose', socket, message: `> To: ${tx.to || '(deploy)'}`})
+    if (tx.data)  await logger.log({level: 'verbose', socket, message: `> Data: ${tx.data ? tx.data.toString().substring(0, 10) + "..." : "(transfer)"}`})
+    if (tx.nonce) await logger.log({level: 'verbose', socket, message: `> Nonce: ${tx.nonce}`})
+    if (tx.value) await logger.log({level: 'verbose', socket, message: `> Value: ${tx.value || 0} wei`})
+    if (tx.gas)   await logger.log({level: 'verbose', socket, message: `> Gas limit: ${tx.gas}`})
+    if (tx.gasPrice) await logger.log({level: 'verbose', socket, message: `> Gas price: ${tx.gasPrice}`})
+    return this.conflux.call(tx, epoch)
   }
 
   /**
