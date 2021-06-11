@@ -58,10 +58,12 @@ export class WalletMiddlewareServer {
       defaultGas,
       new Conflux({ url, networkId, defaultGasPrice })
     )
-  
+
     this.rpcParamsHandlers = {
       eth_getBlockByNumber: this.paramsAppendTrue,
+      eth_estimateGas: this.paramsTranslateTag
     }
+
     this.rpcMethodHandlers = {          
       eth_accounts: this.wrapper.getAccounts,
     }
@@ -196,9 +198,30 @@ export class WalletMiddlewareServer {
 
     return this
   }
+
   async paramsAppendTrue(params:any[], socket:SocketParams): Promise<any> {
     params = [...params, true]
     logger.log({level: 'verbose', socket, message: `Transforming RPC params: appending 'true'`})
+    return this.traceParams(params, socket)
+  }
+
+  async paramsTranslateTag(params:any[], socket:SocketParams) {
+    if (params.length > 1) {
+      let index = params.length - 1
+      let tag = params[index]
+      switch (tag) {
+        case "latest": 
+          params[index] = "latest_state"
+          break
+        case "pending":
+          params[index] = "latest_checkpoint"
+          break
+        case "earliest": 
+          break
+        default:
+          if (!tag.startsWith("0x")) params.pop()
+      }
+    }
     return this.traceParams(params, socket)
   }
 
