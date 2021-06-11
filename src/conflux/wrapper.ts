@@ -85,6 +85,13 @@ export class WalletWrapper {
   }
 
   /**
+   * Gets network id.
+   */
+  async getNetworkId() : Promise<any> {
+    return this.networkId
+  }
+
+  /**
    * Sends raw call to provider.
    * @param method JSON-RPC method
    * @param params JSON-RPC parameters
