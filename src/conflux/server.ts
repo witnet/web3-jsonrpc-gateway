@@ -39,6 +39,8 @@ export class WalletMiddlewareServer {
     eth_getTransactionCount: "cfx_getNextNonce",
     eth_getTransactionReceipt: "cfx_getTransactionReceipt",
   }
+  rpcParamsHandlers: { [K: string]: any }
+
   constructor (
     url: string,
     networkId: number,
@@ -55,6 +57,8 @@ export class WalletMiddlewareServer {
       new Conflux({ url, networkId, defaultGasPrice })
     )
   
+    this.rpcParamsHandlers = {
+    }
     traceKeyValue("Conflux provider", [
       ["Network id", networkId],
       ["Provider URL", url],
@@ -83,11 +87,7 @@ export class WalletMiddlewareServer {
           clientPort: req.connection.remotePort,
         }
 
-        logger.log({
-          level: 'info',
-          socket,
-          message: `>> ${zeroPad(socket.serverId, 4)}::${request.method}`
-        })
+        let method = request.method
 
         if (method in this.dictionaryEthCfx) {
           request.method = this.dictionaryEthCfx[request.method]
@@ -95,8 +95,14 @@ export class WalletMiddlewareServer {
         } else {
           logger.log({level: 'info', socket, message: `>> ${method}`})
         }
-        }
 
+        if (method in this.rpcParamsHandlers) {
+          request.params = await this.rpcParamsHandlers[method].bind(this)(
+            request.params,
+            socket
+          )
+        }
+        
         const header = {
           jsonrpc: request.jsonrpc,
           id: request.id
