@@ -64,10 +64,8 @@ class WalletMiddlewareServer {
 
         const request = req.body
         const socket = {
-          addr: req.connection.remoteAddress,
-          port: req.connection.remotePort,
-          clientId: request.id,
-          serverId: 0
+          clientAddr: req.connection.remoteAddress,
+          clientPort: req.connection.remotePort,
         }
 
         logger.log({
