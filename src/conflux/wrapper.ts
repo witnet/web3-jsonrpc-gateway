@@ -61,6 +61,13 @@ export class WalletWrapper {
   }
 
   /**
+   * Gets given account's metadata.
+   */
+   async getAccount(address: string) : Promise<any> {
+    return this.conflux.getAccount(address)
+  }
+
+  /**
    * Gets addresses of the wallet.
    */
   getAccounts () {

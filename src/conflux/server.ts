@@ -178,7 +178,7 @@ export class WalletMiddlewareServer {
 
     let info
     try {
-      info = (await this.wrapper.getInfo()) as WalletWrapperInfo
+      info = (await this.wrapper.getAccount(this.wrapper.account.toString())) as WalletWrapperInfo
     } catch (e) {
       console.error("Service provider seems to be down or rejecting connections !!!")
       console.error(e)
