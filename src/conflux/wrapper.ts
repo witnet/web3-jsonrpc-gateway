@@ -75,8 +75,10 @@ export class WalletWrapper {
    * @param params JSON-RPC parameters
    * @returns 
    */
-  async send(method: string, params: string) {
-    return this.provider.provider.call(method, params)
+  async send(method: string, params: any[]) {
+    return (params && params.length > 0)
+      ? await this.conflux.provider.call(method, ...params)
+      : await this.conflux.provider.call(method)
   }
 
   /**
