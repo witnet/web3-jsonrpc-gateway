@@ -77,6 +77,14 @@ export class WalletWrapper {
   }
 
   /**
+   * Gets tag-specified epoch number.
+   */
+  async getEpochNumber (tag: EpochNumber) : Promise<any>
+  {
+    return this.conflux.getEpochNumber(tag)
+  }
+
+  /**
    * Sends raw call to provider.
    * @param method JSON-RPC method
    * @param params JSON-RPC parameters
