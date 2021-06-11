@@ -60,6 +60,7 @@ export class WalletMiddlewareServer {
     )
   
     this.rpcParamsHandlers = {
+      eth_getBlockByNumber: this.paramsAppendTrue,
     }
     this.rpcMethodHandlers = {          
       eth_accounts: this.wrapper.getAccounts,
@@ -195,6 +196,17 @@ export class WalletMiddlewareServer {
 
     return this
   }
-}
+  async paramsAppendTrue(params:any[], socket:SocketParams): Promise<any> {
+    params = [...params, true]
+    logger.log({level: 'verbose', socket, message: `Transforming RPC params: appending 'true'`})
+    return this.traceParams(params, socket)
+  }
 
-export { WalletMiddlewareServer }
+  async traceParams(params:any[], socket:SocketParams) {
+    params.forEach((value, index) => {
+      logger.log({level: 'debug', socket, message: `> [${index}] => ${JSON.stringify(value)}`})
+    })
+    return params
+  }
+
+}
