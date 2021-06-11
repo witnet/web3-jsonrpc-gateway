@@ -93,9 +93,12 @@ export class WalletMiddlewareServer {
       async (req: express.Request, res: express.Response) => {
 
         const request = req.body
+
         const socket = {
           clientAddr: req.connection.remoteAddress,
           clientPort: req.connection.remotePort,
+          clientId: request.id % 10000,
+          serverId: parseInt('0x' + this.wrapper.conflux.provider.requestId()) % 10000
         }
 
         let method = request.method
