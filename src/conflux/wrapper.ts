@@ -1,16 +1,12 @@
-import { Conflux } from 'js-conflux-sdk'
-// import { logger, SocketParams, zeroPad } from '../../Logger'
-import { SocketParams } from '../Logger'
+import {
+    Account,
+    Conflux,
+    EpochNumber,
+    TransactionOption
+  } from 'js-conflux-sdk'
 
-interface TransactionParams {
-  from: string,
-  to: string,
-  gas: string,
-  gasPrice: string,
-  value: string,
-  data: string,
-  nonce: string
-}
+import { logger, SocketParams } from '../Logger'
+
 
 /**
  * Wraps the `ether` wallet / signer abstraction so it's compatible with the wallet middleware of

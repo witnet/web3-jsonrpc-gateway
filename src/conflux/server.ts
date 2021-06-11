@@ -2,7 +2,7 @@ import express, { Express } from 'express'
 import cors from 'cors'
 import { Conflux } from 'js-conflux-sdk'
 
-import { logger, traceKeyValue, zeroPad } from '../Logger'
+import { logger, SocketParams, traceKeyValue } from '../Logger'
 import { WalletWrapper } from './wrapper'
 
 interface WalletWrapperInfo {
