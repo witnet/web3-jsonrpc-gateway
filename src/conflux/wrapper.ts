@@ -67,7 +67,7 @@ export class WalletWrapper {
    */
   getAccounts () {
     let accounts:string[] = []
-    this.conflux.wallet.forEach((key) => accounts.push(key.account))
+    this.conflux.wallet.forEach((key) => accounts.push(key.address))
     return accounts
   }
 
@@ -112,7 +112,7 @@ export class WalletWrapper {
     // logger.log({
     //   level: 'debug',
     //   socket,
-    //   message: `=> Signing message: ${address} ${message}`
+    //   message: `=> Signing message: ${account} ${message}`
     // })
     // return this.wallet.signMessage(message)
   }
