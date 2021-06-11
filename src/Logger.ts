@@ -4,8 +4,8 @@ const { combine, timestamp, printf } = format
 require('dotenv').config()
 
 export interface SocketParams {
-  addr: string,
-  port: number,
+  clientAddr: string,
+  clientPort: number,
   clientId: number,
   serverId: number
 }
@@ -22,7 +22,7 @@ export function zeroPad (num: number, places: number) {
 }
 
 const logFormat = printf(({ level, message, socket, timestamp }: LogMessage) => {
-  return `${timestamp} [${socket.addr}:${socket.port}::${zeroPad(socket.clientId, 4)}][${level}] ${message}`
+  return `${timestamp} [${socket.clientAddr}:${socket.clientPort}::${zeroPad(socket.serverId, 4)}][${level}] ${message}`
 })
 
 export const logger = createLogger({

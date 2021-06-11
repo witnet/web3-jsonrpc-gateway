@@ -106,7 +106,7 @@ class WalletMiddlewareServer {
           let body = roger.body || (
             (roger.error && roger.error.body)
               ? roger.error.body
-              : `{ "error": { "code": -32000, "message" : "${message.replace("\"", "'")}"}}`
+              : `{ "error": { "code": -32000, "message" : "${message}"}}`
           )
           body = typeof body !== "string" ? JSON.stringify(body) : body
           try {
@@ -115,7 +115,7 @@ class WalletMiddlewareServer {
             logger.log({
               level: 'error',
               socket,
-              message: `<= ${zeroPad(socket.serverId, 4)}::Invalid JSON: ${body}`
+              message: `<= Invalid JSON: "${body}"`
             })
             response = { ...header, error: `{ "code": -32700, "message": "Invalid JSON" }`}
           }
@@ -124,13 +124,13 @@ class WalletMiddlewareServer {
           logger.log({
             level: 'warn',
             socket,
-            message: `<= ${zeroPad(socket.serverId, 4)}::Error: ${JSON.stringify(response.error)}`
+            message: `<= Error: ${JSON.stringify(response.error)}`
           })
         } else {
           logger.log({
-            level: 'debug',
+            level: 'http',
             socket,
-            message: `<< ${zeroPad(socket.serverId, 4)}::${JSON.stringify(result)}`
+            message: `<< ${JSON.stringify(result)}`
           })
         }
         res.status(200).json(response)
