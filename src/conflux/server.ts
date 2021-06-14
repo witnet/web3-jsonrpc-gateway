@@ -1,6 +1,6 @@
 import express, { Express } from 'express'
 import cors from 'cors'
-import { Conflux } from 'js-conflux-sdk'
+import { Conflux, format as confluxFormat, TransactionOption } from 'js-conflux-sdk'
 
 import { logger, SocketParams, traceKeyValue } from '../Logger'
 import { WalletWrapper } from './wrapper'

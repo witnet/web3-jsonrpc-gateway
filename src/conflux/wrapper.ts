@@ -2,8 +2,10 @@ import {
     Account,
     Conflux,
     EpochNumber,
+    Transaction, 
     TransactionOption
   } from 'js-conflux-sdk'
+
 import { logger, SocketParams } from '../Logger'
 
 /**
@@ -15,14 +17,14 @@ type JSBI = BigInt
 
 export class WalletWrapper {
   account: Account
-  defaultGas: JSBI
+  defaultGas: BigInt
   conflux: Conflux
   networkId: number
   
   constructor (
     networkId: number,
     privateKey: string,
-    defaultGas: JSBI,
+    defaultGas: BigInt,
     conflux: Conflux
   ) {
     this.networkId = networkId
@@ -98,8 +100,8 @@ export class WalletWrapper {
    */
   async send(method: string, params: any[]) {
     return (params && params.length > 0)
-      ? await this.conflux.provider.call(method, ...params)
-      : await this.conflux.provider.call(method)
+      ? this.conflux.provider.call(method, ...params)
+      : this.conflux.provider.call(method)
   }
 
   /**
