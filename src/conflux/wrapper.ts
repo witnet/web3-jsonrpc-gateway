@@ -131,31 +131,51 @@ export class WalletWrapper {
       socket: SocketParams
     ): Promise<any>
   {
-    let gasPrice:BigInt = params.gasPrice || BigInt(this.conflux.defaultGasPrice)
-    let gas:BigInt = params.gas || this.defaultGas
-
+    const gasPrice:BigInt = params.gasPrice || BigInt(this.conflux.defaultGasPrice)
+    const nonce:number = parseInt((await this.conflux.getNextNonce(this.account.toString())).toString())
+    const epoch:BigInt = BigInt(await this.conflux.getEpochNumber()) + BigInt(50)
+    
     // Compose actual transaction:
-    const tx:TransactionOption = {    
-      from: this.account.toString(),  
+    let options = {
+      from: params.from || this.account.toString(),  
       to: params.to,
-      gas,
-      gasPrice,
-      storageLimit: BigInt(Math.floor(this.conflux.defaultStorageRatio * Number(gas))),
-      value: params.value || BigInt(1),
-      data: params.data || '0x',
-      nonce: await this.conflux.getNextNonce(this.account.toString())
+      gasPrice: gasPrice.toString(16),
+      value: (params.value || BigInt(0)).toString(16),
+      data: params.data || null,
+      nonce: `0x${nonce.toString(16)}`,
+      epochHeight: `0x${epoch.toString(16)}`,
+      chainId: `0x${this.networkId.toString(16)}`
     }
-    if (params.gasPrice) tx.gasPrice = params.gasPrice
 
-    await logger.log({level: 'verbose', socket, message: `> From: ${tx.from}`})
-    await logger.log({level: 'verbose', socket, message: `> To: ${tx.to || '(deploy)'}`})
-    await logger.log({level: 'verbose', socket, message: `> Data: ${tx.data ? tx.data.toString().substring(0, 10) + "..." : "(transfer)"}`})
-    await logger.log({level: 'verbose', socket, message: `> Nonce: ${tx.nonce}`})
-    await logger.log({level: 'verbose', socket, message: `> Value: ${tx.value || 0} drips`})
-    if (tx.gas) await logger.log({level: 'verbose', socket, message: `> Gas limit: ${tx.gas}`})
-    if (tx.gasPrice) await logger.log({level: 'verbose', socket, message: `> Gas price: ${tx.gasPrice}`})
+    // Estimate transacion gas and collateral:
+    const estimation:Object = await this.conflux.estimateGasAndCollateral(options) 
+    let payload = {
+      ...options,
+      storageLimit: `0x${Object(estimation).storageCollateralized.toString(16)}`,
+      gas: `0x${Object(estimation).gasLimit.toString(16)}`
+    }
+    
+    // Verbosely log, final transaction params:
+    logger.log({level: 'verbose', socket, message: `> From: ${payload.from}`})
+    logger.log({level: 'verbose', socket, message: `> To: ${payload.to || '(deploy)'}`})
+    logger.log({level: 'verbose', socket, message: `> Data: ${payload.data ? payload.data.toString().substring(0, 10) + "..." : "(transfer)"}`})
+    logger.log({level: 'verbose', socket, message: `> Nonce: ${payload.nonce}`})
+    logger.log({level: 'verbose', socket, message: `> Value: ${payload.value || "0"} drips`})
+    logger.log({level: 'verbose', socket, message: `> Gas: ${payload.gas}`})
+    logger.log({level: 'verbose', socket, message: `> Gas price: ${payload.gasPrice}`})
+    logger.log({level: 'verbose', socket, message: `> Storage limit: ${payload.storageLimit}`})
+    logger.log({level: 'verbose', socket, message: `> Epoch number: ${payload.epochHeight}`})
+    logger.log({level: 'verbose', socket, message: `> Chain id: ${payload.chainId}`})
+   
+    // Sign transaction:
+    const tx:Transaction = await this.account.signTransaction(payload)
+    
+    // Trace signed transaction:
+    const serialized = tx.serialize()
+    await logger.log({level: 'debug', socket, message: `>>> ${serialized} <<<`})
 
-    return this.conflux.sendTransaction(tx)
+    // Serialize and send signed transaction:
+    return await this.conflux.sendRawTransaction(serialized)
   }
 
 }
