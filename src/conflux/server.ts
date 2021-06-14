@@ -96,9 +96,9 @@ export class WalletMiddlewareServer {
 
         const request = req.body
 
-        const socket = {
-          clientAddr: req.connection.remoteAddress,
-          clientPort: req.connection.remotePort,
+        const socket:SocketParams = {
+          clientAddr: req.connection.remoteAddress || 'unknownAddr',
+          clientPort: req.connection.remotePort || 0,
           clientId: request.id % 10000,
           serverId: parseInt('0x' + this.wrapper.conflux.provider.requestId()) % 10000
         }
@@ -111,12 +111,8 @@ export class WalletMiddlewareServer {
         } else {
           logger.log({level: 'info', socket, message: `>> ${method}`})
         }
-
-        if (method in this.rpcParamsHandlers) {
-          request.params = await this.rpcParamsHandlers[method].bind(this)(
-            request.params,
-            socket
-          )
+        if (request.params && request.params.length > 0) {
+          logger.log({level: 'debug', socket, message: `> ${JSON.stringify(request.params)}`})
         }
         
         const header = {
@@ -126,6 +122,14 @@ export class WalletMiddlewareServer {
 
         let response: {id: number, jsonrpc: string, result?: string, error?:string}
         let result
+
+        if (method in this.rpcParamsHandlers) {
+          request.params = await this.rpcParamsHandlers[method].bind(this)(
+            request.params,
+            socket
+          )
+        }
+
         try {
           if (request.method in this.rpcMethodHandlers) {
             result = await this.rpcMethodHandlers[request.method].bind(this.wrapper)(
