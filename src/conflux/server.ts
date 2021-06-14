@@ -66,6 +66,7 @@ export class WalletMiddlewareServer {
       eth_getBalance: this.paramsTranslateAddrAndTag,
       eth_getBlockByNumber: this.paramsTranslateTag,
       eth_getTransactionCount: this.paramsTranslateAddrAndTag,
+      eth_sendTransaction: this.paramsTranslateTxAndTag,
     }
 
     this.rpcMethodHandlers = {          
@@ -228,6 +229,12 @@ export class WalletMiddlewareServer {
     return this.traceParams(params, socket)
   }
 
+  paramsTranslateTag(params:any[], socket:SocketParams) {
+    if (params.length > 0) {
+      params[0] = this.translateTag(params[0])
+    }
+    return this.traceParams(params, socket)
+  }
 
   paramsTranslateTxAndTag(params:any[], socket:SocketParams) {
     if (params.length > 0) {
