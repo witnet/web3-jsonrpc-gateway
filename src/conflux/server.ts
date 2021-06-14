@@ -62,6 +62,7 @@ export class WalletMiddlewareServer {
     this.rpcParamsHandlers = {
       eth_call: this.paramsTranslateTxAndTag,
       eth_estimateGas: this.paramsTranslateTxAndTag,
+      eth_getCode: this.paramsTranslateAddrAndTag,
       eth_getBlockByNumber: this.paramsTranslateTag,
     }
 
@@ -214,9 +215,13 @@ export class WalletMiddlewareServer {
     return this
   }
 
-  async paramsAppendTrue(params:any[], socket:SocketParams): Promise<any> {
-    params = [...params, true]
-    logger.log({level: 'verbose', socket, message: `Transforming RPC params: appending 'true'`})
+  paramsTranslateAddrAndTag(params:any[], socket:SocketParams) {
+    if (params.length > 0) {
+      params[0] = this.translateEthAddress(params[0])
+      if (params.length > 1 && typeof params[1] === 'string') {
+        params[1] = this.translateTag(params[1])
+      }
+    }
     return this.traceParams(params, socket)
   }
 
