@@ -50,8 +50,12 @@ export class WalletWrapper {
     if (tx.data)  await logger.log({level: 'verbose', socket, message: `> Data: ${tx.data ? tx.data.toString().substring(0, 10) + "..." : "(transfer)"}`})
     if (tx.nonce) await logger.log({level: 'verbose', socket, message: `> Nonce: ${tx.nonce}`})
     if (tx.value) await logger.log({level: 'verbose', socket, message: `> Value: ${tx.value || 0} wei`})
-    if (tx.gas)   await logger.log({level: 'verbose', socket, message: `> Gas limit: ${tx.gas}`})
+    if (tx.gas)   await logger.log({level: 'verbose', socket, message: `> Gas: ${tx.gas}`})
     if (tx.gasPrice) await logger.log({level: 'verbose', socket, message: `> Gas price: ${tx.gasPrice}`})
+    if (tx.storageLimit) await logger.log({level: 'verbose', socket, message: `> Storage limit: ${tx.storageLimit}`})
+    if (tx.epochHeight) await logger.log({level: 'verbose', socket, message: `> Epoch number: ${tx.epochHeight}`})
+    if (tx.chainId) await logger.log({level: 'verbose', socket, message: `> Chain id: ${tx.chainId}`})
+
     return this.conflux.call(tx, epoch)
   }
 

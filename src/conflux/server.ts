@@ -60,9 +60,7 @@ export class WalletMiddlewareServer {
     )
 
     this.rpcParamsHandlers = {
-      eth_estimateGas: this.paramsTranslateTag,
-      eth_getCode: this.paramsTranslateTag,
-      eth_getBalance: this.paramsTranslateTag,
+      eth_call: this.paramsTranslateTxAndTag,
       eth_getBlockByNumber: this.paramsTranslateTag,
     }
 
@@ -214,21 +212,46 @@ export class WalletMiddlewareServer {
     return this.traceParams(params, socket)
   }
 
-  async paramsTranslateTag(params:any[], socket:SocketParams) {
-    params.forEach((param, index) => {
-      switch (param) {
-        case "latest" : params[index] = "latest_state" ; break
-        case "pending" : params[index] = "latest_checkpoint"; break
+
+  paramsTranslateTxAndTag(params:any[], socket:SocketParams) {
+    if (params.length > 0) {
+      if (params[0] && typeof params[0] === 'object') {
+        params[0] = this.translateEthAddressesInTransaction(params[0])
+      }
+      if (params.length > 1 && params[1] && typeof params[1] === 'string') {
+        params[1] = this.translateTag(params[1])
       }
     }
     return this.traceParams(params, socket)
   }
 
-  async traceParams(params:any[], socket:SocketParams) {
+  traceParams(params:any[], socket:SocketParams) {
     params.forEach((value, index) => {
-      logger.log({level: 'debug', socket, message: `> [${index}] => ${JSON.stringify(value)}`})
+      logger.log({level: 'verbose', socket, message: `> [${index}] => ${JSON.stringify(value)}`})
     })
     return params
+  }
+
+  translateEthAddress(address:string) {
+    try {
+      return confluxFormat.address(address, this.wrapper.networkId)
+    } catch (e) {
+      return confluxFormat.address(this.wrapper.account.toString(), this.wrapper.networkId)
+    }
+  }
+
+  translateTag(tag:string) {
+    switch (tag) {
+      case "latest": return "latest_state"; 
+      case "pending": return "latest_checkpoint";
+      default: return tag
+    }
+  }
+
+  translateEthAddressesInTransaction(tx:TransactionOption) {
+    if (tx.from) tx.from = this.translateEthAddress(tx.from) 
+    if (tx.to) tx.to =this.translateEthAddress(tx.to)
+    return tx
   }
 
 }
