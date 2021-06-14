@@ -63,6 +63,7 @@ export class WalletMiddlewareServer {
       eth_call: this.paramsTranslateTxAndTag,
       eth_estimateGas: this.paramsTranslateTxAndTag,
       eth_getCode: this.paramsTranslateAddrAndTag,
+      eth_getBalance: this.paramsTranslateAddrAndTag,
       eth_getBlockByNumber: this.paramsTranslateTag,
     }
 
