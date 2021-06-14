@@ -169,6 +169,9 @@ export class WalletMiddlewareServer {
             message: `<= Error: ${JSON.stringify(response.error)}`
           })
         } else {
+          if (method.startsWith("eth_") && result && typeof result === 'object') {
+            result = this.translateCfxAddressesInObject(result, socket)
+          }
           logger.log({
             level: 'http',
             socket,
@@ -258,4 +261,35 @@ export class WalletMiddlewareServer {
     return tx
   }
 
+  translateCfxAddressesInObject(obj:any, socket:SocketParams) {
+    const keys = Object.keys(obj)
+    keys.forEach((key) => {
+      let value = obj[key]
+      if (typeof value === 'object' && value !== null) {
+        value = this.translateCfxAddressesInObject(value, socket)
+      } else if (typeof value === 'string') {
+        if (value.toLowerCase().startsWith("cfx")) {
+          obj[key] = confluxFormat.hexAddress(value)
+          logger.log({level: 'debug', socket, message: `< [${key}]: ${value.toLowerCase()} => ${obj[key]}`})
+        }
+      }
+      switch (key) {
+        case "epochNumber":
+            obj["number"] = obj[key]
+            obj["blockNumber"] = obj[key]
+            break;
+        case "index":
+            obj["transactionIndex"] = obj[key]
+            break;
+        case "gasUsed":
+            obj["cumulativeGasUsed"] = obj[key]
+            break;            
+        case "contractCreated":
+            obj["contractAddress"] = obj[key]
+            break;
+        default:
+      }
+    })
+    return obj
+  }
 }
