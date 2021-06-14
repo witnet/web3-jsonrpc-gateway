@@ -45,14 +45,14 @@ let defaultGasPrice
 if (process.env.DEFAULT_GAS_PRICE) {
   defaultGasPrice = parseInt(process.env.DEFAULT_GAS_PRICE)
 } else {
-  defaultGasPrice = 20e9
+  defaultGasPrice = 1
 }
 
 let defaultGasLimit:BigInt
 if (process.env.DEFAULT_GAS_LIMIT) {
   defaultGasLimit = BigInt(process.env.DEFAULT_GAS_LIMIT)
 } else {
-  defaultGasLimit = BigInt(6721975)
+  defaultGasLimit = BigInt(21000)
 }
 
 console.log("=".repeat(120))
