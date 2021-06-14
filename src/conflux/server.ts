@@ -65,6 +65,7 @@ export class WalletMiddlewareServer {
       eth_getCode: this.paramsTranslateAddrAndTag,
       eth_getBalance: this.paramsTranslateAddrAndTag,
       eth_getBlockByNumber: this.paramsTranslateTag,
+      eth_getTransactionCount: this.paramsTranslateAddrAndTag,
     }
 
     this.rpcMethodHandlers = {          
