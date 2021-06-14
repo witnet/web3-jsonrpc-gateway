@@ -154,7 +154,7 @@ export class WalletMiddlewareServer {
           let body = roger.body || (
             (roger.error && roger.error.body)
               ? roger.error.body
-              : `{ "error": { "code": -32000, "message" : "${message}"}}`
+              : `{ "error": { "code": ${roger.code || -32600}, "message" : "${JSON.stringify(roger.data ? roger.data : message).replace(/\"/g,"").replace(/\\/g,"/")}" } }`
           )
           body = typeof body !== "string" ? JSON.stringify(body) : body
           try {
