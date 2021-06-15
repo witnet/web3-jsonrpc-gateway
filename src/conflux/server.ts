@@ -302,7 +302,12 @@ export class WalletMiddlewareServer {
             break;            
         case "contractCreated":
             obj["contractAddress"] = obj[key]
-            break;
+        case "outcomeStatus":
+            obj["status"] = obj[key]
+            break
+        case "stateRoot":
+            obj["root"] = obj[key]
+            break
         default:
       }
     })
