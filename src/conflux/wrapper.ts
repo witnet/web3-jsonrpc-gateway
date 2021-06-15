@@ -9,11 +9,9 @@ import {
 import { logger, SocketParams } from '../Logger'
 
 /**
- * Wraps the `ether` wallet / signer abstraction so it's compatible with the wallet middleware of
- * `eth-json-rpc-middleware`.
+ * Wraps the Conflux Wallet so it's compatible with the RPC gateway of
+ * `web3-jsonrpc-gateway`.
  */
-
-type JSBI = BigInt
 
 export class WalletWrapper {
   account: Account
