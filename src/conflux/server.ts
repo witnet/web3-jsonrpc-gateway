@@ -293,13 +293,13 @@ export class WalletMiddlewareServer {
         case "epochNumber":
             obj["number"] = obj[key]
             obj["blockNumber"] = obj[key]
-            break;
+            break
         case "index":
             obj["transactionIndex"] = obj[key]
-            break;
+            break
         case "gasUsed":
             obj["cumulativeGasUsed"] = obj[key]
-            break;            
+            break            
         case "contractCreated":
             obj["contractAddress"] = obj[key]
         case "outcomeStatus":
@@ -308,6 +308,20 @@ export class WalletMiddlewareServer {
         case "stateRoot":
             obj["root"] = obj[key]
             break
+        case "status":
+        case "outcomeStatus":
+          if (obj[key]) {
+            if (typeof obj[key] === 'number') {
+              obj["status"] = (obj[key] == 0 ? 1 : 0)
+            } else if (typeof obj[key] === 'string') {
+              if (obj[key] === "0" || obj[key] === "0x0") obj["status"] = "0x1"
+              else obj["status"] ="0x0"
+            } else {
+              obj["status"] = obj[key]
+            }
+          }
+          console.log(`Transalating '${key}' to key 'status' and value ${obj["status"]}`)
+          break
         default:
       }
     })
