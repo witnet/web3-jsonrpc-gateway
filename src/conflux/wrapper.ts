@@ -148,11 +148,18 @@ export class WalletWrapper {
     }
 
     // Estimate transacion gas and collateral:
-    const estimation:Object = await this.conflux.estimateGasAndCollateral(options) 
+    let estimation:Object 
+    try {
+      estimation = await this.conflux.estimateGasAndCollateral(options) 
+    } catch (e) {
+      logger.warn({socket, message: `Estimation failed: ${e}`})
+      estimation = { storageCollateralized: 0, gasLimit: params.gas }
+    }
+
     let payload = {
       ...options,
-      storageLimit: `0x${Object(estimation).storageCollateralized.toString(16)}`,
-      gas: `0x${Object(estimation).gasLimit.toString(16)}`
+      storageLimit: to0x(Object(estimation).storageCollateralized),
+      gas: to0x(Object(estimation).gasLimit)
     }
     
     // Verbosely log, final transaction params:
@@ -178,4 +185,21 @@ export class WalletWrapper {
     return await this.conflux.sendRawTransaction(serialized)
   }
 
+  /**
+   * Sends raw call to provider.
+   * @param method JSON-RPC method
+   * @param params JSON-RPC parameters
+   * @returns 
+   */
+  async send(method: string, params: any[]) {
+    return (params && params.length > 0)
+      ? this.conflux.provider.call(method, ...params)
+      : this.conflux.provider.call(method)
+  }
+}
+
+function to0x(value:BigInt) {
+  let str = value.toString(16)
+  if (!str.startsWith("0x")) str = "0x" + str
+  return str
 }
