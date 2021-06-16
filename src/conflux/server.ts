@@ -143,6 +143,18 @@ export class WalletMiddlewareServer {
               socket
             )
           } else {
+            if (request.method.startsWith("eth_")) {
+              const reason = `Unhandled method '${request.method}`
+              throw { 
+                reason,
+                body: {
+                  error: {
+                    code: -32601,
+                    message: reason
+                  }
+                }
+              }
+            }
             result = await this.wrapper.send(
               request.method,
               request.params
