@@ -73,6 +73,7 @@ export class WalletMiddlewareServer {
       cfx_call: this.wrapper.call,
       cfx_sendTransaction: this.wrapper.processTransaction,
       eth_accounts: this.wrapper.getAccounts,
+      eth_newBlockFilter: this.wrapper.createEthBlockFilter,
       eth_sendTransaction: this.wrapper.processTransaction,
       eth_sign: this.wrapper.processEthSignMessage,      
       net_version: this.wrapper.getNetworkId
@@ -314,8 +315,6 @@ export class WalletMiddlewareServer {
             break            
         case "contractCreated":
             obj["contractAddress"] = obj[key]
-        case "outcomeStatus":
-            obj["status"] = obj[key]
             break
         case "stateRoot":
             obj["root"] = obj[key]

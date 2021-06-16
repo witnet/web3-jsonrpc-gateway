@@ -91,15 +91,13 @@ export class WalletWrapper {
   }
 
   /**
-   * Sends raw call to provider.
-   * @param method JSON-RPC method
-   * @param params JSON-RPC parameters
-   * @returns 
+   * Create new eth_client block filter.
    */
-  async send(method: string, params: any[]) {
-    return (params && params.length > 0)
-      ? this.conflux.provider.call(method, ...params)
-      : this.conflux.provider.call(method)
+   async createEthBlockFilter(_socket: SocketParams) : Promise<string> {
+    return '0x1'
+  }
+
+  /**
   }
 
   /**
