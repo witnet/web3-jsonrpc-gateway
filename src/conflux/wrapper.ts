@@ -84,6 +84,25 @@ export class WalletWrapper {
   }
 
   /**
+   * Gets eth filter changes. Only EthBlockFilters are currently supported.
+   */
+   async getEthFilterChanges (id: string, socket: SocketParams) : Promise<any>
+   {
+      logger.verbose({socket, message: `> Filter id: ${id}`})
+      if (id === '0x1') {
+        return this.conflux.getEpochNumber("latest_state")
+      } else {
+        const reason = `Unsupported filter ${id}`
+        throw {
+          reason, body: {
+            code: -32500,
+            message: reason
+          }
+        }
+      }     
+   }
+
+  /**
    * Gets network id.
    */
   async getNetworkId() : Promise<any> {

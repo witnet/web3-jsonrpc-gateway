@@ -73,6 +73,7 @@ export class WalletMiddlewareServer {
       cfx_call: this.wrapper.call,
       cfx_sendTransaction: this.wrapper.processTransaction,
       eth_accounts: this.wrapper.getAccounts,
+      eth_getFilterChanges: this.wrapper.getEthFilterChanges,
       eth_newBlockFilter: this.wrapper.createEthBlockFilter,
       eth_sendTransaction: this.wrapper.processTransaction,
       eth_sign: this.wrapper.processEthSignMessage,      
