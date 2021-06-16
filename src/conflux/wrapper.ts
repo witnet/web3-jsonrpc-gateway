@@ -162,7 +162,7 @@ export class WalletWrapper {
       from: params.from || this.account.toString(),  
       to: params.to,
       gasPrice: gasPrice.toString(16),
-      value: (params.value || BigInt(0)).toString(16),
+      value: params.value ? params.value.toString(16) : '0x0',
       data: params.data || null,
       nonce: `0x${nonce.toString(16)}`,
       epochHeight: `0x${epoch.toString(16)}`,
