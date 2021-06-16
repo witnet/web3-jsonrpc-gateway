@@ -77,6 +77,7 @@ export class WalletMiddlewareServer {
       eth_newBlockFilter: this.wrapper.createEthBlockFilter,
       eth_sendTransaction: this.wrapper.processTransaction,
       eth_sign: this.wrapper.processEthSignMessage,      
+      eth_uninstallFilter: this.wrapper.uninstallEthFilter,
       net_version: this.wrapper.getNetworkId
     }
   

@@ -117,8 +117,13 @@ export class WalletWrapper {
   }
 
   /**
+   * Uninstall eth_client filter (mock).
+   */
+  async uninstallEthFilter(params: TransactionOption, socket: SocketParams) : Promise<boolean> {
+    await logger.verbose({socket, message: `> ${params}`})
+    return true
   }
-
+  
   /**
    * Signs a message using the wallet's private key.
    *
