@@ -67,6 +67,7 @@ export class WalletMiddlewareServer {
       eth_getBlockByNumber: this.paramsTranslateTag,
       eth_getTransactionCount: this.paramsTranslateAddrAndTag,
       eth_sendTransaction: this.paramsTranslateTxAndTag,
+      eth_sign: this.paramsTranslateAddress
     }
 
     this.rpcMethodHandlers = {          
@@ -235,6 +236,21 @@ export class WalletMiddlewareServer {
   }
 
   /**
+   * Translate to Conflux the ADDRESS value
+   *   that come as first parameter in some Eth methods.
+   *   E.g.: eth_sign
+   */
+   paramsTranslateAddress(params:any[], socket:SocketParams) {
+    if (params.length > 0) {
+      // The ADDRESS is expected as first parameter, and must 
+      // be converted into proper Conflux alphanumeric format.
+      // See: https://github.com/Conflux-Chain/CIPs/blob/master/CIPs/cip-37.md
+      params[0] = this.translateEthAddress(params[0])
+    }
+    return this.traceParams(params, socket)
+  }
+
+  /**
    * Translate to Conflux the ADDRESS and TAG parameters
    *   that come as first and second parameter in some Eth methods.
    *   E.g.: 
@@ -304,11 +320,20 @@ export class WalletMiddlewareServer {
    * See: https://github.com/Conflux-Chain/CIPs/blob/master/CIPs/cip-37.md 
    */
   translateEthAddress(address:string) {
-    // try {
+    try {
       return confluxFormat.address(address, this.wrapper.networkId)
-    // } catch (e) {
-    //   return confluxFormat.address(this.wrapper.account.toString(), this.wrapper.networkId)
-    // }
+    } catch (e) {
+      const reason = `Unable to translate Eth address '${address}'`
+      throw {        
+        reason,
+        body: {
+          error: {
+            code: -32602, // invalid method parameter(s)
+            message: reason
+          }
+        }
+      }
+    }
   }
 
   /**

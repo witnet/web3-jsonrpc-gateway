@@ -62,7 +62,7 @@ export class WalletWrapper {
   /**
    * Gets given account's metadata.
    */
-   async getAccount(address: string) : Promise<any> {
+  async getAccount(address: string) : Promise<any> {
     return this.conflux.getAccount(address)
   }
 
@@ -130,17 +130,29 @@ export class WalletWrapper {
    * @remark Return type is made `any` here because the result needs to be a String, not a `Record`.
    */
   async processEthSignMessage (
-      _address: string,
-      _message: string,
-      _socket: SocketParams
+      address: string,
+      message: object,
+      socket: SocketParams
     ): Promise<any>
   {
-    // logger.log({
-    //   level: 'debug',
-    //   socket,
-    //   message: `=> Signing message: ${account} ${message}`
-    // })
-    // return this.wallet.signMessage(message)
+    console.log(this.getAccounts())
+    if (this.getAccounts().includes(address)) {
+      logger.verbose({socket, message: `> Signing message "${message}"`})
+      let res = await this.account.signMessage(message)
+      logger.debug({socket, message: `> Message signature: ${res}`})
+      return res
+    } else {
+      let reason = `No private key available as to sign messages from '${address}'`
+      throw {
+        reason,
+        body: {
+          error: {
+            code: -32000,
+            message: reason
+          }
+        }
+      }
+    }
   }
 
   /**
