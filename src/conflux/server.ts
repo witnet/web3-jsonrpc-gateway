@@ -234,50 +234,87 @@ export class WalletMiddlewareServer {
     return this
   }
 
+  /**
+   * Translate to Conflux the ADDRESS and TAG parameters
+   *   that come as first and second parameter in some Eth methods.
+   *   E.g.: 
+   */
   paramsTranslateAddrAndTag(params:any[], socket:SocketParams) {
     if (params.length > 0) {
+      // The ADDRESS is expected as first parameter, and must 
+      // be converted into proper Conflux alphanumeric format.
+      // See: https://github.com/Conflux-Chain/CIPs/blob/master/CIPs/cip-37.md
       params[0] = this.translateEthAddress(params[0])
+
       if (params.length > 1 && typeof params[1] === 'string') {
+        // The TAG parameter is optional. If specified,
+        // tag comes in second position as a string.
         params[1] = this.translateTag(params[1])
       }
     }
     return this.traceParams(params, socket)
   }
 
+  /**
+   * Translate to Conflux the TAG parameter that (optionally)
+   *   comes as first parameter in some Eth methods.
+   *   E.g.: 
+   */
   paramsTranslateTag(params:any[], socket:SocketParams) {
     if (params.length > 0) {
+      // TAG as first parameter may be optional in some cases:
       params[0] = this.translateTag(params[0])
     }
     return this.traceParams(params, socket)
   }
 
+  /**
+   * Translate to Conflux the TRANSACTION (object) and 
+   *   TAG (string) that come as first and second 
+   *   parameters in some Eth methods.
+   *   E.g.: 
+   */
   paramsTranslateTxAndTag(params:any[], socket:SocketParams) {
     if (params.length > 0) {
       if (params[0] && typeof params[0] === 'object') {
+        // TRANSACTION parameter must come as an Object:
         params[0] = this.translateEthAddressesInTransaction(params[0])
       }
       if (params.length > 1 && params[1] && typeof params[1] === 'string') {
+        // The TAG parameter is optional. If specified,
+        // it should come in second position as a string.
         params[1] = this.translateTag(params[1])
       }
     }
     return this.traceParams(params, socket)
   }
 
+  /**
+   * Verbosely log incoming parameters.
+   */
   traceParams(params:any[], socket:SocketParams) {
     params.forEach((value, index) => {
-      logger.log({level: 'verbose', socket, message: `> [${index}] => ${JSON.stringify(value)}`})
+      logger.verbose({socket, message: `> [${index}] => ${JSON.stringify(value)}`})
     })
     return params
   }
 
+  /**
+   * Lambda function to perform actual translation of Eth addresses to Conflux alphanumeric format.
+   * See: https://github.com/Conflux-Chain/CIPs/blob/master/CIPs/cip-37.md 
+   */
   translateEthAddress(address:string) {
-    try {
+    // try {
       return confluxFormat.address(address, this.wrapper.networkId)
-    } catch (e) {
-      return confluxFormat.address(this.wrapper.account.toString(), this.wrapper.networkId)
-    }
+    // } catch (e) {
+    //   return confluxFormat.address(this.wrapper.account.toString(), this.wrapper.networkId)
+    // }
   }
 
+  /**
+   * Lambda function to perform actual translation of TAG parameter,
+   *   from Eth to Conflux.
+   */
   translateTag(tag:string) {
     switch (tag) {
       case "latest": return "latest_state"; 
@@ -286,43 +323,65 @@ export class WalletMiddlewareServer {
     }
   }
 
+  /**
+   * Translate to Conflux the values of `from` and `tx` fields 
+   *   within passed Transaction object.
+   */
   translateEthAddressesInTransaction(tx:TransactionOption) {
     if (tx.from) tx.from = this.translateEthAddress(tx.from) 
-    if (tx.to) tx.to =this.translateEthAddress(tx.to)
+    if (tx.to) tx.to = this.translateEthAddress(tx.to)
     return tx
   }
 
+  /**
+   * Recursively mutate Conflux response object as to make it readable by Eth clients.
+   */
   translateCfxResponseObject(obj:any, socket:SocketParams) {
     const keys = Object.keys(obj)
     keys.forEach((key) => {
       let value = obj[key]
       if (typeof value === 'object' && value !== null) {
-        value = this.translateCfxAddressesInObject(value, socket)
+        // Enters recursion if passed object contains other objects:
+        value = this.translateCfxResponseObject(value, socket)
       } else if (typeof value === 'string') {
+        // Otherwise, look for Cfx addresses to be transformed...
         if (value.toLowerCase().startsWith("cfx")) {
+          // String values within a reponse object starting with "cfx"
+          // are considered to be Cfx addresses, that must be
+          // converted to hex format:
           obj[key] = confluxFormat.hexAddress(value)
-          logger.log({level: 'debug', socket, message: `< [${key}]: ${value.toLowerCase()} => ${obj[key]}`})
+          logger.debug({socket, message: `< [${key}]: ${value.toLowerCase()} => ${obj[key]}`})
         }
       }
+      // Some keys in Cfx response object have to either be renamed,
+      // or replicated with the equivalent name actually understood by 
+      // Eth clients:
       switch (key) {
         case "epochNumber":
             obj["number"] = obj[key]
             obj["blockNumber"] = obj[key]
             break
+
         case "index":
             obj["transactionIndex"] = obj[key]
             break
+
         case "gasUsed":
             obj["cumulativeGasUsed"] = obj[key]
             break            
+
         case "contractCreated":
             obj["contractAddress"] = obj[key]
             break
+
         case "stateRoot":
             obj["root"] = obj[key]
             break
+
         case "status":
         case "outcomeStatus":
+          // In Cfx: "0" => tx ok,     "1" => tx failed (see http://developer.confluxnetwork.org/docs/js-conflux-sdk/docs/javascript_sdk/#confluxprototypegettransactionreceipt)
+          // In Eth: "0" => tx failed, "1" => tx ok
           if (obj[key]) {
             if (typeof obj[key] === 'number') {
               obj["status"] = (obj[key] == 0 ? 1 : 0)
@@ -333,8 +392,9 @@ export class WalletMiddlewareServer {
               obj["status"] = obj[key]
             }
           }
-          console.log(`Transalating '${key}' to key 'status' and value ${obj["status"]}`)
+          // console.log(`Transalating '${key}' to key 'status' and value ${obj["status"]}`)
           break
+
         default:
       }
     })
