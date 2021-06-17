@@ -133,14 +133,15 @@ export class WalletMiddlewareServer {
         let response: {id: number, jsonrpc: string, result?: string, error?:string}
         let result
 
-        if (method in this.rpcParamsHandlers) {
-          request.params = await this.rpcParamsHandlers[method].bind(this)(
-            request.params,
-            socket
-          )
-        }
-
         try {
+
+          if (method in this.rpcParamsHandlers) {
+            request.params = await this.rpcParamsHandlers[method].bind(this)(
+              request.params,
+              socket
+            )
+          }
+
           if (request.method in this.rpcMethodHandlers) {
             result = await this.rpcMethodHandlers[request.method].bind(this.wrapper)(
               ...(request.params || []),
@@ -148,7 +149,7 @@ export class WalletMiddlewareServer {
             )
           } else {
             if (request.method.startsWith("eth_")) {
-              const reason = `Unhandled method '${request.method}`
+              const reason = `Unhandled method '${request.method}'`
               throw { 
                 reason,
                 body: {
@@ -164,6 +165,7 @@ export class WalletMiddlewareServer {
               request.params
             )
           }
+
           response = { ...header, result }
         } catch (roger) {
           const message = roger.reason || (roger.error && roger.error.reason) || roger || "null exception"
@@ -210,7 +212,6 @@ export class WalletMiddlewareServer {
    * Tells the Express server to start listening.
    */
   async listen (port: number, hostname?: string) {
-
     let info
     try {
       info = (await this.wrapper.getAccount(this.wrapper.account.toString())) as WalletWrapperInfo
