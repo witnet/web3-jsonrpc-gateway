@@ -174,10 +174,12 @@ export class WalletWrapper {
     try {
       estimation = await this.conflux.estimateGasAndCollateral(options) 
     } catch (e) {
-      logger.warn({socket, message: `Estimation failed: ${e}`})
+      logger.warn({socket, message: `Cost estimation failed => ${e}`})
       estimation = { storageCollateralized: 0, gasLimit: params.gas }
     }
 
+    logger.verbose({socket, message: `Cost estimation => ${estimation}`})
+    
     let payload = {
       ...options,
       storageLimit: to0x(Object(estimation).storageCollateralized),
@@ -185,16 +187,16 @@ export class WalletWrapper {
     }
     
     // Verbosely log, final transaction params:
-    logger.log({level: 'verbose', socket, message: `> From: ${payload.from}`})
-    logger.log({level: 'verbose', socket, message: `> To: ${payload.to || '(deploy)'}`})
-    logger.log({level: 'verbose', socket, message: `> Data: ${payload.data ? payload.data.toString().substring(0, 10) + "..." : "(transfer)"}`})
-    logger.log({level: 'verbose', socket, message: `> Nonce: ${payload.nonce}`})
-    logger.log({level: 'verbose', socket, message: `> Value: ${payload.value || "0"} drips`})
-    logger.log({level: 'verbose', socket, message: `> Gas: ${payload.gas}`})
-    logger.log({level: 'verbose', socket, message: `> Gas price: ${payload.gasPrice}`})
-    logger.log({level: 'verbose', socket, message: `> Storage limit: ${payload.storageLimit}`})
-    logger.log({level: 'verbose', socket, message: `> Epoch number: ${payload.epochHeight}`})
-    logger.log({level: 'verbose', socket, message: `> Chain id: ${payload.chainId}`})
+    logger.verbose({socket, message: `> From: ${payload.from}`})
+    logger.verbose({socket, message: `> To: ${payload.to || '(deploy)'}`})
+    logger.verbose({socket, message: `> Data: ${payload.data ? payload.data.toString().substring(0, 10) + "..." : "(transfer)"}`})
+    logger.verbose({socket, message: `> Nonce: ${payload.nonce}`})
+    logger.verbose({socket, message: `> Value: ${payload.value || "0"} drips`})
+    logger.verbose({socket, message: `> Gas: ${payload.gas}`})
+    logger.verbose({socket, message: `> Gas price: ${payload.gasPrice}`})
+    logger.verbose({socket, message: `> Storage limit: ${payload.storageLimit}`})
+    logger.verbose({socket, message: `> Epoch number: ${payload.epochHeight}`})
+    logger.verbose({socket, message: `> Chain id: ${payload.chainId}`})
    
     // Sign transaction:
     const tx:Transaction = await this.account.signTransaction(payload)
