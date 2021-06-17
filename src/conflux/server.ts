@@ -191,7 +191,7 @@ export class WalletMiddlewareServer {
           })
         } else {
           if (method.startsWith("eth_") && result && typeof result === 'object') {
-            result = this.translateCfxAddressesInObject(result, socket)
+            result = this.translateCfxResponseObject(result, socket)
           }
           logger.log({
             level: 'http',
@@ -292,7 +292,7 @@ export class WalletMiddlewareServer {
     return tx
   }
 
-  translateCfxAddressesInObject(obj:any, socket:SocketParams) {
+  translateCfxResponseObject(obj:any, socket:SocketParams) {
     const keys = Object.keys(obj)
     keys.forEach((key) => {
       let value = obj[key]
