@@ -45,16 +45,16 @@ export class WalletWrapper {
   {
     if (!epoch) epoch = "latest_state"
     if (!tx.from) tx.from = this.account.toString()
-    if (tx.from)  await logger.log({level: 'verbose', socket, message: `> From: ${tx.from}`})
-    if (tx.to)    await logger.log({level: 'verbose', socket, message: `> To: ${tx.to || '(deploy)'}`})
-    if (tx.data)  await logger.log({level: 'verbose', socket, message: `> Data: ${tx.data ? tx.data.toString().substring(0, 10) + "..." : "(transfer)"}`})
-    if (tx.nonce) await logger.log({level: 'verbose', socket, message: `> Nonce: ${tx.nonce}`})
-    if (tx.value) await logger.log({level: 'verbose', socket, message: `> Value: ${tx.value || 0} wei`})
-    if (tx.gas)   await logger.log({level: 'verbose', socket, message: `> Gas: ${tx.gas}`})
-    if (tx.gasPrice) await logger.log({level: 'verbose', socket, message: `> Gas price: ${tx.gasPrice}`})
-    if (tx.storageLimit) await logger.log({level: 'verbose', socket, message: `> Storage limit: ${tx.storageLimit}`})
-    if (tx.epochHeight) await logger.log({level: 'verbose', socket, message: `> Epoch number: ${tx.epochHeight}`})
-    if (tx.chainId) await logger.log({level: 'verbose', socket, message: `> Chain id: ${tx.chainId}`})
+    if (tx.from) logger.verbose({socket, message: `> From: ${tx.from}`})
+    if (tx.to) logger.verbose({socket, message: `> To: ${tx.to || '(deploy)'}`})
+    if (tx.data) logger.verbose({socket, message: `> Data: ${tx.data ? tx.data.toString().substring(0, 10) + "..." : "(transfer)"}`})
+    if (tx.nonce) logger.verbose({socket, message: `> Nonce: ${tx.nonce}`})
+    if (tx.value) logger.verbose({socket, message: `> Value: ${tx.value || 0} wei`})
+    if (tx.gas) logger.verbose({socket, message: `> Gas: ${tx.gas}`})
+    if (tx.gasPrice) logger.verbose({socket, message: `> Gas price: ${tx.gasPrice}`})
+    if (tx.storageLimit) logger.verbose({socket, message: `> Storage limit: ${tx.storageLimit}`})
+    if (tx.epochHeight) logger.verbose({socket, message: `> Epoch number: ${tx.epochHeight}`})
+    if (tx.chainId) logger.verbose({socket, message: `> Chain id: ${tx.chainId}`})
 
     return this.conflux.call(tx, epoch)
   }
@@ -139,7 +139,6 @@ export class WalletWrapper {
     if (this.getAccounts().includes(address)) {
       logger.verbose({socket, message: `> Signing message "${message}"`})
       let res = await this.account.signMessage(message)
-      logger.debug({socket, message: `> Message signature: ${res}`})
       return res
     } else {
       let reason = `No private key available as to sign messages from '${address}'`
