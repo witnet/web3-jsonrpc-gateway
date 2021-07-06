@@ -11,8 +11,7 @@ import { WalletWrapper } from './wrapper'
  */
 class WalletMiddlewareServer {
   expressServer: Express
-  port: number
-  wallet: WalletWrapper
+  wrapper: WalletWrapper
 
   constructor (
     port: number,
@@ -22,11 +21,15 @@ class WalletMiddlewareServer {
     gas_limit: number,
     force_defaults: boolean,
   ) {
+
     this.expressServer = express()
     this.wrapper = new WalletWrapper(seed_phrase, provider, gas_price, gas_limit, force_defaults, no_addresses)
     
     traceKeyValue("Provider", [
-      [null, `${provider.connection.url} ${provider.connection.allowGzip ? "(gzip)" : ""}`]
+      ["Entrypoint", `${provider.connection.url} ${provider.connection.allowGzip ? "(gzip)" : ""}`],
+      ["Force defs", force_defaults],
+      ["Gas price", gas_price],
+      ["Gas limit", gas_limit]
     ])
     
     traceKeyValue("Default gas price", [[null, gas_price]])
@@ -52,7 +55,7 @@ class WalletMiddlewareServer {
           clientAddr: req.connection.remoteAddress,
           clientPort: req.connection.remotePort,
           clientId: request.id,
-          serverId: this.wallet.provider._nextId
+          serverId: this.wrapper.provider._nextId
         }
 
         logger.log({
@@ -62,9 +65,9 @@ class WalletMiddlewareServer {
         })
 
         const handlers: { [K: string]: any } = {
-          eth_accounts: this.wallet.getAccounts,
-          eth_sendTransaction: this.wallet.processTransaction,
-          eth_sign: this.wallet.processEthSignMessage
+          eth_accounts: this.wrapper.getAccounts,
+          eth_sendTransaction: this.wrapper.processTransaction,
+          eth_sign: this.wrapper.processEthSignMessage
         }
 
         const header = {
@@ -76,12 +79,12 @@ class WalletMiddlewareServer {
         let result
         try {
           if (request.method in handlers) {
-            result = await handlers[request.method].bind(this.wallet)(
+            result = await handlers[request.method].bind(this.wrapper)(
               ...(request.params || []),
               socket
             )
           } else {
-            result = await this.wallet.provider.send(
+            result = await this.wrapper.provider.send(
               request.method,
               request.params
             )
@@ -128,11 +131,30 @@ class WalletMiddlewareServer {
   /**
    * Tells the Express server to start listening.
    */
-  async listen (port?: number, hostname?: string) {
-    this.expressServer.listen(port || this.port, hostname || '0.0.0.0')
-    traceKeyValue("Address", [[null, await this.wallet.wallet.getAddress()],])
-    console.log(`Listening on ${hostname || '0.0.0.0'}:${port || this.port}`)
-    console.log()
+  async listen (port: number, hostname?: string) {
+
+    try {
+      let network:ethers.providers.Network = await this.wrapper.provider.detectNetwork()
+      if (network) {
+        traceKeyValue("Network",[
+          ["Network id", network.chainId],
+          ["Network name", network.name],
+          ["ENS address", network.ensAddress]
+        ])
+      }
+    } catch(e) {
+      console.error("Service provider seems to be down or rejecting connections !!!")
+      console.error(e)
+      process.exit(-1)
+    }
+
+    traceKeyValue("Listener",[
+      ["TCP/host", hostname || '0.0.0.0'],
+      ["TCP/port", port],
+      ["Log level", logger.level.toUpperCase()]
+    ])
+
+    this.expressServer.listen(port, hostname || '0.0.0.0')
     return this
   }
 }

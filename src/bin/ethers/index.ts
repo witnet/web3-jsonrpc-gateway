@@ -72,4 +72,4 @@ new WalletMiddlewareServer(
     force_defaults,
   )
   .initialize()
-  .listen()
+  .listen(port)
