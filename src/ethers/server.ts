@@ -1,6 +1,6 @@
 import express, { Express } from 'express'
 import cors from 'cors'
-import ethers from 'ethers'
+import { ethers, Wallet } from 'ethers'
 
 import { logger, traceKeyValue, zeroPad } from '../Logger'
 import { WalletWrapper } from './wrapper'
@@ -14,7 +14,6 @@ class WalletMiddlewareServer {
   wrapper: WalletWrapper
 
   constructor (
-    port: number,
     seed_phrase: string,
     provider: ethers.providers.JsonRpcProvider,
     gas_price: number,
@@ -33,9 +32,6 @@ class WalletMiddlewareServer {
       ["Gas limit", gas_limit]
     ])
     
-    traceKeyValue("Default gas price", [[null, gas_price]])
-    traceKeyValue("Default gas limit", [[null, gas_limit]])
-
     return this
   }
 

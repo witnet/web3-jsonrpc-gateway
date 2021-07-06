@@ -62,7 +62,6 @@ const destinationProvider = new ethers.providers.InfuraProvider(
 )
 
 new WalletMiddlewareServer(
-    port,
     seed_phrase,
     destinationProvider,
     gas_price,

@@ -37,6 +37,7 @@ class WalletWrapper {
     this.provider = provider
     this.defaultGasPrice = gas_price
     this.defaultGasLimit = gas_limit
+    this.forceDefaults = force_defaults
   }
 
   /**

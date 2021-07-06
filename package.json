@@ -1,6 +1,6 @@
 {
   "name": "web3-jsonrpc-gateway",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "A Web3 provider that handles accounts on its own but delegates chain queries to a 3rd party service",
   "main": "src/bin/jsonrpc.js",
   "bin": {
@@ -11,8 +11,7 @@
   "scripts": {
     "lint": "prettier-standard --format",
     "build": "tsc",
-    "test": "jest",
-    "start": "yarn build && node dist/src/bin/conflux"
+    "test": "jest"
   },
   "repository": {
     "type": "git",

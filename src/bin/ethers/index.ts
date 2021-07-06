@@ -71,7 +71,6 @@ const destinationProvider = new ethers.providers.JsonRpcProvider(
 )
 
 new WalletMiddlewareServer(
-    port,
     seed_phrase,
     destinationProvider,
     gas_price,
