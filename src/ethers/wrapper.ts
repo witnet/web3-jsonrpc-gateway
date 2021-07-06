@@ -16,7 +16,7 @@ interface TransactionParams {
  * `eth-json-rpc-middleware`.
  */
 class WalletWrapper {
-  wallet: Wallet
+  wallets: Wallet[]
   provider: ethers.providers.JsonRpcProvider
   defaultGasPrice!: number
   defaultGasLimit!: number
@@ -28,18 +28,37 @@ class WalletWrapper {
     gas_price: number,
     gas_limit: number,
     force_defaults: boolean,
+    no_addresses: number
   ) {
-    this.wallet = Wallet.fromMnemonic(seed_phrase).connect(provider)
+    this.wallets = []
+    for (let ix = 0; ix < no_addresses; ix ++) {
+      this.wallets.push(Wallet.fromMnemonic(seed_phrase, `m/44'/60'/0'/0/${ix}`).connect(provider))  
+    }
     this.provider = provider
     this.defaultGasPrice = gas_price
     this.defaultGasLimit = gas_limit
   }
 
   /**
-   * Gets the address of the wallet.
+   * Gets addresses of all managed wallets.
    */
-  async getAccounts () {
-    return [await this.wallet.getAddress()]
+  async getAccounts () : Promise<string[]> {
+    let accounts:string[] = []
+    this.wallets.forEach(async (wallet:Wallet) => accounts.push(await wallet.getAddress()))
+    return accounts
+  }
+
+  /**
+   * Get wallet of the given's address, if managed
+   */
+   async getWalletByAddress(address: string) : Promise<Wallet | undefined> {
+    let accounts = await this.getAccounts()
+    for (let ix = 0; ix < accounts.length; ix ++) {
+      if (accounts[ix].toLocaleLowerCase() === address.toLowerCase()) {
+        return this.wallets[ix]
+      }
+    }
+    return undefined
   }
 
   /**
@@ -58,7 +77,23 @@ class WalletWrapper {
       socket,
       message: `=> Signing message: ${address} ${message}`
     })
-    return this.wallet.signMessage(message)
+    let wallet:Wallet|undefined = await this.getWalletByAddress(address)
+    if (wallet != undefined ) {
+      logger.verbose({socket, message: `> Signing message "${message}"`})
+      let res = await wallet.signMessage(message)
+      return res
+    } else {
+      let reason = `No private key available as to sign messages from '${address}'`
+      throw {
+        reason,
+        body: {
+          error: {
+            code: -32000,
+            message: reason
+          }
+        }
+      }
+    }
   }
 
   /**
@@ -71,6 +106,19 @@ class WalletWrapper {
       socket: SocketParams
     ): Promise<any>
   {
+    let wallet:Wallet|undefined = await this.getWalletByAddress(params.from)
+    if (wallet == undefined) {
+      let reason = `No private key available as to sign transactions from '${params.from}'`
+      throw {
+        reason,
+        body: {
+          error: {
+            code: -32000,
+            message: reason
+          }
+        }
+      }
+    }
     // Compose actual transaction:
     const tx = {    
       from: params.from,  
@@ -83,10 +131,17 @@ class WalletWrapper {
       chainId: await wallet.getChainId()
     }
 
+    await logger.verbose({socket, message: `> From:      ${tx.from}`})
+    await logger.verbose({socket, message: `> To:        ${tx.to || '(deploy)'}`})
+    await logger.verbose({socket, message: `> Data:      ${tx.data ? tx.data.substring(0, 10) + "..." : "(transfer)"}`})
+    await logger.verbose({socket, message: `> Nonce:     ${tx.nonce}`})
     await logger.verbose({socket, message: `> Chain id:  ${tx.chainId}`})
+    await logger.verbose({socket, message: `> Value:     ${tx.value || 0} wei`})    
+    await logger.verbose({socket, message: `> Gas limit: ${tx.gasLimit}`})
+    await logger.verbose({socket, message: `> Gas price: ${tx.gasPrice}`})
     
     // Sign transaction:
-    const signedTx = await this.wallet.signTransaction(tx)
+    const signedTx = await wallet.signTransaction(tx)
     await logger.log({level: 'debug', socket, message: `=> Signed tx:  ${signedTx}`})
     
     // Await transaction to be sent:

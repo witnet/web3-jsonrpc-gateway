@@ -20,6 +20,7 @@ class WalletMiddlewareServer {
     gas_price: number,
     gas_limit: number,
     force_defaults: boolean,
+    no_addresses: number
   ) {
 
     this.expressServer = express()
@@ -142,6 +143,14 @@ class WalletMiddlewareServer {
           ["ENS address", network.ensAddress]
         ])
       }
+
+      this.wrapper.wallets.forEach(async (wallet:Wallet, index) => {
+        traceKeyValue(`Wallet #${index}`, [
+          ["Address", await wallet.getAddress()],
+          ["Balance", await wallet.getBalance()],
+          ["Nonce  ", await wallet.getTransactionCount()]
+        ])
+      })
     } catch(e) {
       console.error("Service provider seems to be down or rejecting connections !!!")
       console.error(e)

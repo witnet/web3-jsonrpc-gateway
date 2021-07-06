@@ -68,6 +68,7 @@ new WalletMiddlewareServer(
     gas_price,
     gas_limit,
     false,  // force defaults
+    1       // number of addresses
   )
   .initialize()
   .listen(port)

@@ -54,6 +54,13 @@ if (process.env.FORCE_DEFAULTS) {
   force_defaults = false
 }
 
+let no_addresses
+if (process.env.NO_ADDRESSES) {
+  no_addresses = parseInt(process.env.NO_ADDRESSES)
+} else {
+  no_addresses = 1
+}
+
 console.log("=".repeat(120))
 console.log(`${packageData.name} v${packageData.version} (ethers: ${packageData.dependencies.ethers})`)
 console.log()
@@ -70,6 +77,7 @@ new WalletMiddlewareServer(
     gas_price,
     gas_limit,
     force_defaults,
+    no_addresses
   )
   .initialize()
   .listen(port)
