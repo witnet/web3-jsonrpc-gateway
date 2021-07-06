@@ -66,7 +66,8 @@ new WalletMiddlewareServer(
     seed_phrase,
     destinationProvider,
     gas_price,
-    gas_limit
+    gas_limit,
+    false,  // force defaults
   )
   .initialize()
   .listen()

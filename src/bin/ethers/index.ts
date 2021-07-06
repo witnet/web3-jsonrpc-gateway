@@ -47,6 +47,13 @@ if (process.env.DEFAULT_GAS_LIMIT) {
   gas_limit = 6721975
 }
 
+let force_defaults
+if (process.env.FORCE_DEFAULTS) {
+  force_defaults = Boolean(process.env.FORCE_DEFAULTS)
+} else {
+  force_defaults = false
+}
+
 console.log("=".repeat(120))
 console.log(`${packageData.name} v${packageData.version} (ethers: ${packageData.dependencies.ethers})`)
 console.log()
@@ -61,7 +68,8 @@ new WalletMiddlewareServer(
     seed_phrase,
     destinationProvider,
     gas_price,
-    gas_limit
+    gas_limit,
+    force_defaults,
   )
   .initialize()
   .listen()

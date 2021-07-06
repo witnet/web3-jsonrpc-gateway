@@ -19,18 +19,11 @@ class WalletMiddlewareServer {
     seed_phrase: string,
     provider: ethers.providers.JsonRpcProvider,
     gas_price: number,
-    gas_limit: number
-    
+    gas_limit: number,
+    force_defaults: boolean,
   ) {
     this.expressServer = express()
-    this.port = port
-    this.wallet = new WalletWrapper(seed_phrase, provider, gas_price, gas_limit)
-
-    traceKeyValue("Network", [
-      ["Chain id", provider.network.chainId],
-      ["Known as", provider.network.name],
-      ["ENS addr", provider.network.ensAddress]
-    ])
+    this.wrapper = new WalletWrapper(seed_phrase, provider, gas_price, gas_limit, force_defaults, no_addresses)
     
     traceKeyValue("Provider", [
       [null, `${provider.connection.url} ${provider.connection.allowGzip ? "(gzip)" : ""}`]
