@@ -20,7 +20,7 @@
     "ethereum:kovan": "start /b node ./dist/src/bin/ethers/infura 8542 kovan >> logs\\eth.kovan.log",
     "ethereum:mainnet": "start /b node ./dist/src/bin/ethers/infura 9545 homestead >> logs\\eth.homestead.log",
     "conflux:testnet": "start /b node ./dist/src/bin/conflux https://portal-test.confluxrpc.com 1 8540 >> logs\\cfx.testnet.log",
-    "omgx:rinkeby": "set DEFAULT_GAS_PRICE=15000000 && start /b node ./dist/src/bin/ethers https://rinkeby.omgx.network 8539 >> logs\\omgx.rinkeby.log"
+    "boba:rinkeby": "set DEFAULT_GAS_PRICE=15000000 && start /b node ./dist/src/bin/ethers https://rinkeby.boba.network 8539 >> logs\\boba.rinkeby.log"
   },
   "repository": {
     "type": "git",
