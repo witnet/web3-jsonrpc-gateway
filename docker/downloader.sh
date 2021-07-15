@@ -19,18 +19,18 @@ AUTH="Authorization: token $GITHUB_API_TOKEN"
 
 # If version is "latest", resolve the latest version number
 if [[ "$VERSION" == "latest" ]]; then
-    VERSION=$(curl --cacert /etc/ssl/certs/ca-certificates.crt -H "$AUTH" https://api.github.com/repos/witnet/ethersjs-jsonrpc-middleware-server/releases/latest | sed -En "s/.*\"tag_name\": \"([0-9|\.]+)\",/\1/p" | head -1)
+    VERSION=$(curl --cacert /etc/ssl/certs/ca-certificates.crt -H "$AUTH" https://api.github.com/repos/witnet/web3-jsonrpc-gateway/releases/latest | sed -En "s/.*\"tag_name\": \"([0-9|\.]+)\",/\1/p" | head -1)
 fi
 
 # The URL of the release file, and the name that will be used when downloaded
-URL="https://api.github.com/repos/witnet/ethersjs-jsonrpc-middleware-server/tarball/$VERSION"
+URL="https://api.github.com/repos/witnet/web3-jsonrpc-gateway/tarball/$VERSION"
 FILENAME="release.tar.gz"
 
 # Download and extract release bundle
 log "Downloading version $VERSION ('$FILENAME') from '$URL'. This may take a few seconds..."
 curl --cacert /etc/ssl/certs/ca-certificates.crt -LH "$AUTH" -o "/tmp/$FILENAME" "$URL" &&
 tar -zxf "/tmp/$FILENAME" --directory "/tmp/" &&
-mv /tmp/witnet-ethersjs-jsonrpc-middleware-server-* /data/source &&
+mv /tmp/witnet-web3-jsonrpc-gateway-* /data/source &&
 # Clean after ourselves
 rm -f "/tmp/$FILENAME" &&
 # Show success or error message
