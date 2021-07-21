@@ -169,11 +169,25 @@ export class WalletMiddlewareServer {
 
           response = { ...header, result }
         } catch (roger) {
+          if (!roger.code) {
+            // if no error code is specified, 
+            //   assume the Conflux provider is actually reporting an execution error:
+            roger = {
+              reason: roger.toString(),
+              body: {
+                error: {
+                  code: -32015,
+                  message: roger.data ? "Execution error" : JSON.stringify(roger),
+                  data: roger.data
+                }
+              }
+            }
+          }
           const message = roger.reason || (roger.error && roger.error.reason) || roger || "null exception"
           let body = roger.body || (
             (roger.error && roger.error.body)
               ? roger.error.body
-              : `{ "error": { "code": ${roger.code || -32600}, "message" : "${JSON.stringify(roger.data ? roger.data : message).replace(/\"/g,"").replace(/\\/g,"/")}" } }`
+              : { error: { code : roger.code || -32099, message: `"${message}"`, data: roger.data } }
           )
           body = typeof body !== "string" ? JSON.stringify(body) : body
           try {
@@ -182,9 +196,9 @@ export class WalletMiddlewareServer {
             logger.log({
               level: 'error',
               socket,
-              message: `<= Invalid JSON: "${body}"`
+              message: `<= Invalid JSON response: "${body}"`
             })
-            response = { ...header, error: `{ "code": -32700, "message": "Invalid JSON" }`}
+            response = { ...header, error: `{ "code": -32700, "message": "Invalid JSON response" }`}
           }
         }
         if (response.error) {

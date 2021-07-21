@@ -103,7 +103,7 @@ class WalletMiddlewareServer {
               socket,
               message: `<= ${zeroPad(socket.serverId, 4)}::Invalid JSON: ${body}`
             })
-            response = { ...header, error: `{ "code": -32700, "message": "Invalid JSON" }`}
+            response = { ...header, error: `{ "code": -32700, "message": "Invalid JSON response" }`}
           }
         }
         if (response.error) {
