@@ -8,6 +8,18 @@ import {
 
 import { logger, SocketParams } from '../Logger'
 
+interface ConfluxStatus {
+  bestHash: string,
+  chainId: number,
+  networkId: number,
+  blockNumber: bigint,
+  epochNumber: bigint,
+  latestCheckpoint: bigint,
+  latestConfirmed: bigint,
+  latestState: bigint,
+  pendingTxNumber: number
+}
+
 /**
  * Wraps the Conflux Wallet so it's compatible with the RPC gateway of
  * `web3-jsonrpc-gateway`.
@@ -112,8 +124,25 @@ export class WalletWrapper {
   /**
    * Create new eth_client block filter.
    */
-   async createEthBlockFilter(_socket: SocketParams) : Promise<string> {
+  async createEthBlockFilter(_socket: SocketParams) : Promise<string> {
     return '0x1'
+  }
+
+  /**
+   * Get syncing status from provider.
+   */
+  async getSyncingStatus(socket: SocketParams) : Promise<any> {
+    try {
+      const status:ConfluxStatus = <ConfluxStatus> await this.conflux.getStatus()
+      await logger.debug({socket, message: `<<< ${JSON.stringify(status)}`})
+      return {
+        startingBlock: "0x" + status.latestCheckpoint.toString(16),
+        currentBlock: "0x" + status.latestConfirmed.toString(16),
+        highestBlock: "0x" + status.epochNumber.toString(16) 
+      }
+    } catch(_e) {
+      return false
+    }
   }
 
   /**
