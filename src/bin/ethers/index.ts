@@ -6,10 +6,18 @@ import { WalletMiddlewareServer } from '../../ethers/server'
 require('dotenv').config()
 const packageData = require('../../../package.json')
 
-// Mandatory: Listening port for the server. Can also be passed from command-line as first parameter:
+// Mandatory: the actual URL of the Web3 JSON-RPC provider. Can also be passed as first parameter.
+const providerUrl = process.argv[2] || process.env.PROVIDER_URL || ''
+if (providerUrl.length < 1) {
+  throw Error(
+    'No provider URL provided. Please set the `PROVIDER_URL` environment variable.'
+  )
+}
+
+// Mandatory: Listening port for the server. Can also be passed from command-line as second parameter:
 let port
-if (process.argv.length >= 3) {
-  port = parseInt(process.argv[2])
+if (process.argv.length >= 4) {
+  port = parseInt(process.argv[3])
 } else if (process.env.PORT) {
   port = parseInt(process.env.PORT)
 } else {
@@ -26,14 +34,6 @@ if (!seed_phrase) {
   )
 }
 
-// Mandatory: the Infura project ID.
-const providerUrl = process.env.PROVIDER_URL || ''
-if (providerUrl.length < 1) {
-  throw Error(
-    'No provider URL provided. Please set the `PROVIDER_URL` environment variable.'
-  )
-}
-
 // Optional: The network name to connect with. Can also be passed as third parameter. 
 const network = process.argv[4] || process.env.NETWORK
 
@@ -45,7 +45,7 @@ if (process.env.DEFAULT_GAS_PRICE) {
   gas_price = 20e9
 }
 
-// Optional: default gas price to be used before signing a transaction, if not specified by the caller.
+// Optional: default gas limit to be used before signing a transaction, if not specified by the caller.
 let gas_limit
 if (process.env.DEFAULT_GAS_LIMIT) {
   gas_limit = parseInt(process.env.DEFAULT_GAS_LIMIT)
@@ -57,7 +57,7 @@ if (process.env.DEFAULT_GAS_LIMIT) {
 // respective environment variables, before signing a transaciton.
 let force_defaults
 if (process.env.FORCE_DEFAULTS) {
-  force_defaults = Boolean(process.env.FORCE_DEFAULTS)
+  force_defaults = (process.env.FORCE_DEFAULTS === 'true')
 } else {
   force_defaults = false
 }
