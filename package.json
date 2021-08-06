@@ -13,13 +13,13 @@
     "build": "tsc",
     "test": "jest",
     "testnets": "npm run testnets:ethereum && npm run conflux:testnet && npm run omgx.rinkeby",
-    "testnets:ethereum": "npm run ethereum:rinkeby && npm run ethereum:goerli && npm run ethereum:kovan",    
+    "testnets:ethereum": "npm run ethereum:rinkeby && npm run ethereum:ropsten && npm run ethereum:goerli && npm run ethereum:kovan",
     "ethereum:rinkeby": "start /b node ./dist/src/bin/ethers/infura 8544 rinkeby >> logs\\eth.rinkeby.log",
     "ethereum:ropsten": "start /b node ./dist/src/bin/ethers/infura 8543 ropsten >> logs\\eth.ropsten.log",
     "ethereum:goerli": "start /b node ./dist/src/bin/ethers/infura 8545 goerli >> logs\\eth.goerli.log",
     "ethereum:kovan": "start /b node ./dist/src/bin/ethers/infura 8542 kovan >> logs\\eth.kovan.log",
-    "ethereum:homestead": "start /b node ./dist/src/bin/ethers/infura 9545 homestead >> logs\\eth.homestead.log",
-    "conflux:testnet": "start /b node ./dist/src/bin/conflux https://portal-test.confluxrpc.com 1 8540 >> logs\\cfx.testnet.log",    
+    "ethereum:mainnet": "start /b node ./dist/src/bin/ethers/infura 9545 homestead >> logs\\eth.homestead.log",
+    "conflux:testnet": "start /b node ./dist/src/bin/conflux https://portal-test.confluxrpc.com 1 8540 >> logs\\cfx.testnet.log",
     "omgx:rinkeby": "set DEFAULT_GAS_PRICE=15000000 && start /b node ./dist/src/bin/ethers https://rinkeby.omgx.network 8539 >> logs\\omgx.rinkeby.log"
   },
   "repository": {

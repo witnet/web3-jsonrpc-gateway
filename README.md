@@ -1,13 +1,13 @@
 # web3-jsonrpc-gateway
 
-A Web3 JSON-RPC provider that handles accounts on its own using Ethers.js, or other SDKs, but delegates chain queries to a 3rd party "destination provider", e.g. Infura, Cloudflare, Conflux, Omgx-L2, etc.
+A Web3 JSON-RPC provider gateway that handles accounts on its own using Ethers.js, or other SDKs, but delegates chain queries to a 3rd party "destination provider", e.g. Infura, Cloudflare, Conflux, OMGX-L2, etc.
 
 ## Compilation
 
 ```console
 yarn build
 ```
-
+ 
 ## Running a single server instance, depending on destination provider type:
 
 ### Infura as destination provider:
@@ -68,8 +68,45 @@ Optional environment variables:
 - `FORCE_DEFAULTS`: if set to `true`, the server will set `gasPrice` and `gasLimit` values to the ones set by respective environment variables, before signing a transaciton.
 - `NUM_ADDRESSES`: number of wallet addresses to be handled by the server, derived from path '`m/44'/60'/0'/0/*`'.
 
+
+## Pre-configured JSON-RPC provider gateways:
+
+There are several package scripts at your disposal for you to launch specific gateways to multiple WEB3-compatible blockchains, and different possible networks within them. Besides, these scripts enable you to run multiple background instances locally, and at the same time.
+
+Instances launched with any of the following package scripts will write to a corresponding log file located inside the `logs/` folder.
+
+**Important**: In order to these batch scripts to work properly, please create an `.env` on the root folder fulfilling the following parameters:
+
+- `SEED_PHRASE`: seed phrase to be used with either `Infura` or `Ethers.js` providers.
+- `PRIVATE_KEY`: private key to be used by `Conflux`-alike providers.
+- `PROJECT_ID`: your Infura's project id to be used with `Infura`-connected servers.
+- `NUM_ADDRESSES`: number of wallet addresses to be used by `Ethers.js`-connected servers.
+
+
+### Running gateways to Ethereum networks:
+
+- Rinkeby: ```npm run ethereum:rinkeby```
+- Goerli: ```npm run ethereum:goerli```
+- Kovan: ```npm run ethereum:kovan```
+- Ropsten: ```npm run ethereum:ropsten```
+- Mainnet: ```npm run ethereum:mainnet```
+
+### Running gateways to Conflux networks:
+
+- Testnet: ```npm run conflux:testnet```
+- Mainnet: ```npm run conflux:mainnet```
+
+### Running gateways to OMGX Layer-2 networks:
+
+- Rinkeby: ```npm run omgx:rinkeby```
+- Mainnet: ```npm run omgx:mainnet```
+
+### Running simultaneous gateways to multiple testnets:
+
+- All pre-configured testnets: ```npm run testnets```
+- Only Ethereum testnets: ```npm run testnets:ethereum```
+
 ## How to create a server for any other provider
 
-To use a different provider, you can create your own script that creates the provider and then build a server around
-it. Please, have a look to provided examples in `src/bin/**`. 
+To integrate with a different provider, you can create your own script that creates the provider and then build a server around it. Please, have a look to provided examples in `src/bin/**`. 
 

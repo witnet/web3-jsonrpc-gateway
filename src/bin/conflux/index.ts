@@ -53,7 +53,7 @@ if (process.env.DEFAULT_GAS_PRICE) {
   defaultGasPrice = 1
 }
 
-// Optional: default gas limig to be used before signing a transaction, if not specified by the caller.
+// Optional: default gas limit to be used before signing a transaction, if not specified by the caller.
 let defaultGasLimit:BigInt
 if (process.env.DEFAULT_GAS_LIMIT) {
   defaultGasLimit = BigInt(process.env.DEFAULT_GAS_LIMIT)
