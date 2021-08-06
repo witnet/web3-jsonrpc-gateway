@@ -6,6 +6,7 @@ import { WalletMiddlewareServer } from '../../ethers/server'
 require('dotenv').config()
 const packageData = require('../../../package.json')
 
+// Mandatory: Listening port for the server. Can also be passed from command-line as first parameter:
 let port
 if (process.argv.length >= 3) {
   port = parseInt(process.argv[2])
@@ -17,8 +18,10 @@ if (process.argv.length >= 3) {
   )
 }
 
+// Optional: The network name to connect with. Can also be passed as second parameter. 
 const network = process.argv[3] || process.env.NETWORK
 
+// Mandatory: The seed phrase to use for the server's own wrapped wallet, in BIP-39 mnemonics format.
 const seed_phrase = process.env.SEED_PHRASE
 if (!seed_phrase) {
   throw Error(
@@ -26,6 +29,7 @@ if (!seed_phrase) {
   )
 }
 
+// Mandatory: the Infura project ID.
 const providerUrl = process.env.PROVIDER_URL || ''
 if (providerUrl.length < 1) {
   throw Error(
@@ -33,6 +37,7 @@ if (providerUrl.length < 1) {
   )
 }
 
+// Optional: default gas limit to be used before signing a transaction, if not specified by the caller.
 let gas_price
 if (process.env.DEFAULT_GAS_PRICE) {
   gas_price = parseInt(process.env.DEFAULT_GAS_PRICE)
@@ -40,6 +45,7 @@ if (process.env.DEFAULT_GAS_PRICE) {
   gas_price = 20e9
 }
 
+// Optional: default gas price to be used before signing a transaction, if not specified by the caller.
 let gas_limit
 if (process.env.DEFAULT_GAS_LIMIT) {
   gas_limit = parseInt(process.env.DEFAULT_GAS_LIMIT)
@@ -47,6 +53,8 @@ if (process.env.DEFAULT_GAS_LIMIT) {
   gas_limit = 6721975
 }
 
+// Optional: if set to `true`, the server will set `gasPrice` and `gasLimit` values to the ones set by 
+// respective environment variables, before signing a transaciton.
 let force_defaults
 if (process.env.FORCE_DEFAULTS) {
   force_defaults = Boolean(process.env.FORCE_DEFAULTS)
@@ -54,11 +62,12 @@ if (process.env.FORCE_DEFAULTS) {
   force_defaults = false
 }
 
-let no_addresses
-if (process.env.NO_ADDRESSES) {
-  no_addresses = parseInt(process.env.NO_ADDRESSES)
+// Optional: number of wallet addresses to be handled by the server, derived from path '`m/44'/60'/0'/0/*`'.
+let num_addresses
+if (process.env.NUM_ADDRESSES) {
+  num_addresses = parseInt(process.env.NUM_ADDRESSES)
 } else {
-  no_addresses = 1
+  num_addresses = 1
 }
 
 console.log("=".repeat(120))
@@ -76,7 +85,7 @@ new WalletMiddlewareServer(
     gas_price,
     gas_limit,
     force_defaults,
-    no_addresses
+    num_addresses
   )
   .initialize()
   .listen(port)

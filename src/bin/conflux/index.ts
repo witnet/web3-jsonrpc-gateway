@@ -5,6 +5,7 @@ import { WalletMiddlewareServer } from '../../conflux/server'
 require('dotenv').config()
 const packageData = require('../../../package.json')
 
+// Mandatory: Listening port for the server. Can also be passed from command-line as first parameter:
 let port
 if (process.argv.length >= 3) {
   port = parseInt(process.argv[2])
@@ -16,6 +17,7 @@ if (process.argv.length >= 3) {
   )
 }
 
+// Mandatory: The network id to connect with. Can also be passed as second parameter. 
 let networkId
 if (process.argv.length >= 4) {
   networkId = parseInt(process.argv[3])
@@ -27,6 +29,7 @@ if (process.argv.length >= 4) {
   )
 }
 
+// Mandatory: the private key to use for generation the server's own wrapped wallet.
 const privateKey = process.env.PRIVATE_KEY
 if (!privateKey) {
   throw Error(
@@ -34,6 +37,7 @@ if (!privateKey) {
   )
 }
 
+// Mandatory: the actual URL of the Web3 JSON-RPC provider.
 const providerUrl = process.env.PROVIDER_URL || ''
 if (providerUrl.length < 1) {
   throw Error(
@@ -41,6 +45,7 @@ if (providerUrl.length < 1) {
   )
 }
 
+// Optional: default gas limit to be used before signing a transaction, if not specified by the caller.
 let defaultGasPrice
 if (process.env.DEFAULT_GAS_PRICE) {
   defaultGasPrice = parseInt(process.env.DEFAULT_GAS_PRICE)
@@ -48,6 +53,7 @@ if (process.env.DEFAULT_GAS_PRICE) {
   defaultGasPrice = 1
 }
 
+// Optional: default gas price to be used before signing a transaction, if not specified by the caller.
 let defaultGasLimit:BigInt
 if (process.env.DEFAULT_GAS_LIMIT) {
   defaultGasLimit = BigInt(process.env.DEFAULT_GAS_LIMIT)

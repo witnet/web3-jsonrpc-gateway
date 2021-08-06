@@ -6,6 +6,7 @@ import { WalletMiddlewareServer } from '../../ethers/server'
 require('dotenv').config()
 const packageData = require('../../../package.json')
 
+// Mandatory: Listening port for the server. Can also be passed from command-line as first parameter:
 let port
 if (process.argv.length >= 3) {
   port = parseInt(process.argv[2])
@@ -17,6 +18,8 @@ if (process.argv.length >= 3) {
   )
 }
 
+// Mandatory: The network name to connect with. Can also be passed as second parameter. 
+// E.g.: `mainnet`, `ropsten`, `rinkeby`, `kovan` and `goerli`.
 const network = process.argv[3] || process.env.NETWORK
 if (!network) {
   throw Error(
@@ -24,6 +27,7 @@ if (!network) {
   )
 }
 
+// Mandatory: The seed phrase to use for the server's own wrapped wallet, in BIP-39 mnemonics format.
 const seed_phrase = process.env.SEED_PHRASE
 if (!seed_phrase) {
   throw Error(
@@ -31,6 +35,7 @@ if (!seed_phrase) {
   )
 }
 
+// Mandatory: the Infura project ID.
 const projectId = process.env.PROJECT_ID || ''
 if (projectId.length < 1) {
   throw Error(
@@ -38,6 +43,7 @@ if (projectId.length < 1) {
   )
 }
 
+// Optional: default gas limit to be used before signing a transaction, if not specified by the caller.
 let gas_price
 if (process.env.DEFAULT_GAS_PRICE) {
   gas_price = parseInt(process.env.DEFAULT_GAS_PRICE)
@@ -45,6 +51,7 @@ if (process.env.DEFAULT_GAS_PRICE) {
   gas_price = 20e9
 }
 
+// Optional: default gas price to be used before signing a transaction, if not specified by the caller.
 let gas_limit
 if (process.env.DEFAULT_GAS_LIMIT) {
   gas_limit = parseInt(process.env.DEFAULT_GAS_LIMIT)

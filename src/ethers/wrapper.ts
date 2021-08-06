@@ -28,10 +28,10 @@ class WalletWrapper {
     gas_price: number,
     gas_limit: number,
     force_defaults: boolean,
-    no_addresses: number
+    num_addresses: number
   ) {
     this.wallets = []
-    for (let ix = 0; ix < no_addresses; ix ++) {
+    for (let ix = 0; ix < num_addresses; ix ++) {
       this.wallets.push(Wallet.fromMnemonic(seed_phrase, `m/44'/60'/0'/0/${ix}`).connect(provider))  
     }
     this.provider = provider

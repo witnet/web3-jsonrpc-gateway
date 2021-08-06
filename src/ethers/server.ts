@@ -19,11 +19,11 @@ class WalletMiddlewareServer {
     gas_price: number,
     gas_limit: number,
     force_defaults: boolean,
-    no_addresses: number
+    num_addresses: number
   ) {
 
     this.expressServer = express()
-    this.wrapper = new WalletWrapper(seed_phrase, provider, gas_price, gas_limit, force_defaults, no_addresses)
+    this.wrapper = new WalletWrapper(seed_phrase, provider, gas_price, gas_limit, force_defaults, num_addresses)
     
     traceKeyValue("Provider", [
       ["Entrypoint", `${provider.connection.url} ${provider.connection.allowGzip ? "(gzip)" : ""}`],
