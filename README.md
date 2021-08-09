@@ -51,9 +51,9 @@ Optional environment variables:
 node ./dist/src/bin/ethers
 ```
 
-Generic destination providers need to comply with the [JsonRpcProvider] type from the [Ethers.js] library:
-- [jsonrpcprovider]: https://github.com/ethers-io/ethers.js/blob/d395d16fa357ec5dda9b59922cf21c39dc34c071/packages/providers/src.ts/json-rpc-provider.ts#L279-L612
-- [Ether.js]: https://github.com/ethers-io/ethers.js
+Generic destination providers need to comply with the `JsonRpcProvider` type from the `Ethers.js` library:
+- [jsonrpcprovider](https://github.com/ethers-io/ethers.js/blob/d395d16fa357ec5dda9b59922cf21c39dc34c071/packages/providers/src.ts/json-rpc-provider.ts#L279-L612)
+- [Ether.js](https://github.com/ethers-io/ethers.js)
 
 Required environment variables:
 - `PORT`: listening port for the server. Can also be passed from command-line as first parameter.

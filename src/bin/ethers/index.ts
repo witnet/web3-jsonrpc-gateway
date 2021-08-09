@@ -18,9 +18,6 @@ if (process.argv.length >= 3) {
   )
 }
 
-// Optional: The network name to connect with. Can also be passed as second parameter. 
-const network = process.argv[3] || process.env.NETWORK
-
 // Mandatory: The seed phrase to use for the server's own wrapped wallet, in BIP-39 mnemonics format.
 const seed_phrase = process.env.SEED_PHRASE
 if (!seed_phrase) {
@@ -37,7 +34,10 @@ if (providerUrl.length < 1) {
   )
 }
 
-// Optional: default gas limit to be used before signing a transaction, if not specified by the caller.
+// Optional: The network name to connect with. Can also be passed as third parameter. 
+const network = process.argv[4] || process.env.NETWORK
+
+// Optional: default gas price to be used before signing a transaction, if not specified by the caller.
 let gas_price
 if (process.env.DEFAULT_GAS_PRICE) {
   gas_price = parseInt(process.env.DEFAULT_GAS_PRICE)
