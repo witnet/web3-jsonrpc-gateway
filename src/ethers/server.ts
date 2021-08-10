@@ -87,11 +87,11 @@ class WalletMiddlewareServer {
             )
           }
           response = { ...header, result }
-        } catch (roger) {
-          const message = roger.reason || (roger.error && roger.error.reason) || roger || "null exception"
-          let body = roger.body || (
-            (roger.error && roger.error.body)
-              ? roger.error.body
+        } catch (exception) {
+          const message = exception.reason || (exception.error && exception.error.reason) || exception || "null exception"
+          let body = exception.body || (
+            (exception.error && exception.error.body)
+              ? exception.error.body
               : `{ "error": { "code": -32000, "message" : "${message.replace("\"", "'")}"}}`
           )
           body = typeof body !== "string" ? JSON.stringify(body) : body
