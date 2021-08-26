@@ -1,12 +1,14 @@
 {
   "name": "web3-jsonrpc-gateway",
-  "version": "1.2.2",
+  "version": "1.4.0",
   "description": "A Web3 provider that handles accounts on its own but delegates chain queries to a 3rd party service",
   "main": "src/bin/jsonrpc.js",
   "bin": {
     "w3gw-ethers": "dist/src/bin/ethers/",
-    "w3gw-infura": "dist/src/bin/ethers/infura.js",
-    "w3gw-conflux": "dist/src/bin/conflux/"
+    "w3gw-boba": "dist/src/bin/ethers/",
+    "w3gw-celo": "dist/src/bin/ethers/celo.js",
+    "w3gw-conflux": "dist/src/bin/conflux/",
+    "w3gw-infura": "dist/src/bin/ethers/infura.js"
   },
   "scripts": {
     "lint": "prettier-standard --format",
@@ -50,6 +52,7 @@
     "typescript": "^4.2.4"
   },
   "dependencies": {
+    "@celo-tools/celo-ethers-wrapper": "^0.0.5",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "cross-env": "^7.0.3",

@@ -1,51 +1,35 @@
 import express, { Express } from 'express'
 import cors from 'cors'
-import { ethers, Wallet } from 'ethers'
+import { CeloProvider as Provider } from '@celo-tools/celo-ethers-wrapper'
 
-import { logger, traceKeyValue, zeroPad } from '../Logger'
+import { logger, SocketParams, traceKeyValue, zeroPad } from '../Logger'
 import { WalletWrapper } from './wrapper'
 
 /**
  * Leverages `JsonRpcEngine` to intercept account-related calls, and pass any other calls down to a destination
  * provider, e.g. Infura.
  */
-class WalletMiddlewareServer {
+export class WalletMiddlewareServer {
   expressServer: Express
   wrapper: WalletWrapper
 
   constructor (
-    seed_phrase: string,
-    provider: ethers.providers.JsonRpcProvider,
-    gas_price: number,
-    gas_limit: number,
-    force_defaults: boolean,
-    num_addresses: number,
-    estimate_gas_limit: boolean
+    url: string,
+    networkId: number,
+    privateKey: string,
+    feeCurrency: string | undefined
   ) {
     this.expressServer = express()
     this.wrapper = new WalletWrapper(
-      seed_phrase,
-      provider,
-      gas_price,
-      gas_limit,
-      force_defaults,
-      num_addresses,
-      estimate_gas_limit
+      new Provider(url, networkId),
+      privateKey,
+      feeCurrency
     )
 
-    traceKeyValue('Provider', [
-      [
-        'Entrypoint',
-        `${provider.connection.url} ${
-          provider.connection.allowGzip ? '(gzip)' : ''
-        }`
-      ],
-      ['Force defs', force_defaults],
-      ['Gas price', gas_price],
-      [
-        'Gas limit',
-        estimate_gas_limit && !force_defaults ? '(self-estimated)' : gas_limit
-      ]
+    traceKeyValue("Celo provider", [
+      ["Network id", networkId],
+      ["Provider URL", `${this.wrapper.provider.connection.url} ${this.wrapper.provider.connection.allowGzip ? "(gzip)" : ""}`],
+      ["Fee currency", feeCurrency || "(not set)"]
     ])
 
     return this
@@ -62,10 +46,12 @@ class WalletMiddlewareServer {
     this.expressServer.post(
       '*',
       async (req: express.Request, res: express.Response) => {
+
         const request = req.body
-        const socket = {
-          clientAddr: req.connection.remoteAddress,
-          clientPort: req.connection.remotePort,
+
+        const socket:SocketParams = {
+          clientAddr: req.connection.remoteAddress || 'unknownAddr',
+          clientPort: req.connection.remotePort || 0,
           clientId: request.id,
           serverId: this.wrapper.provider._nextId
         }
@@ -73,7 +59,7 @@ class WalletMiddlewareServer {
         logger.log({
           level: 'info',
           socket,
-          message: `>> ${zeroPad(socket.serverId, 4)}::${request.method}`
+          message: `>> ${request.method}`
         })
 
         const handlers: { [K: string]: any } = {
@@ -81,18 +67,13 @@ class WalletMiddlewareServer {
           eth_sendTransaction: this.wrapper.processTransaction,
           eth_sign: this.wrapper.processEthSignMessage
         }
-
+        
         const header = {
           jsonrpc: request.jsonrpc,
           id: request.id
         }
 
-        let response: {
-          id: number
-          jsonrpc: string
-          result?: string
-          error?: string
-        }
+        let response: {id: number, jsonrpc: string, result?: string, error?:string}
         let result
         try {
           if (request.method in handlers) {
@@ -110,7 +91,7 @@ class WalletMiddlewareServer {
         } catch (exception) {
           if (!exception.code) {
             // if no error code is specified, 
-            //   assume the provider is actually reporting an execution error:
+            //   assume the Conflux provider is actually reporting an execution error:
             exception = {
               reason: exception.toString(),
               body: {
@@ -135,33 +116,22 @@ class WalletMiddlewareServer {
             logger.log({
               level: 'error',
               socket,
-              message: `<= ${zeroPad(
-                socket.serverId,
-                4
-              )}::Invalid JSON: ${body}`
+              message: `<= ${zeroPad(socket.serverId, 4)}::Invalid JSON: ${body}`
             })
-            response = {
-              ...header,
-              error: `{ "code": -32700, "message": "Invalid JSON response" }`
-            }
+            response = { ...header, error: `{ "code": -32700, "message": "Invalid JSON response" }`}
           }
         }
         if (response.error) {
           logger.log({
             level: 'warn',
             socket,
-            message: `<= ${zeroPad(
-              socket.serverId,
-              4
-            )}::Error: ${JSON.stringify(response.error)}`
+            message: `<= Error: ${JSON.stringify(response.error)}`
           })
         } else {
           logger.log({
             level: 'debug',
             socket,
-            message: `<< ${zeroPad(socket.serverId, 4)}::${JSON.stringify(
-              result
-            )}`
+            message: `<< ${JSON.stringify(result)}`
           })
         }
         res.status(200).json(response)
@@ -175,39 +145,20 @@ class WalletMiddlewareServer {
    */
   async listen (port: number, hostname?: string) {
     try {
-      let network: ethers.providers.Network = await this.wrapper.provider.detectNetwork()
-      if (network) {
-        traceKeyValue('Network', [
-          ['Network id', network.chainId],
-          ['Network name', network.name],
-          ['ENS address', network.ensAddress]
-        ])
-      }
-
-      this.wrapper.wallets.forEach(async (wallet: Wallet, index) => {
-        traceKeyValue(`Wallet #${index}`, [
-          ['Address', await wallet.getAddress()],
-          ['Balance', await wallet.getBalance()],
-          ['Nonce  ', await wallet.getTransactionCount()]
-        ])
-      })
-    } catch (e) {
-      console.error(
-        'Service provider seems to be down or rejecting connections !!!'
-      )
+      await this.wrapper.provider.ready
+    } catch(e) {
+      console.error("Service provider seems to be down or rejecting connections !!!")
       console.error(e)
       process.exit(-1)
     }
-
-    traceKeyValue('Listener', [
-      ['TCP/host', hostname || '0.0.0.0'],
-      ['TCP/port', port],
-      ['Log level', logger.level.toUpperCase()]
+    traceKeyValue("Celo wallet",[
+      ["Address", await this.wrapper.wallet.getAddress()],
+      ["Balance", await this.wrapper.wallet.getBalance()],
+      ["Chainid", await this.wrapper.wallet.getChainId()],
+      ["Nonce  ", await this.wrapper.wallet.getTransactionCount()],
     ])
-
+    console.log(`Listening on ${hostname || '0.0.0.0'}:${port} [${logger.level.toUpperCase()}]\n`)
     this.expressServer.listen(port, hostname || '0.0.0.0')
     return this
   }
 }
-
-export { WalletMiddlewareServer }

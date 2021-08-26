@@ -29,7 +29,21 @@ Optional environment variables:
 - `DEFAULT_GAS_PRICE`: default gas price to be used before signing a transaction, if not specified by the caller.
 - `LOG_LEVEL`: max log level to be traced, can be any of the following: `error`, `warn`, `info`, `http`, `verbose`, `debug`, `silly`. If not specified, `verbose` will apply.
 
-### Conflux-like destination providers:
+### Celo-compatible destination providers:
+
+```console
+node ./dist/src/bin/ethers/celo
+```
+Required environment variables:
+- `PORT`: listening port for the server. Can also be passed from command-line as first parameter.
+- `NETWORK_ID`: network id. Conflux providers currently supports: `1` for testnet, and `1029` for mainnet.
+- `PRIVATE_KEY`: the private key to use for generation the server's own wrapped wallet.
+- `PROVIDER_URL`: actual URL of the Web3 JSON-RPC provider.
+
+Optional environment variables:
+- `CELO_FEE_CURRENCY`: ERC-20 token address to be used for paying transaction gas. Native CELO will be used if none specified.  
+
+### Conflux-compatible destination providers:
 
 ```console
 node ./dist/src/bin/conflux
@@ -105,6 +119,11 @@ Instances launched with any of the following package scripts will write to a cor
 
 - Rinkeby: `npm run omgx:rinkeby`
 - Mainnet: `npm run omgx:mainnet`
+
+### Running gateways to CELO networks:
+
+- Alfajores: ```npm run celo:alfajores```
+- Mainnet: ```npm run celo:mainnet```
 
 ### Running simultaneous gateways to multiple testnets:
 
