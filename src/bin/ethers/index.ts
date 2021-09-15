@@ -70,6 +70,12 @@ if (process.env.NUM_ADDRESSES) {
   num_addresses = 1
 }
 
+// Optional: if `true`, let provider estimate gas limit before signing the transaction
+let estimate_gas_limit:boolean = false
+if (process.env.ESTIMATE_GAS_LIMIT) {
+  estimate_gas_limit = JSON.parse(process.env.ESTIMATE_GAS_LIMIT)
+}
+
 console.log("=".repeat(120))
 console.log(`${packageData.name} v${packageData.version} (ethers: ${packageData.dependencies.ethers})`)
 console.log()
@@ -85,7 +91,8 @@ new WalletMiddlewareServer(
     gas_price,
     gas_limit,
     force_defaults,
-    num_addresses
+    num_addresses,
+    estimate_gas_limit
   )
   .initialize()
   .listen(port)

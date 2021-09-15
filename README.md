@@ -53,7 +53,7 @@ node ./dist/src/bin/ethers
 
 Generic destination providers need to comply with the `JsonRpcProvider` type from the `Ethers.js` library:
 - [jsonrpcprovider](https://github.com/ethers-io/ethers.js/blob/d395d16fa357ec5dda9b59922cf21c39dc34c071/packages/providers/src.ts/json-rpc-provider.ts#L279-L612)
-- [Ether.js](https://github.com/ethers-io/ethers.js)
+- [Ethers.js](https://github.com/ethers-io/ethers.js)
 
 Required environment variables:
 - `PORT`: listening port for the server. Can also be passed from command-line as first parameter.
@@ -61,11 +61,12 @@ Required environment variables:
 - `PROVIDER_URL`: actual URL of the Web3 JSON-RPC provider.
 
 Optional environment variables:
-- `NETWORK`: the network name to connect with. 
+- `NETWORK`: the testnet or mainnet name to connect with. 
 - `DEFAULT_GAS_LIMIT`: default gas limit to be used before signing a transaction, if not specified by the caller.
 - `DEFAULT_GAS_PRICE`: default gas price to be used before signing a transaction, if not specified by the caller.
 - `LOG_LEVEL`: max log level to be traced, can be any of the following: `error`, `warn`, `info`, `http`, `verbose`, `debug`, `silly`. If not specified, `verbose` will apply.
 - `FORCE_DEFAULTS`: if set to `true`, the server will set `gasPrice` and `gasLimit` values to the ones set by respective environment variables, before signing a transaciton.
+- `ESTIMATE_GAS_LIMIT`: if set to `true`, and defaults are not forced, the gateway will ask the destination provider an estimation of the gas limit, before signing a transaction. In this case, the client-provided gas limit (or the default gas limit, if none was provided) will be considered as a maximum threshold: if provider-estimated value is greater than the client-provided one, the transaction will be rejected by the gateway.
 - `NUM_ADDRESSES`: number of wallet addresses to be handled by the server, derived from path '`m/44'/60'/0'/0/*`'.
 
 
