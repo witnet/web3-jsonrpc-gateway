@@ -121,20 +121,20 @@ class WalletWrapper {
       }
     }
     // Compose actual transaction:
-    const tx = {    
+    let tx:ethers.providers.TransactionRequest = {    
       from: params.from,  
       to: params.to,
-      gasLimit: this.forceDefaults ? this.defaultGasLimit : params.gas || this.defaultGasLimit,
       gasPrice: this.forceDefaults ? this.defaultGasPrice : params.gasPrice || this.defaultGasPrice,
       value: params.value,
       data: params.data,
       nonce: await wallet.getTransactionCount(),
       chainId: await wallet.getChainId()
     }
+    tx.gasLimit = this.forceDefaults ? this.defaultGasLimit : await this.provider.estimateGas(tx)
 
     await logger.verbose({socket, message: `> From:      ${tx.from}`})
     await logger.verbose({socket, message: `> To:        ${tx.to || '(deploy)'}`})
-    await logger.verbose({socket, message: `> Data:      ${tx.data ? tx.data.substring(0, 10) + "..." : "(transfer)"}`})
+    await logger.verbose({socket, message: `> Data:      ${tx.data ? tx.data.toString().substring(0, 10) + "..." : "(transfer)"}`})
     await logger.verbose({socket, message: `> Nonce:     ${tx.nonce}`})
     await logger.verbose({socket, message: `> Chain id:  ${tx.chainId}`})
     await logger.verbose({socket, message: `> Value:     ${tx.value || 0} wei`})    
