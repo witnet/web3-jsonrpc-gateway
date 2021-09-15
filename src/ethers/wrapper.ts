@@ -1,4 +1,4 @@
-import { ethers, Wallet } from 'ethers'
+import { BigNumber, ethers, Wallet } from 'ethers'
 import { logger, SocketParams, zeroPad } from '../Logger'
 
 interface TransactionParams {
@@ -140,7 +140,20 @@ class WalletWrapper {
     await logger.verbose({socket, message: `> Value:     ${tx.value || 0} wei`})    
     await logger.verbose({socket, message: `> Gas limit: ${tx.gasLimit}`})
     await logger.verbose({socket, message: `> Gas price: ${tx.gasPrice}`})
-    
+
+    const gasLimitThreshold = params.gas ? BigNumber.from(params.gas) : this.defaultGasPrice
+    if (tx.gasLimit > gasLimitThreshold) {
+      let reason = `Estimated gas limit overflows threshold (${gasLimitThreshold})`
+      throw {
+        reason,
+        body: {
+          error: {
+            code: -32099,
+            message: reason
+          }
+        }
+      }
+    }    
     // Sign transaction:
     const signedTx = await wallet.signTransaction(tx)
     await logger.log({level: 'debug', socket, message: `=> Signed tx:  ${signedTx}`})
