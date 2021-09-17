@@ -48,15 +48,40 @@ if (!privateKey) {
 // Optional: ERC20 token address to be used for paying tx gas.
 const feeCurrency = process.env.CELO_FEE_CURRENCY
 
+// Optional: gas price factor to be applied to GasPriceMinimum obtained before signing a tx.
+let gasLimitFactor = 3
+if (process.env.CELO_GAS_LIMIT_FACTOR) {
+  gasLimitFactor = parseFloat(process.env.CELO_GAS_LIMIT_FACTOR)
+}
+
+// Optional: gas price factor to be applied to GasPriceMinimum obtained before signing a tx.
+let gasPriceFactor = 1.3
+if (process.env.CELO_GAS_PRICE_FACTOR) {
+  gasPriceFactor = parseFloat(process.env.CELO_GAS_PRICE_FACTOR)
+}
+
+// Optional: max gas price the gateway is authorized to sign before sending tx to provider.
+let maxGasPrice = 10 ** 11 // 100 gwei
+if (process.env.CELO_MAX_GAS_PRICE) {
+  maxGasPrice = parseInt(process.env.CELO_MAX_GAS_PRICE)
+}
+
 console.log("=".repeat(120))
-console.log(`${packageData.name} v${packageData.version} (@celo-tools/celo-ethers-wrapper: ${packageData.dependencies["@celo-tools/celo-ethers-wrapper"]})`)
+console.log(
+  `${packageData.name} v${packageData.version}`,
+  `(@celo-tools/celo-ethers-wrapper: ${packageData.dependencies["@celo-tools/celo-ethers-wrapper"]},`,
+  `@celo/contractkit: ${packageData.dependencies["@celo/contractkit"]})`
+)
 console.log()
 
 new WalletMiddlewareServer(
     providerUrl,
     networkId,
     privateKey,
-    feeCurrency
+    feeCurrency,
+    gasLimitFactor,
+    gasPriceFactor,
+    maxGasPrice
   )
   .initialize()
   .listen(port)

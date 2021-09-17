@@ -32,16 +32,19 @@ Optional environment variables:
 ### Celo-compatible destination providers:
 
 ```console
-node ./dist/src/bin/ethers/celo
+node ./dist/src/bin/celo
 ```
 Required environment variables:
 - `PORT`: listening port for the server. Can also be passed from command-line as first parameter.
-- `NETWORK_ID`: network id. Conflux providers currently supports: `1` for testnet, and `1029` for mainnet.
+- `NETWORK_ID`: Celo providers currently supports: `44787` for testnet, and `42220` for mainnet.
 - `PRIVATE_KEY`: the private key to use for generation the server's own wrapped wallet.
 - `PROVIDER_URL`: actual URL of the Web3 JSON-RPC provider.
 
 Optional environment variables:
 - `CELO_FEE_CURRENCY`: ERC-20 token address to be used for paying transaction gas. Native CELO will be used if none specified.  
+- `CELO_GAS_LIMIT_FACTOR`: factor by which the provider-estimated gas limit will be multiplied, before signing transactions.
+- `CELO_GAS_PRICE_FACTOR`: factor by which the provider-estimated gas price minimum will be multiplied, before signing transactions.
+- `CELO_MAX_GAS_PRICE`: maximum gas price the gateway is allowed to bid when signing transactions.
 
 ### Conflux-compatible destination providers:
 

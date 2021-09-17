@@ -1,9 +1,8 @@
 import express, { Express } from 'express'
 import cors from 'cors'
-import { CeloProvider as Provider } from '@celo-tools/celo-ethers-wrapper'
-
 import { logger, SocketParams, traceKeyValue, zeroPad } from '../Logger'
 import { WalletWrapper } from './wrapper'
+import { CeloContract } from '@celo/contractkit'
 
 /**
  * Leverages `JsonRpcEngine` to intercept account-related calls, and pass any other calls down to a destination
@@ -17,21 +16,29 @@ export class WalletMiddlewareServer {
     url: string,
     networkId: number,
     privateKey: string,
-    feeCurrency: string | undefined
+    feeCurrency: string | undefined,
+    gasLimitFactor: number,
+    gasPriceFactor: number,
+    maxPrice: number
   ) {
     this.expressServer = express()
     this.wrapper = new WalletWrapper(
-      new Provider(url, networkId),
+      url,
+      networkId,
       privateKey,
-      feeCurrency
+      feeCurrency,
+      gasLimitFactor,
+      gasPriceFactor,
+      maxPrice
     )
-
     traceKeyValue("Celo provider", [
       ["Network id", networkId],
       ["Provider URL", `${this.wrapper.provider.connection.url} ${this.wrapper.provider.connection.allowGzip ? "(gzip)" : ""}`],
-      ["Fee currency", feeCurrency || "(not set)"]
+      ["Fee currency", feeCurrency || "(not set)"],
+      ["Gas factor", gasLimitFactor],
+      ["Price factor", gasPriceFactor],
+      ["Max price", `${maxPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")} weis / g.u.`]
     ])
-
     return this
   }
 
@@ -151,9 +158,17 @@ export class WalletMiddlewareServer {
       console.error(e)
       process.exit(-1)
     }
-    traceKeyValue("Celo wallet",[
+    traceKeyValue("Celo contracts", [
+      ["GsPriceMinimum", await this.wrapper.kit.registry.addressFor(CeloContract.GasPriceMinimum)],
+      ["GoldToken", await this.wrapper.kit.registry.addressFor(CeloContract.GoldToken)],
+      ["StableToken", await this.wrapper.kit.registry.addressFor(CeloContract.StableToken)],
+      ["StableTokenEUR", await this.wrapper.kit.registry.addressFor(CeloContract.StableTokenEUR)],
+    ])
+    const balance:any = await this.wrapper.wallet.getBalance()
+    const decimals:number = await (await this.wrapper.kit.contracts.getGoldToken()).decimals()
+    traceKeyValue("Celo wallet", [
       ["Address", await this.wrapper.wallet.getAddress()],
-      ["Balance", await this.wrapper.wallet.getBalance()],
+      ["Balance", `${balance / 10 ** decimals} CELO`],
       ["Chainid", await this.wrapper.wallet.getChainId()],
       ["Nonce  ", await this.wrapper.wallet.getTransactionCount()],
     ])
