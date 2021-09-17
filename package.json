@@ -6,7 +6,7 @@
   "bin": {
     "w3gw-ethers": "dist/src/bin/ethers/",
     "w3gw-boba": "dist/src/bin/ethers/",
-    "w3gw-celo": "dist/src/bin/ethers/celo.js",
+    "w3gw-celo": "dist/src/bin/celo.js",
     "w3gw-conflux": "dist/src/bin/conflux/",
     "w3gw-infura": "dist/src/bin/ethers/infura.js"
   },
