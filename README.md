@@ -13,7 +13,7 @@ yarn build
 ### Infura as destination provider:
 
 ```console
-node ./dist/src/bin/ethers/infura
+node dist/src/bin/ethers/infura
 ```
 
 Required environment variables:
@@ -32,7 +32,7 @@ Optional environment variables:
 ### Celo-compatible destination providers:
 
 ```console
-node ./dist/src/bin/celo
+node dist/src/bin/celo
 ```
 Required environment variables:
 - `PORT`: listening port for the server. Can also be passed from command-line as first parameter.
@@ -127,11 +127,6 @@ Instances launched with any of the following package scripts will write to a cor
 
 - Alfajores: ```npm run celo:alfajores```
 - Mainnet: ```npm run celo:mainnet```
-
-### Running simultaneous gateways to multiple testnets:
-
-- All pre-configured testnets: `npm run testnets`
-- Only Ethereum testnets: `npm run testnets:ethereum`
 
 ## How to create a server for any other provider
 
