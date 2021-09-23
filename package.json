@@ -11,16 +11,14 @@
   "scripts": {
     "lint": "prettier-standard --format",
     "build": "tsc",
-    "test": "jest",
-    "testnets": "npm run testnets:ethereum && npm run conflux:testnet && npm run omgx.rinkeby",
-    "testnets:ethereum": "npm run ethereum:rinkeby && npm run ethereum:ropsten && npm run ethereum:goerli && npm run ethereum:kovan",
-    "ethereum:rinkeby": "start /b node ./dist/src/bin/ethers/infura 8544 rinkeby >> logs\\eth.rinkeby.log",
-    "ethereum:ropsten": "start /b node ./dist/src/bin/ethers/infura 8543 ropsten >> logs\\eth.ropsten.log",
-    "ethereum:goerli": "start /b node ./dist/src/bin/ethers/infura 8545 goerli >> logs\\eth.goerli.log",
-    "ethereum:kovan": "start /b node ./dist/src/bin/ethers/infura 8542 kovan >> logs\\eth.kovan.log",
-    "ethereum:mainnet": "start /b node ./dist/src/bin/ethers/infura 9545 homestead >> logs\\eth.homestead.log",
-    "conflux:testnet": "start /b node ./dist/src/bin/conflux https://portal-test.confluxrpc.com 1 8540 >> logs\\cfx.testnet.log",
-    "boba:rinkeby": "set DEFAULT_GAS_PRICE=15000000 && start /b node ./dist/src/bin/ethers https://rinkeby.boba.network 8539 >> logs\\boba.rinkeby.log"
+    "test": "jest",    
+    "ethereum:rinkeby": "node dist/src/bin/ethers/infura 8544 rinkeby",
+    "ethereum:ropsten": "node dist/src/bin/ethers/infura 8543 ropsten",
+    "ethereum:goerli": "node dist/src/bin/ethers/infura 8545 goerli",
+    "ethereum:kovan": "node dist/src/bin/ethers/infura 8542 kovan",
+    "ethereum:mainnet": "node dist/src/bin/ethers/infura 9545 homestead",
+    "conflux:testnet": "node dist/src/bin/conflux https://portal-test.confluxrpc.com 1 8540",
+    "boba:rinkeby": "DEFAULT_GAS_PRICE=15000000 && node dist/src/bin/ethers https://rinkeby.boba.network 8539"
   },
   "repository": {
     "type": "git",
