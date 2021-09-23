@@ -1,6 +1,6 @@
 # web3-jsonrpc-gateway
 
-A Web3 JSON-RPC provider gateway that handles accounts on its own using Ethers.js, or other SDKs, but delegates chain queries to a 3rd party "destination provider", e.g. Infura, Cloudflare, Conflux, OMGX-L2, etc.
+A Web3 JSON-RPC provider gateway that handles accounts on its own using Ethers.js, or other SDKs, but delegates chain queries to a 3rd party "destination provider", e.g. Infura, Cloudflare, Conflux, BOBA-L2, etc.
 
 ## Compilation
 
@@ -106,7 +106,6 @@ Instances launched with any of the following package scripts will write to a cor
 - `NUM_ADDRESSES`: number of wallet addresses to be used by `Ethers.js`-connected servers.
 
 ### Running gateways to Ethereum networks:
-
 - Rinkeby: `npm run ethereum:rinkeby`
 - Goerli: `npm run ethereum:goerli`
 - Kovan: `npm run ethereum:kovan`
@@ -114,17 +113,14 @@ Instances launched with any of the following package scripts will write to a cor
 - Mainnet: `npm run ethereum:mainnet`
 
 ### Running gateways to Conflux networks:
-
 - Testnet: `npm run conflux:testnet`
 - Mainnet: `npm run conflux:mainnet`
 
-### Running gateways to OMGX Layer-2 networks:
-
+### Running gateways to BOBA Layer-2 networks:
 - Rinkeby: `npm run omgx:rinkeby`
 - Mainnet: `npm run omgx:mainnet`
 
 ### Running gateways to CELO networks:
-
 - Alfajores: ```npm run celo:alfajores```
 - Mainnet: ```npm run celo:mainnet```
 
