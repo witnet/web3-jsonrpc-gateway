@@ -21,7 +21,7 @@ if (process.argv.length >= 4) {
   networkId = parseInt(process.env.NETWORK_ID)
 } else {
   throw Error(
-    'No network id provided. Plese set the `NETWORK_ID` environment variable.'
+    'No network id provided. Please set the `NETWORK_ID` environment variable.'
   )
 }
 

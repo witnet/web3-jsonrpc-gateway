@@ -1,7 +1,7 @@
 import express, { Express } from 'express'
 import cors from 'cors'
 import { Conflux, format as confluxFormat, TransactionOption } from 'js-conflux-sdk'
-
+import { ethers } from 'ethers'
 import { logger, SocketParams, traceKeyValue } from '../Logger'
 import { WalletWrapper } from './wrapper'
 
@@ -235,12 +235,12 @@ export class WalletMiddlewareServer {
       console.error(e)
       process.exit(-1)
     }
-
     traceKeyValue("Conflux wallet", [
-      ["Address", info.address.toLowerCase()],
-      ["Admin  ", info.admin.toLowerCase()],
-      ["Balance", info.balance],
-      ["Nonce  ", info.nonce]
+      ["Address   ", this.wrapper.account.toString()],
+      ["Admin     ", info.admin?.toLowerCase()],
+      ["Balance   ", `${ethers.utils.formatEther(info.balance)} CFX`],
+      ["Collateral", `${ethers.utils.formatEther(info.collateralForStorage)} CFX`],
+      ["Nonce     ", info.nonce]
     ])
 
     console.log(`Listening on ${hostname || '0.0.0.0'}:${port} [${logger.level.toUpperCase()}]`)
