@@ -17,11 +17,11 @@ if (providerUrl.length < 1) {
 let networkId
 if (process.argv.length >= 4) {
   networkId = parseInt(process.argv[3])
-} else if (process.env.NETWORK_ID) {
-  networkId = parseInt(process.env.NETWORK_ID)
+} else if (process.env.NETWORK) {
+  networkId = parseInt(process.env.NETWORK)
 } else {
   throw Error(
-    'No network id provided. Please set the `NETWORK_ID` environment variable.'
+    'No network id provided. Plese set the `NETWORK` environment variable.'
   )
 }
 
@@ -47,16 +47,16 @@ if (!privateKey) {
 
 // Optional: default gas price to be used before signing a transaction, if not specified by the caller.
 let defaultGasPrice
-if (process.env.DEFAULT_GAS_PRICE) {
-  defaultGasPrice = parseInt(process.env.DEFAULT_GAS_PRICE)
+if (process.env.CONFLUX_GAS_PRICE) {
+  defaultGasPrice = parseInt(process.env.CONFLUX_GAS_PRICE)
 } else {
   defaultGasPrice = 1
 }
 
 // Optional: default gas limit to be used before signing a transaction, if not specified by the caller.
-let defaultGasLimit: BigInt
-if (process.env.DEFAULT_GAS_LIMIT) {
-  defaultGasLimit = BigInt(process.env.DEFAULT_GAS_LIMIT)
+let defaultGasLimit:BigInt
+if (process.env.CONFLUX_GAS_LIMIT) {
+  defaultGasLimit = BigInt(process.env.CONFLUX_GAS_LIMIT)
 } else {
   defaultGasLimit = BigInt(21000)
 }

@@ -17,11 +17,11 @@ if (providerUrl.length < 1) {
 let networkId
 if (process.argv.length >= 4) {
   networkId = parseInt(process.argv[3])
-} else if (process.env.NETWORK_ID) {
-  networkId = parseInt(process.env.NETWORK_ID)
+} else if (process.env.NETWORK) {
+  networkId = parseInt(process.env.NETWORK)
 } else {
   throw Error(
-    'No network id provided. Plese set the `NETWORK_ID` environment variable.'
+    'No network id provided. Plese set the `NETWORK` environment variable.'
   )
 }
 
@@ -62,8 +62,8 @@ if (process.env.CELO_GAS_PRICE_FACTOR) {
 
 // Optional: max gas price the gateway is authorized to sign before sending tx to provider.
 let maxGasPrice = 10 ** 11 // 100 gwei
-if (process.env.CELO_MAX_GAS_PRICE) {
-  maxGasPrice = parseInt(process.env.CELO_MAX_GAS_PRICE)
+if (process.env.CELO_GAS_PRICE_MAX) {
+  maxGasPrice = parseInt(process.env.CELO_GAS_PRICE_MAX)
 }
 
 console.log("=".repeat(120))

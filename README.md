@@ -21,12 +21,12 @@ Required environment variables:
 - `PORT`: listening port for the server. Can also be passed from command-line as first parameter.
 - `NETWORK`: network name. Infura supports: `mainnet`, `ropsten`, `rinkeby`, `kovan` and `goerli`.
 - `SEED_PHRASE`: the seed phrase to use for the server's own wrapped wallet, in BIP-39 mnemonics format.
-- `PROJECT_ID`: your Infura project ID.
+- `INFURA_PROJECT_ID`: your Infura project ID.
 
 Optional environment variables:
 
-- `DEFAULT_GAS_LIMIT`: default gas limit to be used before signing a transaction, if not specified by the caller.
-- `DEFAULT_GAS_PRICE`: default gas price to be used before signing a transaction, if not specified by the caller.
+- `INFURA_GAS_LIMIT`: default gas limit to be used before signing a transaction, if not specified by the caller.
+- `INFURA_GAS_PRICE`: default gas price to be used before signing a transaction, if not specified by the caller.
 - `LOG_LEVEL`: max log level to be traced, can be any of the following: `error`, `warn`, `info`, `http`, `verbose`, `debug`, `silly`. If not specified, `verbose` will apply.
 
 ### Celo-compatible destination providers:
@@ -36,15 +36,15 @@ node dist/src/bin/celo
 ```
 Required environment variables:
 - `PORT`: listening port for the server. Can also be passed from command-line as first parameter.
-- `NETWORK_ID`: Celo providers currently supports: `44787` for testnet, and `42220` for mainnet.
-- `PRIVATE_KEY`: the private key to use for generation the server's own wrapped wallet.
+- `NETWORK`: Celo providers currently supports: `44787` for testnet, and `42220` for mainnet.
 - `PROVIDER_URL`: actual URL of the Web3 JSON-RPC provider.
+- `PRIVATE_KEY`: the private key to use for generation the server's own wrapped wallet.
 
 Optional environment variables:
 - `CELO_FEE_CURRENCY`: ERC-20 token address to be used for paying transaction gas. Native CELO will be used if none specified.  
 - `CELO_GAS_LIMIT_FACTOR`: factor by which the provider-estimated gas limit will be multiplied, before signing transactions.
 - `CELO_GAS_PRICE_FACTOR`: factor by which the provider-estimated gas price minimum will be multiplied, before signing transactions.
-- `CELO_MAX_GAS_PRICE`: maximum gas price the gateway is allowed to bid when signing transactions.
+- `CELO_GAS_PRICE_MAX`: maximum gas price the gateway is allowed to bid when signing transactions.
 
 ### Conflux-compatible destination providers:
 
@@ -55,14 +55,14 @@ node ./dist/src/bin/conflux
 Required environment variables:
 
 - `PORT`: listening port for the server. Can also be passed from command-line as first parameter.
-- `NETWORK_ID`: network id. Conflux providers currently supports: `1` for testnet, and `1029` for mainnet.
+- `NETWORK`: network id. Conflux providers currently supports: `1` for testnet, and `1029` for mainnet.
 - `PRIVATE_KEY`: the private key to use for generation the server's own wrapped wallet.
 - `PROVIDER_URL`: actual URL of the Web3 JSON-RPC provider.
 
 Optional environment variables:
 
-- `DEFAULT_GAS_LIMIT`: default gas limit to be used before signing a transaction, if not specified by the caller.
-- `DEFAULT_GAS_PRICE`: default gas price to be used before signing a transaction, if not specified by the caller.
+- `CONFLUX_GAS_LIMIT`: default gas limit to be used before signing a transaction, if not specified by the caller.
+- `CONFLUX_GAS_PRICE`: default gas price to be used before signing a transaction, if not specified by the caller.
 - `LOG_LEVEL`: max log level to be traced, can be any of the following: `error`, `warn`, `info`, `http`, `verbose`, `debug`, `silly`. If not specified, `verbose` will apply.
 
 ### Generic destination providers:
@@ -84,26 +84,23 @@ Required environment variables:
 
 Optional environment variables:
 
-- `NETWORK`: the testnet or mainnet name to connect with.
-- `DEFAULT_GAS_LIMIT`: default gas limit to be used before signing a transaction, if not specified by the caller.
-- `DEFAULT_GAS_PRICE`: default gas price to be used before signing a transaction, if not specified by the caller.
+- `ETHERS_FORCE_DEFAULTS`: if set to `true`, the server will set `gasPrice` and `gasLimit` values to the ones set by respective environment variables, before signing a transaciton.
+- `ETHERS_GAS_LIMIT`: default gas limit to be used before signing a transaction, if not specified by the caller.
+- `ETHERS_GAS_PRICE`: default gas price to be used before signing a transaction, if not specified by the caller.
+- `ETHERS_NUM_ADDRESSES`: number of wallet addresses to be handled by the server, derived from path '`m/44'/60'/0'/0/*`'.
+- `NETWORK`: the network name to connect with. 
 - `LOG_LEVEL`: max log level to be traced, can be any of the following: `error`, `warn`, `info`, `http`, `verbose`, `debug`, `silly`. If not specified, `verbose` will apply.
-- `FORCE_DEFAULTS`: if set to `true`, the server will set `gasPrice` and `gasLimit` values to the ones set by respective environment variables, before signing a transaciton.
-- `ESTIMATE_GAS_LIMIT`: if set to `true`, and defaults are not forced, the gateway will ask the destination provider an estimation of the gas limit, before signing a transaction. In this case, the client-provided gas limit (or the default gas limit, if none was provided) will be considered as a maximum threshold: if provider-estimated value is greater than the client-provided one, the transaction will be rejected by the gateway.
-- `NUM_ADDRESSES`: number of wallet addresses to be handled by the server, derived from path '`m/44'/60'/0'/0/*`'.
 
 ## Pre-configured JSON-RPC provider gateways:
 
-There are several package scripts at your disposal for you to launch specific gateways to multiple WEB3-compatible blockchains, and different possible networks within them. Besides, these scripts enable you to run multiple background instances locally, and at the same time.
+There are several package scripts at your disposal for you to launch specific gateways to multiple WEB3-compatible blockchains, and different possible networks within them. 
 
-Instances launched with any of the following package scripts will write to a corresponding log file located inside the `logs/` folder.
-
-**Important**: In order to these batch scripts to work properly, please create an `.env` on the root folder fulfilling the following parameters:
+**Important**: In order to these batch scripts to work properly, please rename `.env_batch_example` to `.env`, and fulfill the following parameters:
 
 - `SEED_PHRASE`: seed phrase to be used with either `Infura` or `Ethers.js` providers.
 - `PRIVATE_KEY`: private key to be used by `Conflux`-alike providers.
-- `PROJECT_ID`: your Infura's project id to be used with `Infura`-connected servers.
-- `NUM_ADDRESSES`: number of wallet addresses to be used by `Ethers.js`-connected servers.
+- `INFURA_PROJECT_ID`: your Infura's project id to be used with `Infura`-connected servers.
+- `LOG_LEVEL`: max log level to be traced, can be any of the following: `error`, `warn`, `info`, `http`, `verbose`, `debug`, `silly`. If not specified, `verbose` will apply.
 
 ### Running gateways to Ethereum networks:
 - Rinkeby: `npm run ethereum:rinkeby`

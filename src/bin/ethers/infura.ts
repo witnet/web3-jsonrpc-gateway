@@ -36,25 +36,25 @@ if (!seed_phrase) {
 }
 
 // Mandatory: the Infura project ID.
-const projectId = process.env.PROJECT_ID || ''
+const projectId = process.env.INFURA_PROJECT_ID || ''
 if (projectId.length < 1) {
   throw Error(
-    'No Infura PROJECT_ID provided. Please set the `PROJECT_ID` environment variable.'
+    'No Infura INFURA_PROJECT_ID provided. Please set the `INFURA_PROJECT_ID` environment variable.'
   )
 }
 
 // Optional: default gas limit to be used before signing a transaction, if not specified by the caller.
 let gas_price
-if (process.env.DEFAULT_GAS_PRICE) {
-  gas_price = parseInt(process.env.DEFAULT_GAS_PRICE)
+if (process.env.INFURA_GAS_PRICE) {
+  gas_price = parseInt(process.env.INFURA_GAS_PRICE)
 } else {
   gas_price = 20e9
 }
 
 // Optional: default gas price to be used before signing a transaction, if not specified by the caller.
 let gas_limit
-if (process.env.DEFAULT_GAS_LIMIT) {
-  gas_limit = parseInt(process.env.DEFAULT_GAS_LIMIT)
+if (process.env.INFURA_GAS_LIMIT) {
+  gas_limit = parseInt(process.env.INFURA_GAS_LIMIT)
 } else {
   gas_limit = 6721975
 }

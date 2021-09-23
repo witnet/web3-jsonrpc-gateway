@@ -39,16 +39,16 @@ const network = process.argv[4] || process.env.NETWORK
 
 // Optional: default gas price to be used before signing a transaction, if not specified by the caller.
 let gas_price
-if (process.env.DEFAULT_GAS_PRICE) {
-  gas_price = parseInt(process.env.DEFAULT_GAS_PRICE)
+if (process.env.ETHERS_GAS_PRICE) {
+  gas_price = parseInt(process.env.ETHERS_GAS_PRICE)
 } else {
   gas_price = 20e9
 }
 
 // Optional: default gas limit to be used before signing a transaction, if not specified by the caller.
 let gas_limit
-if (process.env.DEFAULT_GAS_LIMIT) {
-  gas_limit = parseInt(process.env.DEFAULT_GAS_LIMIT)
+if (process.env.ETHERS_GAS_LIMIT) {
+  gas_limit = parseInt(process.env.ETHERS_GAS_LIMIT)
 } else {
   gas_limit = 6721975
 }
@@ -56,18 +56,18 @@ if (process.env.DEFAULT_GAS_LIMIT) {
 // Optional: if set to `true`, the server will set `gasPrice` and `gasLimit` values to the ones set by
 // respective environment variables, before signing a transaciton.
 let force_defaults
-if (process.env.FORCE_DEFAULTS) {
-  force_defaults = process.env.FORCE_DEFAULTS === 'true'
+if (process.env.ETHERS_FORCE_DEFAULTS) {
+  force_defaults = (process.env.ETHERS_FORCE_DEFAULTS === 'true')
 } else {
   force_defaults = false
 }
 
 // Optional: number of wallet addresses to be handled by the server, derived from path '`m/44'/60'/0'/0/*`'.
 let num_addresses
-if (process.env.NUM_ADDRESSES) {
-  num_addresses = parseInt(process.env.NUM_ADDRESSES)
+if (process.env.ETHERS_NUM_ADDRESSES) {
+  num_addresses = parseInt(process.env.ETHERS_NUM_ADDRESSES)
 } else {
-  num_addresses = 1
+  num_addresses = 5
 }
 
 // Optional: if `true`, let provider estimate gas limit before signing the transaction
