@@ -18,7 +18,8 @@
     "ethereum:kovan": "node dist/src/bin/ethers/infura 8542 kovan",
     "ethereum:mainnet": "node dist/src/bin/ethers/infura 9545 homestead",
     "conflux:testnet": "node dist/src/bin/conflux https://portal-test.confluxrpc.com 1 8540",
-    "boba:rinkeby": "DEFAULT_GAS_PRICE=15000000 && node dist/src/bin/ethers https://rinkeby.boba.network 8539"
+    "boba:rinkeby": "cross-env-shell DEFAULT_GAS_PRICE=15000000 ESTIMATE_GAS_LIMIT=false node dist/src/bin/ethers https://rinkeby.boba.network 8539",
+    "boba:mainnet": "cross-env-shell DEFAULT_GAS_PRICE=15000000 ESTIMATE_GAS_LIMIT=false node dist/src/bin/ethers https://mainnet.boba.network 9539"
   },
   "repository": {
     "type": "git",
@@ -51,6 +52,7 @@
   "dependencies": {
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
+    "cross-env": "^7.0.3",
     "ethers": "^5.2.0",
     "express": "^4.17.1",
     "js-conflux-sdk": "^1.7.0",
