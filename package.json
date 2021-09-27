@@ -14,14 +14,13 @@
     "lint": "prettier-standard --format",
     "build": "tsc",
     "test": "jest",
-    "ethereum:rinkeby": "node dist/src/bin/ethers/infura 8544 rinkeby",
-    "ethereum:ropsten": "node dist/src/bin/ethers/infura 8543 ropsten",
+    "boba:mainnet": "cross-env-shell ETHERS_GAS_PRICE=15000000 node dist/src/bin/ethers https://mainnet.boba.network 9539",
+    "boba:rinkeby": "cross-env-shell ETHERS_GAS_PRICE=15000000 node dist/src/bin/ethers https://rinkeby.boba.network 8539",
+    "celo:alfajores": "node dist/src/bin/celo https://alfajores-forno.celo-testnet.org 44787 8538",
+    "conflux:testnet": "node dist/src/bin/conflux https://portal-test.confluxrpc.com 1 8540",
     "ethereum:goerli": "node dist/src/bin/ethers/infura 8545 goerli",
     "ethereum:kovan": "node dist/src/bin/ethers/infura 8542 kovan",
-    "ethereum:mainnet": "node dist/src/bin/ethers/infura 9545 homestead",
-    "conflux:testnet": "node dist/src/bin/conflux https://portal-test.confluxrpc.com 1 8540",
-    "boba:rinkeby": "cross-env-shell ETHERS_GAS_PRICE=15000000 node dist/src/bin/ethers https://rinkeby.boba.network 8539",
-    "boba:mainnet": "cross-env-shell ETHERS_GAS_PRICE=15000000 node dist/src/bin/ethers https://mainnet.boba.network 9539"
+    "ethereum:mainnet": "node dist/src/bin/ethers/infura 9545 homestead"
   },
   "repository": {
     "type": "git",
