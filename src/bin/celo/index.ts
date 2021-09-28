@@ -13,7 +13,7 @@ if (providerUrl.length < 1) {
   )
 }
 
-// Mandatory: The network id to connect with. Can also be passed as second parameter. 
+// Mandatory: The network id to connect with. Can also be passed as second parameter.
 let networkId
 if (process.argv.length >= 4) {
   networkId = parseInt(process.argv[3])
@@ -66,22 +66,22 @@ if (process.env.CELO_GAS_PRICE_MAX) {
   maxGasPrice = parseInt(process.env.CELO_GAS_PRICE_MAX)
 }
 
-console.log("=".repeat(120))
+console.log('='.repeat(120))
 console.log(
   `${packageData.name} v${packageData.version}`,
-  `(@celo-tools/celo-ethers-wrapper: ${packageData.dependencies["@celo-tools/celo-ethers-wrapper"]},`,
-  `@celo/contractkit: ${packageData.dependencies["@celo/contractkit"]})`
+  `(@celo-tools/celo-ethers-wrapper: ${packageData.dependencies['@celo-tools/celo-ethers-wrapper']},`,
+  `@celo/contractkit: ${packageData.dependencies['@celo/contractkit']})`
 )
 console.log()
 
 new WalletMiddlewareServer(
-    providerUrl,
-    networkId,
-    privateKey,
-    feeCurrency,
-    gasLimitFactor,
-    gasPriceFactor,
-    maxGasPrice
-  )
+  providerUrl,
+  networkId,
+  privateKey,
+  feeCurrency,
+  gasLimitFactor,
+  gasPriceFactor,
+  maxGasPrice
+)
   .initialize()
   .listen(port)

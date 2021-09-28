@@ -54,7 +54,7 @@ if (process.env.CONFLUX_GAS_PRICE) {
 }
 
 // Optional: default gas limit to be used before signing a transaction, if not specified by the caller.
-let defaultGasLimit:BigInt
+let defaultGasLimit: BigInt
 if (process.env.CONFLUX_GAS_LIMIT) {
   defaultGasLimit = BigInt(process.env.CONFLUX_GAS_LIMIT)
 } else {

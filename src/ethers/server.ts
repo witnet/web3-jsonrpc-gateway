@@ -116,19 +116,31 @@ class WalletMiddlewareServer {
               body: {
                 error: {
                   code: -32015,
-                  message: exception.data ? "Execution error" : JSON.stringify(exception),
+                  message: exception.data
+                    ? 'Execution error'
+                    : JSON.stringify(exception),
                   data: exception.data
                 }
               }
             }
           }
-          const message = exception.reason || (exception.error && exception.error.reason) || exception || "null exception"
-          let body = exception.body || (
-            (exception.error && exception.error.body)
+          const message =
+            exception.reason ||
+            (exception.error && exception.error.reason) ||
+            exception ||
+            'null exception'
+          let body =
+            exception.body ||
+            (exception.error && exception.error.body
               ? exception.error.body
-              : { error: { code : exception.code || -32099, message: `"${message}"`, data: exception.data } }
-          )
-          body = typeof body !== "string" ? JSON.stringify(body) : body
+              : {
+                  error: {
+                    code: exception.code || -32099,
+                    message: `"${message}"`,
+                    data: exception.data
+                  }
+                })
+          body = typeof body !== 'string' ? JSON.stringify(body) : body
           try {
             response = { ...header, error: JSON.parse(body).error }
           } catch (e) {

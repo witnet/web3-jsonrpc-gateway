@@ -57,7 +57,7 @@ if (process.env.ETHERS_GAS_LIMIT) {
 // respective environment variables, before signing a transaciton.
 let force_defaults
 if (process.env.ETHERS_FORCE_DEFAULTS) {
-  force_defaults = (process.env.ETHERS_FORCE_DEFAULTS === 'true')
+  force_defaults = process.env.ETHERS_FORCE_DEFAULTS === 'true'
 } else {
   force_defaults = false
 }

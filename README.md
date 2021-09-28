@@ -34,14 +34,17 @@ Optional environment variables:
 ```console
 node dist/src/bin/celo
 ```
+
 Required environment variables:
+
 - `PORT`: listening port for the server. Can also be passed from command-line as first parameter.
 - `NETWORK`: Celo providers currently supports: `44787` for testnet, and `42220` for mainnet.
 - `PROVIDER_URL`: actual URL of the Web3 JSON-RPC provider.
 - `PRIVATE_KEY`: the private key to use for generation the server's own wrapped wallet.
 
 Optional environment variables:
-- `CELO_FEE_CURRENCY`: ERC-20 token address to be used for paying transaction gas. Native CELO will be used if none specified.  
+
+- `CELO_FEE_CURRENCY`: ERC-20 token address to be used for paying transaction gas. Native CELO will be used if none specified.
 - `CELO_GAS_LIMIT_FACTOR`: factor by which the provider-estimated gas limit will be multiplied, before signing transactions.
 - `CELO_GAS_PRICE_FACTOR`: factor by which the provider-estimated gas price minimum will be multiplied, before signing transactions.
 - `CELO_GAS_PRICE_MAX`: maximum gas price the gateway is allowed to bid when signing transactions.
@@ -93,7 +96,7 @@ Optional environment variables:
 
 ## Pre-configured JSON-RPC provider gateways:
 
-There are several package scripts at your disposal for you to launch specific gateways to multiple WEB3-compatible blockchains, and different possible networks within them. 
+There are several package scripts at your disposal for you to launch specific gateways to multiple WEB3-compatible blockchains, and different possible networks within them.
 
 **Important**: In order to these batch scripts to work properly, please rename `.env_batch_example` to `.env`, and fulfill the following parameters:
 
@@ -109,17 +112,18 @@ There are several package scripts at your disposal for you to launch specific ga
 - Ropsten: `npm run ethereum:ropsten`
 - Mainnet: `npm run ethereum:mainnet`
 
-### Running gateways to Conflux networks:
-- Testnet: `npm run conflux:testnet`
-- Mainnet: `npm run conflux:mainnet`
-
 ### Running gateways to BOBA Layer-2 networks:
-- Rinkeby: `npm run omgx:rinkeby`
-- Mainnet: `npm run omgx:mainnet`
+- Rinkeby: `npm run boba:rinkeby`
+- Mainnet: `npm run boba:mainnet`
 
 ### Running gateways to CELO networks:
 - Alfajores: ```npm run celo:alfajores```
 - Mainnet: ```npm run celo:mainnet```
+
+### Running gateways to Conflux networks:
+
+- Testnet: `npm run conflux:testnet`
+- Mainnet: `npm run conflux:mainnet`
 
 ## How to create a server for any other provider
 

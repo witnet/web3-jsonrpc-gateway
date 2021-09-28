@@ -31,13 +31,23 @@ export class WalletMiddlewareServer {
       gasPriceFactor,
       maxPrice
     )
-    traceKeyValue("Celo provider", [
-      ["Network id", networkId],
-      ["Provider URL", `${this.wrapper.provider.connection.url} ${this.wrapper.provider.connection.allowGzip ? "(gzip)" : ""}`],
-      ["Fee currency", feeCurrency || "(not set)"],
-      ["Gas factor", gasLimitFactor],
-      ["Price factor", gasPriceFactor],
-      ["Max price", `${maxPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")} weis / g.u.`]
+    traceKeyValue('Celo provider', [
+      ['Network id', networkId],
+      [
+        'Provider URL',
+        `${this.wrapper.provider.connection.url} ${
+          this.wrapper.provider.connection.allowGzip ? '(gzip)' : ''
+        }`
+      ],
+      ['Fee currency', feeCurrency || '(not set)'],
+      ['Gas factor', gasLimitFactor],
+      ['Price factor', gasPriceFactor],
+      [
+        'Max price',
+        `${maxPrice
+          .toString()
+          .replace(/\B(?=(\d{3})+(?!\d))/g, ',')} weis / g.u.`
+      ]
     ])
     return this
   }
@@ -53,10 +63,9 @@ export class WalletMiddlewareServer {
     this.expressServer.post(
       '*',
       async (req: express.Request, res: express.Response) => {
-
         const request = req.body
 
-        const socket:SocketParams = {
+        const socket: SocketParams = {
           clientAddr: req.connection.remoteAddress || 'unknownAddr',
           clientPort: req.connection.remotePort || 0,
           clientId: request.id,
@@ -74,13 +83,18 @@ export class WalletMiddlewareServer {
           eth_sendTransaction: this.wrapper.processTransaction,
           eth_sign: this.wrapper.processEthSignMessage
         }
-        
+
         const header = {
           jsonrpc: request.jsonrpc,
           id: request.id
         }
 
-        let response: {id: number, jsonrpc: string, result?: string, error?:string}
+        let response: {
+          id: number
+          jsonrpc: string
+          result?: string
+          error?: string
+        }
         let result
         try {
           if (request.method in handlers) {
@@ -97,35 +111,53 @@ export class WalletMiddlewareServer {
           response = { ...header, result }
         } catch (exception) {
           if (!exception.code) {
-            // if no error code is specified, 
+            // if no error code is specified,
             //   assume the Conflux provider is actually reporting an execution error:
             exception = {
               reason: exception.toString(),
               body: {
                 error: {
                   code: -32015,
-                  message: exception.data ? "Execution error" : JSON.stringify(exception),
+                  message: exception.data
+                    ? 'Execution error'
+                    : JSON.stringify(exception),
                   data: exception.data
                 }
               }
             }
           }
-          const message = exception.reason || (exception.error && exception.error.reason) || exception || "null exception"
-          let body = exception.body || (
-            (exception.error && exception.error.body)
+          const message =
+            exception.reason ||
+            (exception.error && exception.error.reason) ||
+            exception ||
+            'null exception'
+          let body =
+            exception.body ||
+            (exception.error && exception.error.body
               ? exception.error.body
-              : { error: { code : exception.code || -32099, message: `"${message}"`, data: exception.data } }
-          )
-          body = typeof body !== "string" ? JSON.stringify(body) : body
+              : {
+                  error: {
+                    code: exception.code || -32099,
+                    message: `"${message}"`,
+                    data: exception.data
+                  }
+                })
+          body = typeof body !== 'string' ? JSON.stringify(body) : body
           try {
             response = { ...header, error: JSON.parse(body).error }
           } catch (e) {
             logger.log({
               level: 'error',
               socket,
-              message: `<= ${zeroPad(socket.serverId, 4)}::Invalid JSON: ${body}`
+              message: `<= ${zeroPad(
+                socket.serverId,
+                4
+              )}::Invalid JSON: ${body}`
             })
-            response = { ...header, error: `{ "code": -32700, "message": "Invalid JSON response" }`}
+            response = {
+              ...header,
+              error: `{ "code": -32700, "message": "Invalid JSON response" }`
+            }
           }
         }
         if (response.error) {
@@ -153,26 +185,45 @@ export class WalletMiddlewareServer {
   async listen (port: number, hostname?: string) {
     try {
       await this.wrapper.provider.ready
-    } catch(e) {
-      console.error("Service provider seems to be down or rejecting connections !!!")
+    } catch (e) {
+      console.error(
+        'Service provider seems to be down or rejecting connections !!!'
+      )
       console.error(e)
       process.exit(-1)
     }
-    traceKeyValue("Celo contracts", [
-      ["GsPriceMinimum", await this.wrapper.kit.registry.addressFor(CeloContract.GasPriceMinimum)],
-      ["GoldToken", await this.wrapper.kit.registry.addressFor(CeloContract.GoldToken)],
-      ["StableToken", await this.wrapper.kit.registry.addressFor(CeloContract.StableToken)],
-      ["StableTokenEUR", await this.wrapper.kit.registry.addressFor(CeloContract.StableTokenEUR)],
+    traceKeyValue('Celo contracts', [
+      [
+        'GsPriceMinimum',
+        await this.wrapper.kit.registry.addressFor(CeloContract.GasPriceMinimum)
+      ],
+      [
+        'GoldToken',
+        await this.wrapper.kit.registry.addressFor(CeloContract.GoldToken)
+      ],
+      [
+        'StableToken',
+        await this.wrapper.kit.registry.addressFor(CeloContract.StableToken)
+      ],
+      [
+        'StableTokenEUR',
+        await this.wrapper.kit.registry.addressFor(CeloContract.StableTokenEUR)
+      ]
     ])
-    const balance:any = await this.wrapper.wallet.getBalance()
-    const decimals:number = await (await this.wrapper.kit.contracts.getGoldToken()).decimals()
-    traceKeyValue("Celo wallet", [
-      ["Address", await this.wrapper.wallet.getAddress()],
-      ["Balance", `${balance / 10 ** decimals} CELO`],
-      ["Chainid", await this.wrapper.wallet.getChainId()],
-      ["Nonce  ", await this.wrapper.wallet.getTransactionCount()],
+    const balance: any = await this.wrapper.wallet.getBalance()
+    const decimals: number = await (
+      await this.wrapper.kit.contracts.getGoldToken()
+    ).decimals()
+    traceKeyValue('Celo wallet', [
+      ['Address', await this.wrapper.wallet.getAddress()],
+      ['Balance', `${balance / 10 ** decimals} CELO`],
+      ['Chainid', await this.wrapper.wallet.getChainId()],
+      ['Nonce  ', await this.wrapper.wallet.getTransactionCount()]
     ])
-    console.log(`Listening on ${hostname || '0.0.0.0'}:${port} [${logger.level.toUpperCase()}]\n`)
+    console.log(
+      `Listening on ${hostname ||
+        '0.0.0.0'}:${port} [${logger.level.toUpperCase()}]\n`
+    )
     this.expressServer.listen(port, hostname || '0.0.0.0')
     return this
   }
