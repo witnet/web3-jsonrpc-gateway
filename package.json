@@ -18,9 +18,11 @@
     "boba:rinkeby": "cross-env-shell ETHERS_GAS_PRICE=15000000 node dist/src/bin/ethers https://rinkeby.boba.network 8539",
     "celo:alfajores": "node dist/src/bin/celo https://alfajores-forno.celo-testnet.org 44787 8538",
     "conflux:testnet": "node dist/src/bin/conflux https://portal-test.confluxrpc.com 1 8540",
+    "conflux:tethys": "node dist/src/bin/conflux https://portal-test.confluxrpc.com 1029 9540",
     "ethereum:goerli": "node dist/src/bin/ethers/infura 8545 goerli",
     "ethereum:kovan": "node dist/src/bin/ethers/infura 8542 kovan",
-    "ethereum:mainnet": "node dist/src/bin/ethers/infura 9545 homestead"
+    "ethereum:mainnet": "node dist/src/bin/ethers/infura 9545 homestead",
+    "ethereum:rinkeby": "node dist/src/bin/ethers/infura 8544 rinkeby"
   },
   "repository": {
     "type": "git",
