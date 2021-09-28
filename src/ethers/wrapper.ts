@@ -197,7 +197,7 @@ class WalletWrapper {
     await logger.verbose({
       socket,
       message: `> Data:      ${
-        tx.data ? tx.data.substring(0, 10) + '...' : '(transfer)'
+        tx.data ? tx.data.toString().substring(0, 10) + '...' : '(transfer)'
       }`
     })
     await logger.verbose({ socket, message: `> Nonce:     ${tx.nonce}` })

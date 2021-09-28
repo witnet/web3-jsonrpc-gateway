@@ -87,7 +87,7 @@ Required environment variables:
 
 Optional environment variables:
 
-- `NETWORK`: the network name to connect with. 
+- `NETWORK`: the network name to connect with.
 - `LOG_LEVEL`: max log level to be traced, can be any of the following: `error`, `warn`, `info`, `http`, `verbose`, `debug`, `silly`. If not specified, `verbose` will apply.
 - `ETHERS_FORCE_DEFAULTS`: if set to `true`, the server will set `gasPrice` and `gasLimit` values to the ones set by respective environment variables, before signing a transaction.
 - `ETHERS_GAS_LIMIT`: default gas limit to be used before signing a transaction, if not specified by the caller.
@@ -106,6 +106,7 @@ There are several package scripts at your disposal for you to launch specific ga
 - `LOG_LEVEL`: max log level to be traced, can be any of the following: `error`, `warn`, `info`, `http`, `verbose`, `debug`, `silly`. If not specified, `verbose` will apply.
 
 ### Running gateways to Ethereum networks:
+
 - Rinkeby: `npm run ethereum:rinkeby`
 - Goerli: `npm run ethereum:goerli`
 - Kovan: `npm run ethereum:kovan`
@@ -113,12 +114,14 @@ There are several package scripts at your disposal for you to launch specific ga
 - Mainnet: `npm run ethereum:mainnet`
 
 ### Running gateways to BOBA Layer-2 networks:
+
 - Rinkeby: `npm run boba:rinkeby`
 - Mainnet: `npm run boba:mainnet`
 
 ### Running gateways to CELO networks:
-- Alfajores: ```npm run celo:alfajores```
-- Mainnet: ```npm run celo:mainnet```
+
+- Alfajores: `npm run celo:alfajores`
+- Mainnet: `npm run celo:mainnet`
 
 ### Running gateways to Conflux networks:
 

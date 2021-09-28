@@ -109,7 +109,7 @@ class WalletMiddlewareServer {
           response = { ...header, result }
         } catch (exception) {
           if (!exception.code) {
-            // if no error code is specified, 
+            // if no error code is specified,
             //   assume the provider is actually reporting an execution error:
             exception = {
               reason: exception.toString(),
