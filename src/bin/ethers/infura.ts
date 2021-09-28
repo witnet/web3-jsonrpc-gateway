@@ -18,7 +18,7 @@ if (process.argv.length >= 3) {
   )
 }
 
-// Mandatory: The network name to connect with. Can also be passed as second parameter. 
+// Mandatory: The network name to connect with. Can also be passed as second parameter.
 // E.g.: `mainnet`, `ropsten`, `rinkeby`, `kovan` and `goerli`.
 const network = process.argv[3] || process.env.NETWORK
 if (!network) {
@@ -59,8 +59,10 @@ if (process.env.DEFAULT_GAS_LIMIT) {
   gas_limit = 6721975
 }
 
-console.log("=".repeat(120))
-console.log(`${packageData.name} v${packageData.version} (ethers: ${packageData.dependencies.ethers})`)
+console.log('='.repeat(120))
+console.log(
+  `${packageData.name} v${packageData.version} (ethers: ${packageData.dependencies.ethers})`
+)
 console.log()
 
 const destinationProvider = new ethers.providers.InfuraProvider(
@@ -69,13 +71,13 @@ const destinationProvider = new ethers.providers.InfuraProvider(
 )
 
 new WalletMiddlewareServer(
-    seed_phrase,
-    destinationProvider,
-    gas_price,
-    gas_limit,
-    false,  // force defaults
-    1,      // number of addresses
-    false   // estimate gas limit
-  )
+  seed_phrase,
+  destinationProvider,
+  gas_price,
+  gas_limit,
+  false, // force defaults
+  1, // number of addresses
+  false // estimate gas limit
+)
   .initialize()
   .listen(port)

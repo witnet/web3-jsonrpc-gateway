@@ -34,7 +34,7 @@ if (!seed_phrase) {
   )
 }
 
-// Optional: The network name to connect with. Can also be passed as third parameter. 
+// Optional: The network name to connect with. Can also be passed as third parameter.
 const network = process.argv[4] || process.env.NETWORK
 
 // Optional: default gas price to be used before signing a transaction, if not specified by the caller.
@@ -53,11 +53,11 @@ if (process.env.DEFAULT_GAS_LIMIT) {
   gas_limit = 6721975
 }
 
-// Optional: if set to `true`, the server will set `gasPrice` and `gasLimit` values to the ones set by 
+// Optional: if set to `true`, the server will set `gasPrice` and `gasLimit` values to the ones set by
 // respective environment variables, before signing a transaciton.
 let force_defaults
 if (process.env.FORCE_DEFAULTS) {
-  force_defaults = (process.env.FORCE_DEFAULTS === 'true')
+  force_defaults = process.env.FORCE_DEFAULTS === 'true'
 } else {
   force_defaults = false
 }
@@ -71,28 +71,30 @@ if (process.env.NUM_ADDRESSES) {
 }
 
 // Optional: if `true`, let provider estimate gas limit before signing the transaction
-let estimate_gas_limit:boolean = false
+let estimate_gas_limit: boolean = false
 if (process.env.ESTIMATE_GAS_LIMIT) {
   estimate_gas_limit = JSON.parse(process.env.ESTIMATE_GAS_LIMIT)
 }
 
-console.log("=".repeat(120))
-console.log(`${packageData.name} v${packageData.version} (ethers: ${packageData.dependencies.ethers})`)
+console.log('='.repeat(120))
+console.log(
+  `${packageData.name} v${packageData.version} (ethers: ${packageData.dependencies.ethers})`
+)
 console.log()
 
 const destinationProvider = new ethers.providers.JsonRpcProvider(
-    providerUrl,
-    network
+  providerUrl,
+  network
 )
 
 new WalletMiddlewareServer(
-    seed_phrase,
-    destinationProvider,
-    gas_price,
-    gas_limit,
-    force_defaults,
-    num_addresses,
-    estimate_gas_limit
-  )
+  seed_phrase,
+  destinationProvider,
+  gas_price,
+  gas_limit,
+  force_defaults,
+  num_addresses,
+  estimate_gas_limit
+)
   .initialize()
   .listen(port)

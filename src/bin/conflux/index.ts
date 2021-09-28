@@ -13,7 +13,7 @@ if (providerUrl.length < 1) {
   )
 }
 
-// Mandatory: The network id to connect with. Can also be passed as second parameter. 
+// Mandatory: The network id to connect with. Can also be passed as second parameter.
 let networkId
 if (process.argv.length >= 4) {
   networkId = parseInt(process.argv[3])
@@ -54,23 +54,25 @@ if (process.env.DEFAULT_GAS_PRICE) {
 }
 
 // Optional: default gas limit to be used before signing a transaction, if not specified by the caller.
-let defaultGasLimit:BigInt
+let defaultGasLimit: BigInt
 if (process.env.DEFAULT_GAS_LIMIT) {
   defaultGasLimit = BigInt(process.env.DEFAULT_GAS_LIMIT)
 } else {
   defaultGasLimit = BigInt(21000)
 }
 
-console.log("=".repeat(120))
-console.log(`${packageData.name} v${packageData.version} (js-conflux-sdk: ${packageData.dependencies["js-conflux-sdk"]})`)
+console.log('='.repeat(120))
+console.log(
+  `${packageData.name} v${packageData.version} (js-conflux-sdk: ${packageData.dependencies['js-conflux-sdk']})`
+)
 console.log()
 
 new WalletMiddlewareServer(
-    providerUrl,
-    networkId,
-    privateKey,
-    defaultGasLimit,
-    defaultGasPrice
-  )
+  providerUrl,
+  networkId,
+  privateKey,
+  defaultGasLimit,
+  defaultGasPrice
+)
   .initialize()
   .listen(port)

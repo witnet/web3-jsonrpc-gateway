@@ -1,19 +1,23 @@
 import express, { Express } from 'express'
 import cors from 'cors'
-import { Conflux, format as confluxFormat, TransactionOption } from 'js-conflux-sdk'
+import {
+  Conflux,
+  format as confluxFormat,
+  TransactionOption
+} from 'js-conflux-sdk'
 import { ethers } from 'ethers'
 import { logger, SocketParams, traceKeyValue } from '../Logger'
 import { WalletWrapper } from './wrapper'
 
 interface WalletWrapperInfo {
-  accumulatedInterestReturn: string,
-  address: string, 
-  admin: string,
-  balance: string,
-  codeHash: string,
-  collateralForStorage: string,
-  nonce: string,  
-  stakingBalance: string  
+  accumulatedInterestReturn: string
+  address: string
+  admin: string
+  balance: string
+  codeHash: string
+  collateralForStorage: string
+  nonce: string
+  stakingBalance: string
 }
 
 /**
@@ -25,19 +29,19 @@ export class WalletMiddlewareServer {
   wrapper: WalletWrapper
 
   dictionaryEthCfx: { [K: string]: string } = {
-    eth_blockNumber: "cfx_epochNumber",
-    eth_call: "cfx_call",
-    eth_estimateGas: "cfx_estimateGasAndCollateral",
-    eth_gasPrice: "cfx_gasPrice",
-    eth_getBalance: "cfx_getBalance",
-    eth_getBlockByHash: "cfx_getBlockByHash",
-    eth_getBlockByNumber: "cfx_getBlockByEpochNumber",
-    eth_getCode: "cfx_getCode",
-    eth_getLogs: "cfx_getLogs",
-    eth_getStorageAt: "cfx_getStorageAt",
-    eth_getTransactionByHash: "cfx_getTransactionByHash",
-    eth_getTransactionCount: "cfx_getNextNonce",
-    eth_getTransactionReceipt: "cfx_getTransactionReceipt",
+    eth_blockNumber: 'cfx_epochNumber',
+    eth_call: 'cfx_call',
+    eth_estimateGas: 'cfx_estimateGasAndCollateral',
+    eth_gasPrice: 'cfx_gasPrice',
+    eth_getBalance: 'cfx_getBalance',
+    eth_getBlockByHash: 'cfx_getBlockByHash',
+    eth_getBlockByNumber: 'cfx_getBlockByEpochNumber',
+    eth_getCode: 'cfx_getCode',
+    eth_getLogs: 'cfx_getLogs',
+    eth_getStorageAt: 'cfx_getStorageAt',
+    eth_getTransactionByHash: 'cfx_getTransactionByHash',
+    eth_getTransactionCount: 'cfx_getNextNonce',
+    eth_getTransactionReceipt: 'cfx_getTransactionReceipt'
   }
 
   rpcMethodHandlers: { [K: string]: any }
@@ -70,24 +74,24 @@ export class WalletMiddlewareServer {
       eth_sign: this.paramsTranslateAddress
     }
 
-    this.rpcMethodHandlers = {          
+    this.rpcMethodHandlers = {
       cfx_call: this.wrapper.call,
       cfx_sendTransaction: this.wrapper.processTransaction,
       eth_accounts: this.wrapper.getAccounts,
       eth_getFilterChanges: this.wrapper.getEthFilterChanges,
       eth_newBlockFilter: this.wrapper.createEthBlockFilter,
       eth_sendTransaction: this.wrapper.processTransaction,
-      eth_sign: this.wrapper.processEthSignMessage,      
+      eth_sign: this.wrapper.processEthSignMessage,
       eth_syncing: this.wrapper.getSyncingStatus,
       eth_uninstallFilter: this.wrapper.uninstallEthFilter,
       net_version: this.wrapper.getNetworkId
     }
-  
-    traceKeyValue("Conflux provider", [
-      ["Network id", networkId],
-      ["Provider URL", url],
-      ["Def. gas limit", defaultGas],
-      ["Def. gas price", defaultGasPrice]
+
+    traceKeyValue('Conflux provider', [
+      ['Network id', networkId],
+      ['Provider URL', url],
+      ['Def. gas limit', defaultGas],
+      ['Def. gas price', defaultGasPrice]
     ])
 
     return this
@@ -104,38 +108,50 @@ export class WalletMiddlewareServer {
     this.expressServer.post(
       '*',
       async (req: express.Request, res: express.Response) => {
-
         const request = req.body
 
-        const socket:SocketParams = {
+        const socket: SocketParams = {
           clientAddr: req.connection.remoteAddress || 'unknownAddr',
           clientPort: req.connection.remotePort || 0,
           clientId: request.id % 10000,
-          serverId: parseInt('0x' + this.wrapper.conflux.provider.requestId()) % 10000
+          serverId:
+            parseInt('0x' + this.wrapper.conflux.provider.requestId()) % 10000
         }
 
         let method = request.method
 
         if (method in this.dictionaryEthCfx) {
           request.method = this.dictionaryEthCfx[request.method]
-          logger.log({level: 'info', socket, message: `>> ${method} >> ${request.method}`})
+          logger.log({
+            level: 'info',
+            socket,
+            message: `>> ${method} >> ${request.method}`
+          })
         } else {
-          logger.log({level: 'info', socket, message: `>> ${method}`})
+          logger.log({ level: 'info', socket, message: `>> ${method}` })
         }
         if (request.params && request.params.length > 0) {
-          logger.log({level: 'debug', socket, message: `> ${JSON.stringify(request.params)}`})
+          logger.log({
+            level: 'debug',
+            socket,
+            message: `> ${JSON.stringify(request.params)}`
+          })
         }
-        
+
         const header = {
           jsonrpc: request.jsonrpc,
           id: request.id
         }
 
-        let response: {id: number, jsonrpc: string, result?: string, error?:string}
+        let response: {
+          id: number
+          jsonrpc: string
+          result?: string
+          error?: string
+        }
         let result
 
         try {
-
           if (method in this.rpcParamsHandlers) {
             request.params = await this.rpcParamsHandlers[method].bind(this)(
               request.params,
@@ -144,14 +160,13 @@ export class WalletMiddlewareServer {
           }
 
           if (request.method in this.rpcMethodHandlers) {
-            result = await this.rpcMethodHandlers[request.method].bind(this.wrapper)(
-              ...(request.params || []),
-              socket
-            )
+            result = await this.rpcMethodHandlers[request.method].bind(
+              this.wrapper
+            )(...(request.params || []), socket)
           } else {
-            if (request.method.startsWith("eth_")) {
+            if (request.method.startsWith('eth_')) {
               const reason = `Unhandled method '${request.method}'`
-              throw { 
+              throw {
                 reason,
                 body: {
                   error: {
@@ -161,35 +176,44 @@ export class WalletMiddlewareServer {
                 }
               }
             }
-            result = await this.wrapper.send(
-              request.method,
-              request.params
-            )
+            result = await this.wrapper.send(request.method, request.params)
           }
 
           response = { ...header, result }
         } catch (exception) {
           if (!exception.code) {
-            // if no error code is specified, 
+            // if no error code is specified,
             //   assume the Conflux provider is actually reporting an execution error:
             exception = {
               reason: exception.toString(),
               body: {
                 error: {
                   code: -32015,
-                  message: exception.data ? "Execution error" : JSON.stringify(exception),
+                  message: exception.data
+                    ? 'Execution error'
+                    : JSON.stringify(exception),
                   data: exception.data
                 }
               }
             }
           }
-          const message = exception.reason || (exception.error && exception.error.reason) || exception || "null exception"
-          let body = exception.body || (
-            (exception.error && exception.error.body)
+          const message =
+            exception.reason ||
+            (exception.error && exception.error.reason) ||
+            exception ||
+            'null exception'
+          let body =
+            exception.body ||
+            (exception.error && exception.error.body
               ? exception.error.body
-              : { error: { code : exception.code || -32099, message: `"${message}"`, data: exception.data } }
-          )
-          body = typeof body !== "string" ? JSON.stringify(body) : body
+              : {
+                  error: {
+                    code: exception.code || -32099,
+                    message: `"${message}"`,
+                    data: exception.data
+                  }
+                })
+          body = typeof body !== 'string' ? JSON.stringify(body) : body
           try {
             response = { ...header, error: JSON.parse(body).error }
           } catch (e) {
@@ -198,7 +222,10 @@ export class WalletMiddlewareServer {
               socket,
               message: `<= Invalid JSON response: "${body}"`
             })
-            response = { ...header, error: `{ "code": -32700, "message": "Invalid JSON response" }`}
+            response = {
+              ...header,
+              error: `{ "code": -32700, "message": "Invalid JSON response" }`
+            }
           }
         }
         if (response.error) {
@@ -208,7 +235,11 @@ export class WalletMiddlewareServer {
             message: `<= Error: ${JSON.stringify(response.error)}`
           })
         } else {
-          if (method.startsWith("eth_") && result && typeof result === 'object') {
+          if (
+            method.startsWith('eth_') &&
+            result &&
+            typeof result === 'object'
+          ) {
             result = this.translateCfxResponseObject(result, socket)
           }
           logger.log({
@@ -229,22 +260,32 @@ export class WalletMiddlewareServer {
   async listen (port: number, hostname?: string) {
     let info
     try {
-      info = (await this.wrapper.getAccount(this.wrapper.account.toString())) as WalletWrapperInfo
+      info = (await this.wrapper.getAccount(
+        this.wrapper.account.toString()
+      )) as WalletWrapperInfo
     } catch (e) {
-      console.error("Service provider seems to be down or rejecting connections !!!")
+      console.error(
+        'Service provider seems to be down or rejecting connections !!!'
+      )
       console.error(e)
       process.exit(-1)
     }
-    traceKeyValue("Conflux wallet", [
-      ["Address   ", this.wrapper.account.toString()],
-      ["Admin     ", info.admin?.toLowerCase()],
-      ["Balance   ", `${ethers.utils.formatEther(info.balance)} CFX`],
-      ["Collateral", `${ethers.utils.formatEther(info.collateralForStorage)} CFX`],
-      ["Nonce     ", info.nonce]
+    traceKeyValue('Conflux wallet', [
+      ['Address   ', this.wrapper.account.toString()],
+      ['Admin     ', info.admin?.toLowerCase()],
+      ['Balance   ', `${ethers.utils.formatEther(info.balance)} CFX`],
+      [
+        'Collateral',
+        `${ethers.utils.formatEther(info.collateralForStorage)} CFX`
+      ],
+      ['Nonce     ', info.nonce]
     ])
 
-    console.log(`Listening on ${hostname || '0.0.0.0'}:${port} [${logger.level.toUpperCase()}]`)
-    console.log()    
+    console.log(
+      `Listening on ${hostname ||
+        '0.0.0.0'}:${port} [${logger.level.toUpperCase()}]`
+    )
+    console.log()
 
     this.expressServer.listen(port, hostname || '0.0.0.0')
 
@@ -256,9 +297,9 @@ export class WalletMiddlewareServer {
    *   that come as first parameter in some Eth methods.
    *   E.g.: eth_sign
    */
-   paramsTranslateAddress(params:any[], socket:SocketParams) {
+  paramsTranslateAddress (params: any[], socket: SocketParams) {
     if (params.length > 0) {
-      // The ADDRESS is expected as first parameter, and must 
+      // The ADDRESS is expected as first parameter, and must
       // be converted into proper Conflux alphanumeric format.
       // See: https://github.com/Conflux-Chain/CIPs/blob/master/CIPs/cip-37.md
       params[0] = this.translateEthAddress(params[0])
@@ -269,11 +310,11 @@ export class WalletMiddlewareServer {
   /**
    * Translate to Conflux the ADDRESS and TAG parameters
    *   that come as first and second parameter in some Eth methods.
-   *   E.g.: 
+   *   E.g.:
    */
-  paramsTranslateAddrAndTag(params:any[], socket:SocketParams) {
+  paramsTranslateAddrAndTag (params: any[], socket: SocketParams) {
     if (params.length > 0) {
-      // The ADDRESS is expected as first parameter, and must 
+      // The ADDRESS is expected as first parameter, and must
       // be converted into proper Conflux alphanumeric format.
       // See: https://github.com/Conflux-Chain/CIPs/blob/master/CIPs/cip-37.md
       params[0] = this.translateEthAddress(params[0])
@@ -290,9 +331,9 @@ export class WalletMiddlewareServer {
   /**
    * Translate to Conflux the TAG parameter that (optionally)
    *   comes as first parameter in some Eth methods.
-   *   E.g.: 
+   *   E.g.:
    */
-  paramsTranslateTag(params:any[], socket:SocketParams) {
+  paramsTranslateTag (params: any[], socket: SocketParams) {
     if (params.length > 0) {
       // TAG as first parameter may be optional in some cases:
       params[0] = this.translateTag(params[0])
@@ -301,12 +342,12 @@ export class WalletMiddlewareServer {
   }
 
   /**
-   * Translate to Conflux the TRANSACTION (object) and 
-   *   TAG (string) that come as first and second 
+   * Translate to Conflux the TRANSACTION (object) and
+   *   TAG (string) that come as first and second
    *   parameters in some Eth methods.
-   *   E.g.: 
+   *   E.g.:
    */
-  paramsTranslateTxAndTag(params:any[], socket:SocketParams) {
+  paramsTranslateTxAndTag (params: any[], socket: SocketParams) {
     if (params.length > 0) {
       if (params[0] && typeof params[0] === 'object') {
         // TRANSACTION parameter must come as an Object:
@@ -324,23 +365,26 @@ export class WalletMiddlewareServer {
   /**
    * Verbosely log incoming parameters.
    */
-  traceParams(params:any[], socket:SocketParams) {
+  traceParams (params: any[], socket: SocketParams) {
     params.forEach((value, index) => {
-      logger.verbose({socket, message: `> [${index}] => ${JSON.stringify(value)}`})
+      logger.verbose({
+        socket,
+        message: `> [${index}] => ${JSON.stringify(value)}`
+      })
     })
     return params
   }
 
   /**
    * Lambda function to perform actual translation of Eth addresses to Conflux alphanumeric format.
-   * See: https://github.com/Conflux-Chain/CIPs/blob/master/CIPs/cip-37.md 
+   * See: https://github.com/Conflux-Chain/CIPs/blob/master/CIPs/cip-37.md
    */
-  translateEthAddress(address:string) {
+  translateEthAddress (address: string) {
     try {
       return confluxFormat.address(address, this.wrapper.networkId)
     } catch (e) {
       const reason = `Unable to translate Eth address '${address}'`
-      throw {        
+      throw {
         reason,
         body: {
           error: {
@@ -356,20 +400,23 @@ export class WalletMiddlewareServer {
    * Lambda function to perform actual translation of TAG parameter,
    *   from Eth to Conflux.
    */
-  translateTag(tag:string) {
+  translateTag (tag: string) {
     switch (tag) {
-      case "latest": return "latest_state"; 
-      case "pending": return "latest_checkpoint";
-      default: return tag
+      case 'latest':
+        return 'latest_state'
+      case 'pending':
+        return 'latest_checkpoint'
+      default:
+        return tag
     }
   }
 
   /**
-   * Translate to Conflux the values of `from` and `tx` fields 
+   * Translate to Conflux the values of `from` and `tx` fields
    *   within passed Transaction object.
    */
-  translateEthAddressesInTransaction(tx:TransactionOption) {
-    if (tx.from) tx.from = this.translateEthAddress(tx.from) 
+  translateEthAddressesInTransaction (tx: TransactionOption) {
+    if (tx.from) tx.from = this.translateEthAddress(tx.from)
     if (tx.to) tx.to = this.translateEthAddress(tx.to)
     return tx
   }
@@ -377,60 +424,63 @@ export class WalletMiddlewareServer {
   /**
    * Recursively mutate Conflux response object as to make it readable by Eth clients.
    */
-  translateCfxResponseObject(obj:any, socket:SocketParams) {
+  translateCfxResponseObject (obj: any, socket: SocketParams) {
     const keys = Object.keys(obj)
-    keys.forEach((key) => {
+    keys.forEach(key => {
       let value = obj[key]
       if (typeof value === 'object' && value !== null) {
         // Enters recursion if passed object contains other objects:
         value = this.translateCfxResponseObject(value, socket)
       } else if (typeof value === 'string') {
         // Otherwise, look for Cfx addresses to be transformed...
-        if (value.toLowerCase().startsWith("cfx")) {
+        if (value.toLowerCase().startsWith('cfx')) {
           // String values within a reponse object starting with "cfx"
           // are considered to be Cfx addresses, that must be
           // converted to hex format:
           obj[key] = confluxFormat.hexAddress(value)
-          logger.debug({socket, message: `< [${key}]: ${value.toLowerCase()} => ${obj[key]}`})
+          logger.debug({
+            socket,
+            message: `< [${key}]: ${value.toLowerCase()} => ${obj[key]}`
+          })
         }
       }
       // Some keys in Cfx response object have to either be renamed,
-      // or replicated with the equivalent name actually understood by 
+      // or replicated with the equivalent name actually understood by
       // Eth clients:
       switch (key) {
-        case "epochNumber":
-            obj["number"] = obj[key]
-            obj["blockNumber"] = obj[key]
-            break
+        case 'epochNumber':
+          obj['number'] = obj[key]
+          obj['blockNumber'] = obj[key]
+          break
 
-        case "index":
-            obj["transactionIndex"] = obj[key]
-            break
+        case 'index':
+          obj['transactionIndex'] = obj[key]
+          break
 
-        case "gasUsed":
-            obj["cumulativeGasUsed"] = obj[key]
-            break            
+        case 'gasUsed':
+          obj['cumulativeGasUsed'] = obj[key]
+          break
 
-        case "contractCreated":
-            obj["contractAddress"] = obj[key]
-            break
+        case 'contractCreated':
+          obj['contractAddress'] = obj[key]
+          break
 
-        case "stateRoot":
-            obj["root"] = obj[key]
-            break
+        case 'stateRoot':
+          obj['root'] = obj[key]
+          break
 
-        case "status":
-        case "outcomeStatus":
+        case 'status':
+        case 'outcomeStatus':
           // In Cfx: "0" => tx ok,     "1" => tx failed (see http://developer.confluxnetwork.org/docs/js-conflux-sdk/docs/javascript_sdk/#confluxprototypegettransactionreceipt)
           // In Eth: "0" => tx failed, "1" => tx ok
           if (obj[key]) {
             if (typeof obj[key] === 'number') {
-              obj["status"] = (obj[key] == 0 ? 1 : 0)
+              obj['status'] = obj[key] == 0 ? 1 : 0
             } else if (typeof obj[key] === 'string') {
-              if (obj[key] === "0" || obj[key] === "0x0") obj["status"] = "0x1"
-              else obj["status"] ="0x0"
+              if (obj[key] === '0' || obj[key] === '0x0') obj['status'] = '0x1'
+              else obj['status'] = '0x0'
             } else {
-              obj["status"] = obj[key]
+              obj['status'] = obj[key]
             }
           }
           // console.log(`Transalating '${key}' to key 'status' and value ${obj["status"]}`)

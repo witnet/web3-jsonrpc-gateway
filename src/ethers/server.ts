@@ -22,7 +22,6 @@ class WalletMiddlewareServer {
     num_addresses: number,
     estimate_gas_limit: boolean
   ) {
-
     this.expressServer = express()
     this.wrapper = new WalletWrapper(
       seed_phrase,
@@ -33,14 +32,22 @@ class WalletMiddlewareServer {
       num_addresses,
       estimate_gas_limit
     )
-    
-    traceKeyValue("Provider", [
-      ["Entrypoint", `${provider.connection.url} ${provider.connection.allowGzip ? "(gzip)" : ""}`],
-      ["Force defs", force_defaults],
-      ["Gas price", gas_price],
-      ["Gas limit", estimate_gas_limit && !force_defaults ? "(self-estimated)" : gas_limit]
+
+    traceKeyValue('Provider', [
+      [
+        'Entrypoint',
+        `${provider.connection.url} ${
+          provider.connection.allowGzip ? '(gzip)' : ''
+        }`
+      ],
+      ['Force defs', force_defaults],
+      ['Gas price', gas_price],
+      [
+        'Gas limit',
+        estimate_gas_limit && !force_defaults ? '(self-estimated)' : gas_limit
+      ]
     ])
-    
+
     return this
   }
 
@@ -55,7 +62,6 @@ class WalletMiddlewareServer {
     this.expressServer.post(
       '*',
       async (req: express.Request, res: express.Response) => {
-
         const request = req.body
         const socket = {
           clientAddr: req.connection.remoteAddress,
@@ -81,7 +87,12 @@ class WalletMiddlewareServer {
           id: request.id
         }
 
-        let response: {id: number, jsonrpc: string, result?: string, error?:string}
+        let response: {
+          id: number
+          jsonrpc: string
+          result?: string
+          error?: string
+        }
         let result
         try {
           if (request.method in handlers) {
@@ -97,35 +108,53 @@ class WalletMiddlewareServer {
           }
           response = { ...header, result }
         } catch (exception) {
-          const message = exception.reason || (exception.error && exception.error.reason) || exception || "null exception"
-          let body = exception.body || (
-            (exception.error && exception.error.body)
+          const message =
+            exception.reason ||
+            (exception.error && exception.error.reason) ||
+            exception ||
+            'null exception'
+          let body =
+            exception.body ||
+            (exception.error && exception.error.body
               ? exception.error.body
-              : `{ "error": { "code": -32000, "message" : "${message.replace("\"", "'")}"}}`
-          )
-          body = typeof body !== "string" ? JSON.stringify(body) : body
+              : `{ "error": { "code": -32000, "message" : "${message.replace(
+                  '"',
+                  "'"
+                )}"}}`)
+          body = typeof body !== 'string' ? JSON.stringify(body) : body
           try {
             response = { ...header, error: JSON.parse(body).error }
           } catch (e) {
             logger.log({
               level: 'error',
               socket,
-              message: `<= ${zeroPad(socket.serverId, 4)}::Invalid JSON: ${body}`
+              message: `<= ${zeroPad(
+                socket.serverId,
+                4
+              )}::Invalid JSON: ${body}`
             })
-            response = { ...header, error: `{ "code": -32700, "message": "Invalid JSON response" }`}
+            response = {
+              ...header,
+              error: `{ "code": -32700, "message": "Invalid JSON response" }`
+            }
           }
         }
         if (response.error) {
           logger.log({
             level: 'warn',
             socket,
-            message: `<= ${zeroPad(socket.serverId, 4)}::Error: ${JSON.stringify(response.error)}`
+            message: `<= ${zeroPad(
+              socket.serverId,
+              4
+            )}::Error: ${JSON.stringify(response.error)}`
           })
         } else {
           logger.log({
             level: 'debug',
             socket,
-            message: `<< ${zeroPad(socket.serverId, 4)}::${JSON.stringify(result)}`
+            message: `<< ${zeroPad(socket.serverId, 4)}::${JSON.stringify(
+              result
+            )}`
           })
         }
         res.status(200).json(response)
@@ -138,34 +167,35 @@ class WalletMiddlewareServer {
    * Tells the Express server to start listening.
    */
   async listen (port: number, hostname?: string) {
-
     try {
-      let network:ethers.providers.Network = await this.wrapper.provider.detectNetwork()
+      let network: ethers.providers.Network = await this.wrapper.provider.detectNetwork()
       if (network) {
-        traceKeyValue("Network",[
-          ["Network id", network.chainId],
-          ["Network name", network.name],
-          ["ENS address", network.ensAddress]
+        traceKeyValue('Network', [
+          ['Network id', network.chainId],
+          ['Network name', network.name],
+          ['ENS address', network.ensAddress]
         ])
       }
 
-      this.wrapper.wallets.forEach(async (wallet:Wallet, index) => {
+      this.wrapper.wallets.forEach(async (wallet: Wallet, index) => {
         traceKeyValue(`Wallet #${index}`, [
-          ["Address", await wallet.getAddress()],
-          ["Balance", await wallet.getBalance()],
-          ["Nonce  ", await wallet.getTransactionCount()]
+          ['Address', await wallet.getAddress()],
+          ['Balance', await wallet.getBalance()],
+          ['Nonce  ', await wallet.getTransactionCount()]
         ])
       })
-    } catch(e) {
-      console.error("Service provider seems to be down or rejecting connections !!!")
+    } catch (e) {
+      console.error(
+        'Service provider seems to be down or rejecting connections !!!'
+      )
       console.error(e)
       process.exit(-1)
     }
 
-    traceKeyValue("Listener",[
-      ["TCP/host", hostname || '0.0.0.0'],
-      ["TCP/port", port],
-      ["Log level", logger.level.toUpperCase()]
+    traceKeyValue('Listener', [
+      ['TCP/host', hostname || '0.0.0.0'],
+      ['TCP/port', port],
+      ['Log level', logger.level.toUpperCase()]
     ])
 
     this.expressServer.listen(port, hostname || '0.0.0.0')

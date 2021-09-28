@@ -11,7 +11,7 @@
   "scripts": {
     "lint": "prettier-standard --format",
     "build": "tsc",
-    "test": "jest",    
+    "test": "jest",
     "ethereum:rinkeby": "node dist/src/bin/ethers/infura 8544 rinkeby",
     "ethereum:ropsten": "node dist/src/bin/ethers/infura 8543 ropsten",
     "ethereum:goerli": "node dist/src/bin/ethers/infura 8545 goerli",
