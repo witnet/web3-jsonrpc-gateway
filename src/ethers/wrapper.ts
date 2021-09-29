@@ -145,7 +145,7 @@ class WalletWrapper {
         : await this.provider.estimateGas(tx)
       const gasLimitThreshold = params.gas
         ? BigNumber.from(params.gas)
-        : this.defaultGasPrice
+        : this.defaultGasLimit
       if (tx.gasLimit > gasLimitThreshold) {
         let reason = `Estimated gas limit exceeds threshold (${gasLimitThreshold})`
         throw {
@@ -167,7 +167,7 @@ class WalletWrapper {
       })
       tx.gasLimit = this.forceDefaults
         ? this.defaultGasLimit
-        : BigNumber.from(params.gas) || this.defaultGasLimit
+        : params.gas ? BigNumber.from(params.gas) : this.defaultGasLimit
     }
 
     await logger.verbose({ socket, message: `> From:      ${tx.from}` })
