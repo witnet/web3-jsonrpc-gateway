@@ -89,6 +89,7 @@ Optional environment variables:
 
 - `NETWORK`: the network name to connect with.
 - `LOG_LEVEL`: max log level to be traced, can be any of the following: `error`, `warn`, `info`, `http`, `verbose`, `debug`, `silly`. If not specified, `verbose` will apply.
+- `ETHERS_ESTIMATE_GAS_LIMIT`: if set to `true`, the provider will be asked to estimate the gas limit, before signing the transaction; if the provider-estimated gas limit is greater than the one specified from client side (or `ETHERS_GAS_LIMIT`, if none given), the transaction will be rejected by the gateway.
 - `ETHERS_FORCE_DEFAULTS`: if set to `true`, the server will set `gasPrice` and `gasLimit` values to the ones set by respective environment variables, before signing a transaction.
 - `ETHERS_GAS_LIMIT`: default gas limit to be used before signing a transaction, if not specified by the caller.
 - `ETHERS_GAS_PRICE`: default gas price to be used before signing a transaction, if not specified by the caller.
