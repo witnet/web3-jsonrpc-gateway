@@ -2,8 +2,8 @@ import {
   CeloProvider as Provider,
   CeloWallet as Wallet
 } from '@celo-tools/celo-ethers-wrapper'
-import { newKit, ContractKit /*, CeloContract*/ } from '@celo/contractkit'
-import { logger, SocketParams, zeroPad } from '../Logger'
+import { newKit, ContractKit } from '@celo/contractkit'
+import { logger, SocketParams } from '../Logger'
 
 interface TransactionParams {
   from: string
@@ -166,7 +166,7 @@ class WalletWrapper {
     await logger.log({
       level: 'http',
       socket,
-      message: `<< ${zeroPad(socket.serverId, 4)}::${res.hash}`
+      message: `<< ${res.hash}`
     })
 
     // Return transaction hash:

@@ -1,6 +1,6 @@
 import express, { Express } from 'express'
 import cors from 'cors'
-import { logger, SocketParams, traceKeyValue, zeroPad } from '../Logger'
+import { logger, SocketParams, traceKeyValue } from '../Logger'
 import { WalletWrapper } from './wrapper'
 import { CeloContract } from '@celo/contractkit'
 
@@ -149,10 +149,7 @@ export class WalletMiddlewareServer {
             logger.log({
               level: 'error',
               socket,
-              message: `<= ${zeroPad(
-                socket.serverId,
-                4
-              )}::Invalid JSON: ${body}`
+              message: `<= Invalid JSON: ${body}`
             })
             response = {
               ...header,

@@ -1,5 +1,5 @@
 import { BigNumber, ethers, Wallet } from 'ethers'
-import { logger, SocketParams, zeroPad } from '../Logger'
+import { logger, SocketParams } from '../Logger'
 
 interface TransactionParams {
   from: string
@@ -189,25 +189,6 @@ class WalletWrapper {
     })
     await logger.verbose({ socket, message: `> Gas limit: ${tx.gasLimit}` })
     await logger.verbose({ socket, message: `> Gas price: ${tx.gasPrice}` })
-    await logger.verbose({ socket, message: `> From:      ${tx.from}` })
-    await logger.verbose({
-      socket,
-      message: `> To:        ${tx.to || '(deploy)'}`
-    })
-    await logger.verbose({
-      socket,
-      message: `> Data:      ${
-        tx.data ? tx.data.toString().substring(0, 10) + '...' : '(transfer)'
-      }`
-    })
-    await logger.verbose({ socket, message: `> Nonce:     ${tx.nonce}` })
-    await logger.verbose({ socket, message: `> Chain id:  ${tx.chainId}` })
-    await logger.verbose({
-      socket,
-      message: `> Value:     ${tx.value || 0} wei`
-    })
-    await logger.verbose({ socket, message: `> Gas limit: ${tx.gasLimit}` })
-    await logger.verbose({ socket, message: `> Gas price: ${tx.gasPrice}` })
 
     // Sign transaction:
     const signedTx = await wallet.signTransaction(tx)
@@ -222,7 +203,7 @@ class WalletWrapper {
     await logger.log({
       level: 'http',
       socket,
-      message: `<< ${zeroPad(socket.serverId, 4)}::${res.hash}`
+      message: `<< ${res.hash}`
     })
 
     // Return transaction hash:

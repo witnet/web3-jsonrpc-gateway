@@ -2,7 +2,7 @@ import express, { Express } from 'express'
 import cors from 'cors'
 import { ethers, Wallet } from 'ethers'
 
-import { logger, traceKeyValue, zeroPad } from '../Logger'
+import { logger, traceKeyValue } from '../Logger'
 import { WalletWrapper } from './wrapper'
 
 /**
@@ -73,7 +73,7 @@ class WalletMiddlewareServer {
         logger.log({
           level: 'info',
           socket,
-          message: `>> ${zeroPad(socket.serverId, 4)}::${request.method}`
+          message: `>> ${request.method}`
         })
 
         const handlers: { [K: string]: any } = {
@@ -147,10 +147,7 @@ class WalletMiddlewareServer {
             logger.log({
               level: 'error',
               socket,
-              message: `<= ${zeroPad(
-                socket.serverId,
-                4
-              )}::Invalid JSON: ${body}`
+              message: `<= Invalid JSON: ${body}`
             })
             response = {
               ...header,
@@ -162,18 +159,13 @@ class WalletMiddlewareServer {
           logger.log({
             level: 'warn',
             socket,
-            message: `<= ${zeroPad(
-              socket.serverId,
-              4
-            )}::Error: ${JSON.stringify(response.error)}`
+            message: `<= Error: ${JSON.stringify(response.error)}`
           })
         } else {
           logger.log({
             level: 'debug',
             socket,
-            message: `<< ${zeroPad(socket.serverId, 4)}::${JSON.stringify(
-              result
-            )}`
+            message: `<< ${JSON.stringify(result)}`
           })
         }
         res.status(200).json(response)
