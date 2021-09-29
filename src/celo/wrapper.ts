@@ -25,7 +25,7 @@ class WalletWrapper {
   feeCurrency?: string
   gasLimitFactor: number
   gasPriceFactor: number
-  maxPrice: number
+  gasPriceMax: number
   provider: Provider
   wallet: Wallet
 
@@ -36,14 +36,14 @@ class WalletWrapper {
     feeCurrency: string | undefined,
     gasLimitFactor: number,
     gasPriceFactor: number,
-    maxPrice: number
+    gasPriceMax: number
   ) {
     this.kit = newKit(url)
     this.feeCurrency = feeCurrency
     this.gasLimitFactor = gasLimitFactor
     this.gasPriceFactor = gasPriceFactor
     this.provider = new Provider(url, networkId)
-    this.maxPrice = maxPrice
+    this.gasPriceMax = gasPriceMax
     this.wallet = new Wallet(privateKey, this.provider)
     this.kit.connection.addAccount(privateKey)
     // this.kit.setFeeCurrency(CeloContract.GoldToken)
@@ -86,12 +86,20 @@ class WalletWrapper {
     socket: SocketParams
   ): Promise<any> {
     // Estimate gas price
-    // const feeCurrencyAddr = this.feeCurrency || (await this.kit.registry.addressFor(CeloContract.GoldToken)).toLowerCase()
-    // const gasPriceMinimumContract = await this.kit.contracts.getGasPriceMinimum()
-    // const gasPriceMinimum:any = await gasPriceMinimumContract.getGasPriceMinimum(feeCurrencyAddr)
     const gasPriceMinimum: any = await this.wallet.getGasPrice(this.feeCurrency)
     const gasPrice = Math.ceil(gasPriceMinimum * this.gasPriceFactor) // wiggle room if gas price minimum changes before tx is sent
-
+    if (gasPrice > this.gasPriceMax) {
+      let reason = `Estimated gas price exceeds threshold (${this.gasPriceMax})`
+        throw {
+          reason,
+          body: {
+            error: {
+              code: -32099,
+              message: reason
+            }
+          }
+        }
+    }
     // Compose actual transaction:
     let tx = {
       from: this.wallet.address,
