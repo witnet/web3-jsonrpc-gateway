@@ -90,15 +90,15 @@ class WalletWrapper {
     const gasPrice = Math.ceil(gasPriceMinimum * this.gasPriceFactor) // wiggle room if gas price minimum changes before tx is sent
     if (gasPrice > this.gasPriceMax) {
       let reason = `Estimated gas price exceeds threshold (${this.gasPriceMax})`
-        throw {
-          reason,
-          body: {
-            error: {
-              code: -32099,
-              message: reason
-            }
+      throw {
+        reason,
+        body: {
+          error: {
+            code: -32099,
+            message: reason
           }
         }
+      }
     }
     // Compose actual transaction:
     let tx = {
