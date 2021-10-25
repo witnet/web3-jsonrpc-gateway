@@ -107,7 +107,7 @@ class WalletMiddlewareServer {
             )
           }
           response = { ...header, result }
-        } catch (exception) {
+        } catch (exception:any) {
           if (!exception.code) {
             // if no error code is specified,
             //   assume the provider is actually reporting an execution error:
