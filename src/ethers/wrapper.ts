@@ -1,4 +1,3 @@
-import { Deferrable } from '@ethersproject/properties'
 import { BigNumber, ethers, Wallet } from 'ethers'
 import { logger, SocketParams } from '../Logger'
 
@@ -33,7 +32,7 @@ class WalletWrapper {
     force_defaults: boolean,
     num_addresses: number,
     estimate_gas_limit: boolean,
-    estimate_gas_price: booelan
+    estimate_gas_price: boolean
   ) {
     this.wallets = []
     for (let ix = 0; ix < num_addresses; ix++) {
@@ -168,7 +167,9 @@ class WalletWrapper {
       })
       tx.gasPrice = this.forceDefaults
         ? this.defaultGasPrice
-        : params.gasPrice ? BigNumber.from(params.gasPrice) : this.defaultGasPrice
+        : params.gasPrice
+        ? BigNumber.from(params.gasPrice)
+        : this.defaultGasPrice
     }
     if (this.estimateGasLimit) {
       tx.gasLimit = this.forceDefaults
@@ -198,7 +199,9 @@ class WalletWrapper {
       })
       tx.gasLimit = this.forceDefaults
         ? this.defaultGasLimit
-        : params.gas ? BigNumber.from(params.gas) : this.defaultGasLimit
+        : params.gas
+        ? BigNumber.from(params.gas)
+        : this.defaultGasLimit
     }
 
     await logger.verbose({ socket, message: `> From:      ${tx.from}` })
