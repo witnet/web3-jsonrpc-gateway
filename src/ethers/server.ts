@@ -20,7 +20,8 @@ class WalletMiddlewareServer {
     gas_limit: number,
     force_defaults: boolean,
     num_addresses: number,
-    estimate_gas_limit: boolean
+    estimate_gas_limit: boolean,
+    estimate_gas_price: boolean
   ) {
     this.expressServer = express()
     this.wrapper = new WalletWrapper(
@@ -30,7 +31,8 @@ class WalletMiddlewareServer {
       gas_limit,
       force_defaults,
       num_addresses,
-      estimate_gas_limit
+      estimate_gas_limit,
+      estimate_gas_price
     )
 
     traceKeyValue('Provider', [

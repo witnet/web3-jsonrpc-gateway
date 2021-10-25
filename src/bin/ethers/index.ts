@@ -76,6 +76,12 @@ if (process.env.ETHERS_ESTIMATE_GAS_LIMIT) {
   estimate_gas_limit = JSON.parse(process.env.ETHERS_ESTIMATE_GAS_LIMIT)
 }
 
+// Optional: if `true`, let provider estimate gas price before signing the transaction
+let estimate_gas_price: boolean = false
+if (process.env.ETHERS_ESTIMATE_GAS_PRICE) {
+  estimate_gas_limit = JSON.parse(process.env.ETHERS_ESTIMATE_GAS_PRICE)
+}
+
 console.log('='.repeat(120))
 console.log(
   `${packageData.name} v${packageData.version} (ethers: ${packageData.dependencies.ethers})`
@@ -94,7 +100,8 @@ new WalletMiddlewareServer(
   gas_limit,
   force_defaults,
   num_addresses,
-  estimate_gas_limit
+  estimate_gas_limit,
+  estimate_gas_price
 )
   .initialize()
   .listen(port)

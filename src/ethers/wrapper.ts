@@ -1,3 +1,4 @@
+import { Deferrable } from '@ethersproject/properties'
 import { BigNumber, ethers, Wallet } from 'ethers'
 import { logger, SocketParams } from '../Logger'
 
@@ -22,6 +23,7 @@ class WalletWrapper {
   defaultGasLimit!: number
   forceDefaults: boolean
   estimateGasLimit: boolean
+  estimateGasPrice: boolean
 
   constructor (
     seed_phrase: string,
@@ -30,7 +32,8 @@ class WalletWrapper {
     gas_limit: number,
     force_defaults: boolean,
     num_addresses: number,
-    estimate_gas_limit: boolean
+    estimate_gas_limit: boolean,
+    estimate_gas_price: booelan
   ) {
     this.wallets = []
     for (let ix = 0; ix < num_addresses; ix++) {
@@ -45,6 +48,7 @@ class WalletWrapper {
     this.defaultGasLimit = gas_limit
     this.forceDefaults = force_defaults
     this.estimateGasLimit = estimate_gas_limit
+    this.estimateGasPrice = estimate_gas_price
   }
 
   /**
@@ -106,7 +110,7 @@ class WalletWrapper {
   }
 
   /**
-   * Signs transactinon usings wallet's private key, before forwarding to provider.
+   * Signs transaction using wallet's private key, before forwarding to provider.
    *
    * @remark Return type is made `any` here because the result needs to be a String, not a `Record`.
    */
@@ -131,13 +135,40 @@ class WalletWrapper {
     let tx: ethers.providers.TransactionRequest = {
       from: params.from,
       to: params.to,
-      gasPrice: this.forceDefaults
-        ? this.defaultGasPrice
-        : params.gasPrice || this.defaultGasPrice,
       value: params.value,
       data: params.data,
       nonce: await wallet.getTransactionCount(),
       chainId: await wallet.getChainId()
+    }
+    if (this.estimateGasPrice) {
+      tx.gasPrice = this.forceDefaults
+        ? this.defaultGasPrice
+        : await this.provider.getGasPrice()
+      const gasPriceThreshold = params.gasPrice
+        ? BigNumber.from(params.gasPrice)
+        : this.defaultGasLimit
+      if (tx.gasPrice > gasPriceThreshold) {
+        let reason = `Estimated gas price exceeds threshold (${gasPriceThreshold})`
+        throw {
+          reason,
+          body: {
+            error: {
+              code: -32099,
+              message: reason
+            }
+          }
+        }
+      }
+    } else {
+      await logger.debug({
+        socket,
+        message: `=> Estimated gas price: ${(
+          await this.provider.getGasPrice()
+        ).toString()} (ignored)`
+      })
+      tx.gasPrice = this.forceDefaults
+        ? this.defaultGasPrice
+        : params.gasPrice ? BigNumber.from(params.gasPrice) : this.defaultGasPrice
     }
     if (this.estimateGasLimit) {
       tx.gasLimit = this.forceDefaults
