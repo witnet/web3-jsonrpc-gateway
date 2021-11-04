@@ -139,15 +139,17 @@ class WalletWrapper {
       nonce: await wallet.getTransactionCount(),
       chainId: await wallet.getChainId()
     }
+    // Estimate gas price, if neccesary:
+    let gasPrice: BigNumber
     if (this.estimateGasPrice) {
-      tx.gasPrice = this.forceDefaults
-        ? this.defaultGasPrice
+      gasPrice = this.forceDefaults
+        ? BigNumber.from(this.defaultGasPrice)
         : await this.provider.getGasPrice()
       const gasPriceThreshold = params.gasPrice
         ? BigNumber.from(params.gasPrice)
-        : this.defaultGasLimit
-      if (tx.gasPrice > gasPriceThreshold) {
-        let reason = `Estimated gas price exceeds threshold (${gasPriceThreshold})`
+        : BigNumber.from(this.defaultGasPrice)
+      if (gasPrice.gt(gasPriceThreshold)) {
+        let reason = `Estimated gas price exceeds threshold (${gasPrice} > ${gasPriceThreshold})`
         throw {
           reason,
           body: {
@@ -159,27 +161,23 @@ class WalletWrapper {
         }
       }
     } else {
-      await logger.debug({
-        socket,
-        message: `=> Estimated gas price: ${(
-          await this.provider.getGasPrice()
-        ).toString()} (ignored)`
-      })
-      tx.gasPrice = this.forceDefaults
-        ? this.defaultGasPrice
+      gasPrice = this.forceDefaults
+        ? BigNumber.from(this.defaultGasPrice)
         : params.gasPrice
         ? BigNumber.from(params.gasPrice)
-        : this.defaultGasPrice
+        : BigNumber.from(this.defaultGasPrice)
     }
+    // Estimate gas limit, if neccesary:
+    let gasLimit: BigNumber
     if (this.estimateGasLimit) {
-      tx.gasLimit = this.forceDefaults
-        ? this.defaultGasLimit
+      gasLimit = this.forceDefaults
+        ? BigNumber.from(this.defaultGasLimit)
         : await this.provider.estimateGas(tx)
-      const gasLimitThreshold = params.gas
+      const gasLimitThreshold: BigNumber = params.gas
         ? BigNumber.from(params.gas)
-        : this.defaultGasLimit
-      if (tx.gasLimit > gasLimitThreshold) {
-        let reason = `Estimated gas limit exceeds threshold (${gasLimitThreshold})`
+        : BigNumber.from(this.defaultGasLimit)
+      if (gasLimit.gt(gasLimitThreshold)) {
+        let reason = `Estimated gas limit exceeds threshold (${gasLimit} > ${gasLimitThreshold})`
         throw {
           reason,
           body: {
@@ -191,18 +189,15 @@ class WalletWrapper {
         }
       }
     } else {
-      await logger.debug({
-        socket,
-        message: `=> Estimated gas limit: ${(
-          await this.provider.estimateGas(tx)
-        ).toString()} (ignored)`
-      })
-      tx.gasLimit = this.forceDefaults
-        ? this.defaultGasLimit
+      gasLimit = this.forceDefaults
+        ? BigNumber.from(this.defaultGasLimit)
         : params.gas
         ? BigNumber.from(params.gas)
-        : this.defaultGasLimit
+        : BigNumber.from(this.defaultGasLimit)
     }
+    // Fulfill unsigned tx:
+    tx.gasPrice = gasPrice.toHexString()
+    tx.gasLimit = gasLimit.toHexString()
 
     await logger.verbose({ socket, message: `> From:      ${tx.from}` })
     await logger.verbose({
