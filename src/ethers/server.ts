@@ -43,7 +43,10 @@ class WalletMiddlewareServer {
         }`
       ],
       ['Force defs', force_defaults],
-      ['Gas price', gas_price],
+      [
+        'Gas price',
+        estimate_gas_price && !force_defaults ? '(self-estimated)' : gas_price
+      ],
       [
         'Gas limit',
         estimate_gas_limit && !force_defaults ? '(self-estimated)' : gas_limit

@@ -79,7 +79,7 @@ if (process.env.ETHERS_ESTIMATE_GAS_LIMIT) {
 // Optional: if `true`, let provider estimate gas price before signing the transaction
 let estimate_gas_price: boolean = false
 if (process.env.ETHERS_ESTIMATE_GAS_PRICE) {
-  estimate_gas_limit = JSON.parse(process.env.ETHERS_ESTIMATE_GAS_PRICE)
+  estimate_gas_price = JSON.parse(process.env.ETHERS_ESTIMATE_GAS_PRICE)
 }
 
 console.log('='.repeat(120))
