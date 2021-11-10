@@ -1,4 +1,4 @@
-FROM node:current-alpine3.12
+FROM node:14-alpine3.12
 
 # Read the GitHub API token and release version from --build-arg
 ARG GITHUB_API_TOKEN
