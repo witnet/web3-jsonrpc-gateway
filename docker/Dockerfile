@@ -17,11 +17,9 @@ RUN update-ca-certificates
 # Check out latest release of this repository
 RUN mkdir /data
 COPY . /data
-RUN chmod +x /data/downloader.sh
-RUN /data/downloader.sh
 
 # Navigate to the nodejs root package, install dependencies and build the project
-WORKDIR /data/source
+WORKDIR /data
 RUN npm install yarn
 RUN yarn
 RUN yarn build
