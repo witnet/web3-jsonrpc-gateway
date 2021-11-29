@@ -61,6 +61,12 @@ if (process.env.CONFLUX_GAS_LIMIT) {
   defaultGasLimit = BigInt(21000)
 }
 
+// Optional: if `true`, let provider estimate gas price before signing the transaction
+let estimateGasPrice: boolean = false
+if (process.env.CONFLUX_ESTIMATE_GAS_PRICE) {
+  estimateGasPrice = JSON.parse(process.env.CONFLUX_ESTIMATE_GAS_PRICE)
+}
+
 console.log('='.repeat(120))
 console.log(
   `${packageData.name} v${packageData.version} (js-conflux-sdk: ${packageData.dependencies['js-conflux-sdk']})`
@@ -72,7 +78,8 @@ new WalletMiddlewareServer(
   networkId,
   privateKey,
   defaultGasLimit,
-  defaultGasPrice
+  defaultGasPrice,
+  estimateGasPrice
 )
   .initialize()
   .listen(port)

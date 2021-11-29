@@ -52,7 +52,8 @@ export class WalletMiddlewareServer {
     networkId: number,
     privateKey: string,
     defaultGas: BigInt,
-    defaultGasPrice: number
+    defaultGasPrice: number,
+    estimateGasPrice: boolean
   ) {
     this.expressServer = express()
 
@@ -60,6 +61,7 @@ export class WalletMiddlewareServer {
       networkId,
       privateKey,
       defaultGas,
+      estimateGasPrice,
       new Conflux({ url, networkId, defaultGasPrice })
     )
 
@@ -91,7 +93,7 @@ export class WalletMiddlewareServer {
       ['Network id', networkId],
       ['Provider URL', url],
       ['Def. gas limit', defaultGas],
-      ['Def. gas price', defaultGasPrice]
+      ['Def. gas price', estimateGasPrice ? "(self-estimated)" : defaultGasPrice]
     ])
 
     return this

@@ -30,16 +30,19 @@ export class WalletWrapper {
   defaultGas: BigInt
   conflux: Conflux
   networkId: number
+  estimateGasPrice: boolean
 
   constructor (
     networkId: number,
     privateKey: string,
     defaultGas: BigInt,
+    estimateGasPrice: boolean,
     conflux: Conflux
   ) {
     this.networkId = networkId
     this.defaultGas = defaultGas
     this.conflux = conflux
+    this.estimateGasPrice = estimateGasPrice
     this.account = this.conflux.wallet.addPrivateKey(privateKey)
   }
 
@@ -206,8 +209,28 @@ export class WalletWrapper {
     params: TransactionOption,
     socket: SocketParams
   ): Promise<any> {
-    const gasPrice: BigInt =
-      params.gasPrice || BigInt(this.conflux.defaultGasPrice)
+    let gasPrice: BigInt
+    if (this.estimateGasPrice) {
+      gasPrice = await this.conflux.getGasPrice()
+      const gasPriceThreshold = params.gasPrice
+        ? BigInt(params.gasPrice.toString())
+        : BigInt(this.conflux.defaultGasPrice)
+      if (gasPrice > gasPriceThreshold) {
+        let reason = `Estimated gas price exceeds threshold (${gasPrice} > ${gasPriceThreshold})`
+        throw {
+          reason,
+          body: {
+            error: {
+              code: -32099,
+              message: reason
+            }
+          }
+        }
+      }
+    } else {
+      gasPrice = params.gasPrice || BigInt(this.conflux.defaultGasPrice)
+    }    
+      
     const nonce: number = parseInt(
       (await this.conflux.getNextNonce(this.account.toString())).toString()
     )
