@@ -18,7 +18,7 @@
     "boba:rinkeby": "cross-env-shell ETHERS_ESTIMATE_GAS_PRICE=true node dist/src/bin/ethers https://rinkeby.boba.network 8539",
     "celo:alfajores": "node dist/src/bin/celo https://alfajores-forno.celo-testnet.org 44787 8538",
     "celo:mainnet": "node dist/src/bin/celo https://forno.celo.org 42220 9538",
-    "conflux:testnet": "node dist/src/bin/conflux https://test.confluxrpc.com 1 8540",
+    "conflux:testnet": "cross-env-shell CONFLUX_ESTIMATE_GAS_PRICE=true node dist/src/bin/conflux https://test.confluxrpc.com 1 8540",
     "conflux:tethys": "node dist/src/bin/conflux https://main.confluxrpc.com 1029 9540",
     "ethereum:goerli": "node dist/src/bin/ethers/infura 8545 goerli",
     "ethereum:kovan": "node dist/src/bin/ethers/infura 8542 kovan",
