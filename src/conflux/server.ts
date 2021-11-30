@@ -93,7 +93,10 @@ export class WalletMiddlewareServer {
       ['Network id', networkId],
       ['Provider URL', url],
       ['Def. gas limit', defaultGas],
-      ['Def. gas price', estimateGasPrice ? "(self-estimated)" : defaultGasPrice]
+      [
+        'Def. gas price',
+        estimateGasPrice ? '(self-estimated)' : defaultGasPrice
+      ]
     ])
 
     return this

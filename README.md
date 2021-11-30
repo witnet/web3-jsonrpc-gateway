@@ -64,7 +64,7 @@ Required environment variables:
 
 Optional environment variables:
 
-- `CONFLUX_ESTIMATE_GAS_PRICE`: if set to `true`, the provider will be asked to estimate the gas price, before signing the transaction; if the provider-estimated gas price is greater than the one specified from client side (or `CONFLUX_GAS_PRICE`, if none given), the transaction will be rejected by the gateway.
+- `CONFLUX_ESTIMATE_GAS_PRICE`: if set to `true`, the provider will be asked to estimate the gas price, before signing the transaction; if the provider-estimated gas price is greater than `CONFLUX_GAS_PRICE`, the transaction will be rejected by the gateway.
 - `CONFLUX_GAS_LIMIT`: default gas limit to be used before signing a transaction, if not specified by the caller.
 - `CONFLUX_GAS_PRICE`: default gas price to be used before signing a transaction, if not specified by the caller.
 - `LOG_LEVEL`: max log level to be traced, can be any of the following: `error`, `warn`, `info`, `http`, `verbose`, `debug`, `silly`. If not specified, `verbose` will apply.

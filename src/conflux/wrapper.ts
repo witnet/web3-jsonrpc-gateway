@@ -212,11 +212,8 @@ export class WalletWrapper {
     let gasPrice: BigInt
     if (this.estimateGasPrice) {
       gasPrice = await this.conflux.getGasPrice()
-      const gasPriceThreshold = params.gasPrice
-        ? BigInt(params.gasPrice.toString())
-        : BigInt(this.conflux.defaultGasPrice)
-      if (gasPrice > gasPriceThreshold) {
-        let reason = `Estimated gas price exceeds threshold (${gasPrice} > ${gasPriceThreshold})`
+      if (gasPrice > BigInt(this.conflux.defaultGasPrice)) {
+        let reason = `Estimated gas price exceeds threshold (${gasPrice} > ${this.conflux.defaultGasPrice})`
         throw {
           reason,
           body: {
@@ -229,8 +226,8 @@ export class WalletWrapper {
       }
     } else {
       gasPrice = params.gasPrice || BigInt(this.conflux.defaultGasPrice)
-    }    
-      
+    }
+
     const nonce: number = parseInt(
       (await this.conflux.getNextNonce(this.account.toString())).toString()
     )
