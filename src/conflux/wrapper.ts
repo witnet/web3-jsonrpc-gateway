@@ -238,7 +238,7 @@ export class WalletWrapper {
     let options = {
       from: params.from || this.account.toString(),
       to: params.to,
-      gasPrice: gasPrice.toString(16),
+      gasPrice: `0x${gasPrice.toString(16)}`,
       value: params.value ? params.value.toString(16) : '0x0',
       data: params.data || null,
       nonce: `0x${nonce.toString(16)}`,
