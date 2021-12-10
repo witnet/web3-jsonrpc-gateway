@@ -225,20 +225,20 @@ export class WalletWrapper {
         }
       }
     } else {
-      gasPrice = params.gasPrice || BigInt(this.conflux.defaultGasPrice)
+      gasPrice = params.gasPrice || "0x" + BigInt(this.conflux.defaultGasPrice).toString(16)
     }
 
     const nonce: number = parseInt(
       (await this.conflux.getNextNonce(this.account.toString())).toString()
     )
     const epoch: BigInt =
-      BigInt(await this.conflux.getEpochNumber()) + BigInt(50)
+      BigInt(await this.conflux.getEpochNumber()) + BigInt(100)
 
     // Compose actual transaction:
     let options = {
       from: params.from || this.account.toString(),
       to: params.to,
-      gasPrice: `0x${gasPrice.toString(16)}`,
+      gasPrice, 
       value: params.value ? params.value.toString(16) : '0x0',
       data: params.data || null,
       nonce: `0x${nonce.toString(16)}`,
