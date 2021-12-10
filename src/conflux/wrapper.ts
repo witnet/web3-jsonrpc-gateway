@@ -209,11 +209,11 @@ export class WalletWrapper {
     params: TransactionOption,
     socket: SocketParams
   ): Promise<any> {
-    let gasPrice: BigInt
+    let gasPrice: BigInt | string
     if (this.estimateGasPrice) {
-      gasPrice = await this.conflux.getGasPrice()
-      if (gasPrice > BigInt(this.conflux.defaultGasPrice)) {
-        let reason = `Estimated gas price exceeds threshold (${gasPrice} > ${this.conflux.defaultGasPrice})`
+      let gasPriceBI = await this.conflux.getGasPrice()      
+      if (gasPriceBI > BigInt(this.conflux.defaultGasPrice)) {
+        let reason = `Estimated gas price exceeds threshold (${gasPriceBI} > ${this.conflux.defaultGasPrice})`
         throw {
           reason,
           body: {
@@ -224,6 +224,7 @@ export class WalletWrapper {
           }
         }
       }
+      gasPrice = "0x" + BigInt(`${gasPriceBI}0`).toString(16)
     } else {
       gasPrice = params.gasPrice || "0x" + BigInt(this.conflux.defaultGasPrice).toString(16)
     }
