@@ -256,7 +256,7 @@ export class WalletWrapper {
       estimation = { storageCollateralized: 0, gasLimit: params.gas }
     }
 
-    logger.verbose({ socket, message: `Cost estimation => ${estimation}` })
+    logger.verbose({ socket, message: `Cost estimation => ${JSON.stringify(estimation)}` })
 
     let payload = {
       ...options,
