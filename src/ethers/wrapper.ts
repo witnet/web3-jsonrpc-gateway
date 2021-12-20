@@ -145,9 +145,7 @@ class WalletWrapper {
       gasPrice = this.forceDefaults
         ? BigNumber.from(this.defaultGasPrice)
         : await this.provider.getGasPrice()
-      const gasPriceThreshold = params.gasPrice
-        ? BigNumber.from(params.gasPrice)
-        : BigNumber.from(this.defaultGasPrice)
+      const gasPriceThreshold = BigNumber.from(this.defaultGasPrice)
       if (gasPrice.gt(gasPriceThreshold)) {
         let reason = `Estimated gas price exceeds threshold (${gasPrice} > ${gasPriceThreshold})`
         throw {
@@ -173,9 +171,7 @@ class WalletWrapper {
       gasLimit = this.forceDefaults
         ? BigNumber.from(this.defaultGasLimit)
         : await this.provider.estimateGas(tx)
-      const gasLimitThreshold: BigNumber = params.gas
-        ? BigNumber.from(params.gas)
-        : BigNumber.from(this.defaultGasLimit)
+      const gasLimitThreshold: BigNumber = BigNumber.from(this.defaultGasLimit)
       if (gasLimit.gt(gasLimitThreshold)) {
         let reason = `Estimated gas limit exceeds threshold (${gasLimit} > ${gasLimitThreshold})`
         throw {
