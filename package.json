@@ -25,6 +25,7 @@
     "ethereum:mainnet": "node dist/src/bin/ethers/infura 9545 homestead",
     "ethereum:rinkeby": "node dist/src/bin/ethers/infura 8544 rinkeby",
     "harmony:testnet#0": "cross-env-shell ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_GAS_PRICE=25000000000 node dist/src/bin/ethers https://api.s0.b.hmny.io 8534",
+    "kcc:testnet": "node dist/src/bin/ethers https://rpc-testnet.kcc.network 8537",
   },
   "repository": {
     "type": "git",
