@@ -23,7 +23,8 @@
     "ethereum:goerli": "node dist/src/bin/ethers/infura 8545 goerli",
     "ethereum:kovan": "node dist/src/bin/ethers/infura 8542 kovan",
     "ethereum:mainnet": "node dist/src/bin/ethers/infura 9545 homestead",
-    "ethereum:rinkeby": "node dist/src/bin/ethers/infura 8544 rinkeby"
+    "ethereum:rinkeby": "node dist/src/bin/ethers/infura 8544 rinkeby",
+    "harmony:testnet#0": "cross-env-shell ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_GAS_PRICE=25000000000 node dist/src/bin/ethers https://api.s0.b.hmny.io 8534",
   },
   "repository": {
     "type": "git",
