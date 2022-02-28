@@ -10,6 +10,7 @@ import { WalletWrapper } from './wrapper'
  * provider, e.g. Infura.
  */
 class WalletMiddlewareServer {
+  alwaysSynced: boolean
   expressServer: Express
   wrapper: WalletWrapper
 
@@ -21,8 +22,10 @@ class WalletMiddlewareServer {
     force_defaults: boolean,
     num_addresses: number,
     estimate_gas_limit: boolean,
-    estimate_gas_price: boolean
+    estimate_gas_price: boolean,
+    always_synced: boolean
   ) {
+    this.alwaysSynced = always_synced
     this.expressServer = express()
     this.wrapper = new WalletWrapper(
       seed_phrase,
@@ -85,6 +88,12 @@ class WalletMiddlewareServer {
           eth_accounts: this.wrapper.getAccounts,
           eth_sendTransaction: this.wrapper.processTransaction,
           eth_sign: this.wrapper.processEthSignMessage
+        }
+        if (this.alwaysSynced) {
+          handlers = {
+            ...handlers,
+            eth_syncing: () => false
+          }
         }
 
         const header = {

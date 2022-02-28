@@ -78,7 +78,8 @@ new WalletMiddlewareServer(
   false, // force defaults
   1, // number of addresses
   false, // estimate gas limit
-  false // estimate gas price
+  false, // estimate gas price
+  false, // always synced
 )
   .initialize()
   .listen(port)

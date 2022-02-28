@@ -82,6 +82,12 @@ if (process.env.ETHERS_ESTIMATE_GAS_PRICE) {
   estimate_gas_price = JSON.parse(process.env.ETHERS_ESTIMATE_GAS_PRICE)
 }
 
+// Optional: if `true`, force responses to `eth_syncing` as being always `false`
+let always_synced: boolean = false
+if (process.env.ETHERS_ALWAYS_SYNCED) {
+  always_synced = JSON.parse(process.env.ETHERS_ALWAYS_SYNCED)
+}
+
 console.log('='.repeat(120))
 console.log(
   `${packageData.name} v${packageData.version} (ethers: ${packageData.dependencies.ethers})`
@@ -101,7 +107,8 @@ new WalletMiddlewareServer(
   force_defaults,
   num_addresses,
   estimate_gas_limit,
-  estimate_gas_price
+  estimate_gas_price,
+  always_synced
 )
   .initialize()
   .listen(port)
