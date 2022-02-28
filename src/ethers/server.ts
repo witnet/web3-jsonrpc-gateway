@@ -84,8 +84,9 @@ class WalletMiddlewareServer {
           message: `>> ${request.method}`
         })
 
-        const handlers: { [K: string]: any } = {
+        let handlers: { [K: string]: any } = {
           eth_accounts: this.wrapper.getAccounts,
+          eth_call: this.wrapper.processEthCall,
           eth_sendTransaction: this.wrapper.processTransaction,
           eth_sign: this.wrapper.processEthSignMessage
         }
@@ -110,9 +111,9 @@ class WalletMiddlewareServer {
         let result
         try {
           if (request.method in handlers) {
-            result = await handlers[request.method].bind(this.wrapper)(
-              ...(request.params || []),
-              socket
+            result = await handlers[request.method].bind(this.wrapper) (
+              socket,
+              ...(request.params || [])
             )
           } else {
             result = await this.wrapper.provider.send(

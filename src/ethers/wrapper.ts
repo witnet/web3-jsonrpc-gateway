@@ -50,6 +50,60 @@ class WalletWrapper {
     this.estimateGasPrice = estimate_gas_price
   }
 
+  async composeTransaction (
+    socket: SocketParams,
+    params: TransactionParams
+  ): Promise<ethers.providers.TransactionRequest> {
+    // Complete tx from, if necessary:
+    if (!params.from) {
+      params.from = (await this.getAccounts())[0]
+    }
+    // Get wallet by address
+    let wallet: Wallet | undefined = await this.getWalletByAddress(params.from)
+    if (wallet == undefined) {
+      let reason = `No private key available as to sign transactions from '${params.from}'`
+      throw {
+        reason,
+        body: {
+          error: {
+            code: -32000,
+            message: reason
+          }
+        }
+      }
+    }
+    // Compose actual transaction:
+    let tx: ethers.providers.TransactionRequest = {
+      from: params.from,
+      to: params.to,
+      value: params.value,
+      data: params.data,
+      gasPrice: params.gasPrice,
+      gasLimit: params.gas,
+      nonce: await wallet.getTransactionCount(),
+      chainId: await wallet.getChainId()
+    }
+    // Trace tx params
+    await logger.verbose({ socket, message: `> From:      ${tx.from}` })
+    await logger.verbose({
+      socket,
+      message: `> To:        ${tx.to || '(deploy)'}`
+    })
+    await logger.verbose({
+      socket,
+      message: `> Data:      ${
+        tx.data ? tx.data.toString().substring(0, 10) + '...' : '(transfer)'
+      }`
+    })
+    await logger.verbose({ socket, message: `> Nonce:     ${tx.nonce}` })
+    await logger.verbose({ socket, message: `> Chain id:  ${tx.chainId}` })
+    await logger.verbose({
+      socket,
+      message: `> Value:     ${tx.value || 0} wei`
+    })
+    return tx
+  }
+
   /**
    * Gets addresses of all managed wallets.
    */
@@ -59,6 +113,76 @@ class WalletWrapper {
       accounts.push(await wallet.getAddress())
     )
     return accounts
+  }
+
+  /**
+   * Calculates suitable gas price depending on tx params, and gateway settings.
+   * 
+   * @param params Transaction params
+   * @returns Estimated gas price, as BigNumber
+   */
+  async getGasPrice (tx: ethers.providers.TransactionRequest): Promise<BigNumber> {
+    let gasPrice: BigNumber
+    if (this.estimateGasPrice) {
+      gasPrice = this.forceDefaults
+        ? BigNumber.from(this.defaultGasPrice)
+        : (await this.provider.getGasPrice())
+      const gasPriceThreshold = BigNumber.from(this.defaultGasPrice)
+      if (gasPrice.gt(gasPriceThreshold)) {
+        let reason = `Estimated gas price exceeds threshold (${gasPrice} > ${gasPriceThreshold})`
+        throw {
+          reason,
+          body: {
+            error: {
+              code: -32099,
+              message: reason
+            }
+          }
+        }
+      }
+    } else {
+      gasPrice = this.forceDefaults
+        ? BigNumber.from(this.defaultGasPrice)
+        : tx.gasPrice
+        ? BigNumber.from(tx.gasPrice)
+        : BigNumber.from(this.defaultGasPrice)
+    }
+    return gasPrice
+  }
+
+  /**
+   * Calculates suitable gas limit depending on tx params, and gateway settings.
+   * 
+   * @param params Transaction params
+   * @returns Estimated gas limit, as BigNumber
+   */
+  async getGasLimit (tx: ethers.providers.TransactionRequest): Promise<BigNumber> {
+    let gasLimit: BigNumber
+    if (this.estimateGasLimit) {
+      gasLimit = this.forceDefaults
+        ? BigNumber.from(this.defaultGasLimit)
+        : await this.provider.estimateGas(tx)
+      const gasLimitThreshold: BigNumber = BigNumber.from(this.defaultGasLimit)
+      if (gasLimit.gt(gasLimitThreshold)) {
+        let reason = `Estimated gas limit exceeds threshold (${gasLimit} > ${gasLimitThreshold})`
+        throw {
+          reason,
+          body: {
+            error: {
+              code: -32099,
+              message: reason
+            }
+          }
+        }
+      }
+    } else {
+      gasLimit = this.forceDefaults
+        ? BigNumber.from(this.defaultGasLimit)
+        : tx.gasLimit
+        ? BigNumber.from(tx.gasLimit)
+        : BigNumber.from(this.defaultGasLimit)
+    }
+    return gasLimit
   }
 
   /**
@@ -72,6 +196,30 @@ class WalletWrapper {
       }
     }
     return undefined
+  }
+
+  /**
+   * Surrogates call to provider, fater estimating/setting gas, if necessary.
+   */
+  async processEthCall (
+    socket: SocketParams,
+    params: TransactionParams  
+  ): Promise<any> {
+    // Compose base transaction:
+    let tx: ethers.providers.TransactionRequest = await this.composeTransaction(socket, params)
+    // Complete tx gas price, if necessary:
+    if (params.gasPrice) {
+      tx.gasPrice = params.gasPrice
+      tx.gasPrice = (await this.getGasPrice(tx)).toHexString()
+      await logger.verbose({ socket, message: `> Gas price: ${tx.gasPrice}` })
+    }
+    // Complete tx gas limit, if necessary:
+    if (params.gas) {
+      tx.gasLimit = params.gas
+      tx.gasLimit = (await this.getGasLimit(tx)).toHexString()
+      await logger.verbose({ socket, message: `> Gas limit: ${tx.gasLimit}` })
+    }
+    return await this.provider.call(tx)
   }
 
   /**
@@ -114,9 +262,20 @@ class WalletWrapper {
    * @remark Return type is made `any` here because the result needs to be a String, not a `Record`.
    */
   async processTransaction (
-    params: TransactionParams,
-    socket: SocketParams
+    socket: SocketParams,
+    params: TransactionParams
   ): Promise<any> {
+    // Compose base transaction:
+    let tx: ethers.providers.TransactionRequest = await this.composeTransaction(socket, params)
+    tx.gasPrice = params.gasPrice
+    tx.gasPrice = (await this.getGasPrice(tx)).toHexString()
+    await logger.verbose({ socket, message: `> Gas price: ${tx.gasPrice}` })
+
+    tx.gasLimit = params.gas
+    tx.gasLimit = (await this.getGasLimit(tx)).toHexString()    
+    await logger.verbose({ socket, message: `> Gas limit: ${tx.gasLimit}` })
+    
+    // Sign transaction:
     let wallet: Wallet | undefined = await this.getWalletByAddress(params.from)
     if (wallet == undefined) {
       let reason = `No private key available as to sign transactions from '${params.from}'`
@@ -130,92 +289,6 @@ class WalletWrapper {
         }
       }
     }
-    // Compose actual transaction:
-    let tx: ethers.providers.TransactionRequest = {
-      from: params.from,
-      to: params.to,
-      value: params.value,
-      data: params.data,
-      nonce: await wallet.getTransactionCount(),
-      chainId: await wallet.getChainId()
-    }
-    // Estimate gas price, if neccesary:
-    let gasPrice: BigNumber
-    if (this.estimateGasPrice) {
-      gasPrice = this.forceDefaults
-        ? BigNumber.from(this.defaultGasPrice)
-        : await this.provider.getGasPrice()
-      const gasPriceThreshold = BigNumber.from(this.defaultGasPrice)
-      if (gasPrice.gt(gasPriceThreshold)) {
-        let reason = `Estimated gas price exceeds threshold (${gasPrice} > ${gasPriceThreshold})`
-        throw {
-          reason,
-          body: {
-            error: {
-              code: -32099,
-              message: reason
-            }
-          }
-        }
-      }
-    } else {
-      gasPrice = this.forceDefaults
-        ? BigNumber.from(this.defaultGasPrice)
-        : params.gasPrice
-        ? BigNumber.from(params.gasPrice)
-        : BigNumber.from(this.defaultGasPrice)
-    }
-    // Estimate gas limit, if neccesary:
-    let gasLimit: BigNumber
-    if (this.estimateGasLimit) {
-      gasLimit = this.forceDefaults
-        ? BigNumber.from(this.defaultGasLimit)
-        : await this.provider.estimateGas(tx)
-      const gasLimitThreshold: BigNumber = BigNumber.from(this.defaultGasLimit)
-      if (gasLimit.gt(gasLimitThreshold)) {
-        let reason = `Estimated gas limit exceeds threshold (${gasLimit} > ${gasLimitThreshold})`
-        throw {
-          reason,
-          body: {
-            error: {
-              code: -32099,
-              message: reason
-            }
-          }
-        }
-      }
-    } else {
-      gasLimit = this.forceDefaults
-        ? BigNumber.from(this.defaultGasLimit)
-        : params.gas
-        ? BigNumber.from(params.gas)
-        : BigNumber.from(this.defaultGasLimit)
-    }
-    // Fulfill unsigned tx:
-    tx.gasPrice = gasPrice.toHexString()
-    tx.gasLimit = gasLimit.toHexString()
-
-    await logger.verbose({ socket, message: `> From:      ${tx.from}` })
-    await logger.verbose({
-      socket,
-      message: `> To:        ${tx.to || '(deploy)'}`
-    })
-    await logger.verbose({
-      socket,
-      message: `> Data:      ${
-        tx.data ? tx.data.toString().substring(0, 10) + '...' : '(transfer)'
-      }`
-    })
-    await logger.verbose({ socket, message: `> Nonce:     ${tx.nonce}` })
-    await logger.verbose({ socket, message: `> Chain id:  ${tx.chainId}` })
-    await logger.verbose({
-      socket,
-      message: `> Value:     ${tx.value || 0} wei`
-    })
-    await logger.verbose({ socket, message: `> Gas limit: ${tx.gasLimit}` })
-    await logger.verbose({ socket, message: `> Gas price: ${tx.gasPrice}` })
-
-    // Sign transaction:
     const signedTx = await wallet.signTransaction(tx)
     await logger.log({
       level: 'debug',
