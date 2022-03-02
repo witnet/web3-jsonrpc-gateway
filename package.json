@@ -21,15 +21,18 @@
     "celo:alfajores": "node dist/src/bin/celo https://alfajores-forno.celo-testnet.org 44787 8538",
     "celo:mainnet": "node dist/src/bin/celo https://forno.celo.org 42220 9538",
     "conflux:testnet": "cross-env-shell CONFLUX_ESTIMATE_GAS_PRICE=true CONFLUX_GAS_PRICE=3000 node dist/src/bin/conflux https://test.confluxrpc.com 1 8540",
-    "conflux:tethys": "cross-env-shell CONFLUX_ESTIMATE_GAS_PRICE=true CONFLUX_GAS_PRICE=30000 node dist/src/bin/conflux https://main.confluxrpc.com 1029 9540",
+    "conflux:mainnet": "cross-env-shell CONFLUX_ESTIMATE_GAS_PRICE=true CONFLUX_GAS_PRICE=30000000000 node dist/src/bin/conflux https://main.confluxrpc.com 1029 9540",
     "ethereum:goerli": "node dist/src/bin/ethers/infura 8545 goerli",
     "ethereum:kovan": "node dist/src/bin/ethers/infura 8542 kovan",
     "ethereum:mainnet": "node dist/src/bin/ethers/infura 9545 homestead",
     "ethereum:rinkeby": "node dist/src/bin/ethers/infura 8544 rinkeby",
     "harmony:testnet#0": "cross-env-shell ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_GAS_PRICE=25000000000 node dist/src/bin/ethers https://api.s0.b.hmny.io 8534",
     "kcc:testnet": "node dist/src/bin/ethers https://rpc-testnet.kcc.network 8537",
+    "kcc:mainnet": "node dist/src/bin/ethers https://rpc-mainnet.kcc.network 9537",
     "metis:rinkeby": "cross-env-shell ETHERS_ESTIMATE_GAS_PRICE=false ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_GAS_LIMIT=30000000 node dist/src/bin/ethers https://stardust.metis.io/?owner=588 8536",
-    "polygon:goerli": "cross-env-shell ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=false ETHERS_GAS_PRICE=100000000000 node dist/src/bin/ethers https://rpc-mumbai.maticvigil.com 8535"
+    "metis:mainnet": "cross-env-shell ETHERS_ESTIMATE_GAS_PRICE=false ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_GAS_LIMIT=50000000 node dist/src/bin/ethers https://andromeda.metis.io/?owner=1088 9536",
+    "polygon:goerli": "cross-env-shell ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=false ETHERS_GAS_PRICE=100000000000 node dist/src/bin/ethers https://matic-mumbai.chainstacklabs.com 8535",
+    "polygon:mainnet": "cross-env-shell ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=false ETHERS_GAS_PRICE=100000000000 node dist/src/bin/ethers https://rpc-mainnet.maticvigil.com 9535"
   },
   "repository": {
     "type": "git",
