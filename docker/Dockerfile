@@ -26,6 +26,9 @@ RUN yarn build
 RUN chmod +x dist/src/bin/*
 RUN yarn link
 
+# remove development dependencies
+RUN npm prune --production
+
 # Set the entrypoint and main command
 # Runs the bot by default, but CMD can be overriden when running a container so it runs the reactions monitor server
 ENTRYPOINT ["npx"]
