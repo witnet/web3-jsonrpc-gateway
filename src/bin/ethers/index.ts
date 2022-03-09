@@ -88,6 +88,12 @@ if (process.env.ETHERS_ALWAYS_SYNCED) {
   always_synced = JSON.parse(process.env.ETHERS_ALWAYS_SYNCED)
 }
 
+// Optional: if `true`, force responses to `eth_getFilterChanges` to always reply w/ latest block hash
+let mock_filters: boolean = false
+if (process.env.ETHERS_MOCK_FILTERS) {
+  mock_filters = JSON.parse(process.env.ETHERS_MOCK_FILTERS)
+}
+
 console.log('='.repeat(120))
 console.log(
   `${packageData.name} v${packageData.version} (ethers: ${packageData.dependencies.ethers})`
@@ -108,7 +114,8 @@ new WalletMiddlewareServer(
   num_addresses,
   estimate_gas_limit,
   estimate_gas_price,
-  always_synced
+  always_synced,
+  mock_filters
 )
   .initialize()
   .listen(port)

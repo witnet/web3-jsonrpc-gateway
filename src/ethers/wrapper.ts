@@ -199,7 +199,20 @@ class WalletWrapper {
   }
 
   /**
-   * Surrogates call to provider, fater estimating/setting gas, if necessary.
+   * Gets eth filter changes. Only EthBlockFilters are currently supported.
+   */
+   async mockEthFilterChanges (
+      socket: SocketParams,
+      id: string
+  ): Promise<any> {
+    logger.verbose({ socket, message: `> Filter id: ${id}` })
+    return [
+      await this.provider.getBlock("latest")
+    ]
+  }
+
+  /**
+   * Surrogates call to provider, after estimating/setting gas, if necessary.
    */
   async processEthCall (
     socket: SocketParams,

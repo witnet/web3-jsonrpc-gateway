@@ -12,6 +12,7 @@ import { WalletWrapper } from './wrapper'
 class WalletMiddlewareServer {
   alwaysSynced: boolean
   expressServer: Express
+  mockFilters: boolean
   wrapper: WalletWrapper
 
   constructor (
@@ -23,10 +24,12 @@ class WalletMiddlewareServer {
     num_addresses: number,
     estimate_gas_limit: boolean,
     estimate_gas_price: boolean,
-    always_synced: boolean
+    always_synced: boolean,
+    mock_filters: boolean
   ) {
     this.alwaysSynced = always_synced
     this.expressServer = express()
+    this.mockFilters = mock_filters
     this.wrapper = new WalletWrapper(
       seed_phrase,
       provider,
@@ -94,6 +97,12 @@ class WalletMiddlewareServer {
           handlers = {
             ...handlers,
             eth_syncing: () => false
+          }
+        }
+        if (this.mockFilters) {
+          handlers = {
+            ...handlers,
+            eth_getFilterChanges: this.wrapper.mockEthFilterChanges
           }
         }
 

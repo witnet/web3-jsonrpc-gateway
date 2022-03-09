@@ -80,6 +80,7 @@ new WalletMiddlewareServer(
   false, // estimate gas limit
   false, // estimate gas price
   false, // always synced
+  false, // mock filters
 )
   .initialize()
   .listen(port)
