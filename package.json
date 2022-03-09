@@ -1,6 +1,6 @@
 {
   "name": "web3-jsonrpc-gateway",
-  "version": "1.5.3",
+  "version": "1.6.4",
   "description": "A Web3 provider that handles accounts on its own but delegates chain queries to a 3rd party service",
   "main": "src/bin/jsonrpc.js",
   "bin": {
@@ -8,7 +8,8 @@
     "w3gw-boba": "dist/src/bin/ethers/",
     "w3gw-celo": "dist/src/bin/celo.js",
     "w3gw-conflux": "dist/src/bin/conflux/",
-    "w3gw-infura": "dist/src/bin/ethers/infura.js"
+    "w3gw-infura": "dist/src/bin/ethers/infura.js",
+    "w3gw-reef": "dist/src/bin/reef/"
   },
   "scripts": {
     "lint": "prettier-standard --format",
@@ -51,8 +52,7 @@
     "okxchain:mainnet": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=16 ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_GAS_LIMIT=8000000 node dist/src/bin/ethers https://exchainrpc.okex.org 9528",
     "polygon:goerli": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=8 ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=false ETHERS_GAS_PRICE=100000000000 node dist/src/bin/ethers https://matic-mumbai.chainstacklabs.com 8535",
     "polygon:mainnet": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=8 ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=false ETHERS_GAS_PRICE=100000000000 node dist/src/bin/ethers https://rpc-mainnet.maticvigil.com 9535",
-    "smartbch:amber": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=5 node dist/src/bin/ethers http://35.220.203.194:8545 8525",
-    "syscoin:testnet": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=0 ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=true node dist/src/bin/ethers https://rpc.tanenbaum.io 8521"
+    "smartbch:amber": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=5 node dist/src/bin/ethers http://35.220.203.194:8545 8525"
   },
   "repository": {
     "type": "git",
@@ -80,11 +80,12 @@
     "jest": "^27.0.1",
     "prettier-standard": "^16.4.1",
     "tslint": "^6.1.3",
-    "typescript": "^4.2.4"
+    "typescript": "^4.3.2"
   },
   "dependencies": {
     "@celo-tools/celo-ethers-wrapper": "~0.1.1",
     "@celo/contractkit": "~2.0.0",
+    "@reef-defi/evm-provider": "^1.0.9",
     "body-parser": "1.19.0",
     "cors": "2.8.5",
     "cross-env": "7.0.3",
