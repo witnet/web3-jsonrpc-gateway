@@ -96,6 +96,8 @@ Optional environment variables:
 - `ETHERS_FORCE_DEFAULTS`: if set to `true`, the server will set `gasPrice` and `gasLimit` values to the ones set by respective environment variables, before signing a transaction.
 - `ETHERS_GAS_LIMIT`: default gas limit to be used before signing a transaction, if not specified by the caller.
 - `ETHERS_GAS_PRICE`: default gas price to be used before signing a transaction, if not specified by the caller.
+- `ETHERS_GAS_PRICE_FACTOR`: multiplier applied to estimated gas price, if `ETHERS_ESTIMATE_GAS_PRICE` is `true`.
+- `ETHERS_MOCK_FILTERS`: makes `eth_getFilterChanges` to always return latest known block.
 - `ETHERS_NUM_ADDRESSES`: number of wallet addresses to be handled by the server, derived from path '`m/44'/60'/0'/0/*`'.
 
 ## Pre-configured JSON-RPC provider gateways:
