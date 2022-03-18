@@ -58,10 +58,10 @@ class WalletMiddlewareServer {
       [
         'Gas limit',
         estimate_gas_limit && !force_defaults ? '(self-estimated)' : gas_limit
-      ],
+      ]
     ]
     if (gas_price_factor > 0) {
-      lines = [ ...lines, [ 'Gas price factor', `x ${gas_price_factor}` ] ]
+      lines = [...lines, ['Gas price factor', `x ${gas_price_factor}`]]
     }
     traceKeyValue('Provider', lines)
     return this
@@ -126,7 +126,7 @@ class WalletMiddlewareServer {
         let result
         try {
           if (request.method in handlers) {
-            result = await handlers[request.method].bind(this.wrapper) (
+            result = await handlers[request.method].bind(this.wrapper)(
               socket,
               ...(request.params || [])
             )
@@ -137,7 +137,7 @@ class WalletMiddlewareServer {
             )
           }
           response = { ...header, result }
-        } catch (exception: any) {
+        } catch (exception) {
           if (!exception.code) {
             // if no error code is specified,
             //   assume the provider is actually reporting an execution error:

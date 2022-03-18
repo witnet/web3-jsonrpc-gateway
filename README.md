@@ -112,6 +112,7 @@ There are several package scripts at your disposal for you to launch specific ga
 - `LOG_LEVEL`: max log level to be traced, can be any of the following: `error`, `warn`, `info`, `http`, `verbose`, `debug`, `silly`. If not specified, `verbose` will apply.
 
 ### Running gateways to Ethereum networks:
+
 - Rinkeby: `npm run ethereum:rinkeby`
 - Goerli: `npm run ethereum:goerli`
 - Kovan: `npm run ethereum:kovan`
@@ -119,27 +120,34 @@ There are several package scripts at your disposal for you to launch specific ga
 - Mainnet: `npm run ethereum:mainnet`
 
 ### Running gateways to BOBA Layer-2 networks:
+
 - Rinkeby: `npm run boba:rinkeby`
 - Mainnet: `npm run boba:mainnet`
 
 ### Running gateways to CELO networks:
+
 - Alfajores: `npm run celo:alfajores`
 - Mainnet: `npm run celo:mainnet`
 
 ### Running gateways to Conflux networks:
+
 - Testnet: `npm run conflux:testnet`
 - Mainnet: `npm run conflux:mainnet`
 
 ### Running gateways to HARMONY networks:
+
 - Testnet (Shard #0): `npm run harmony:testnet#0`
 
 ### Running gateways to KCC networks:
+
 - Testnet: `npm run kcc:testnet`
 
 ### Running gateways to METIS networks:
+
 - Stardust (Rinkeby): `npm run metis:rinkeby`
 
 ### Running gateways to POLYGON networks:
+
 - Mumbai (Goerli): `npm run polygon:goerli`
 
 ## How to create a server for any other provider

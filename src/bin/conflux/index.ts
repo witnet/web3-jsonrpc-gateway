@@ -62,7 +62,9 @@ if (process.env.CONFLUX_GAS_LIMIT) {
 }
 
 // Optional: if `true`, let provider estimate gas price before signing the transaction
-const estimateGasPrice: boolean = JSON.parse(process.env.CONFLUX_ESTIMATE_GAS_PRICE || "false")
+const estimateGasPrice: boolean = JSON.parse(
+  process.env.CONFLUX_ESTIMATE_GAS_PRICE || 'false'
+)
 
 console.log('='.repeat(120))
 console.log(

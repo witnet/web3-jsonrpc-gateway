@@ -109,7 +109,7 @@ export class WalletMiddlewareServer {
             )
           }
           response = { ...header, result }
-        } catch (exception: any) {
+        } catch (exception) {
           if (!exception.code) {
             // if no error code is specified,
             //   assume the Conflux provider is actually reporting an execution error:

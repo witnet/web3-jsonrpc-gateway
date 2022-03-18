@@ -32,7 +32,7 @@
     "metis:rinkeby": "cross-env-shell ETHERS_ESTIMATE_GAS_PRICE=false ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_GAS_LIMIT=30000000 node dist/src/bin/ethers https://stardust.metis.io/?owner=588 8536",
     "metis:mainnet": "cross-env-shell ETHERS_ESTIMATE_GAS_PRICE=false ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_GAS_LIMIT=50000000 node dist/src/bin/ethers https://andromeda.metis.io/?owner=1088 9536",
     "moonbeam:moonbase": "cross-env-shell ETHERS_ESTIMATE_GAS_PRICE=false ETHERS_ESTIMATE_GAS_LIMIT=false ETHERS_GAS_PRICE=3000000000 ETHERS_GAS_LIMIT=8000000 ETHERS_MOCK_FILTERS=true node dist/src/bin/ethers https://rpc.api.moonbase.moonbeam.network 8531",
-    "moonbeam:mainnet":  "cross-env-shell ETHERS_ESTIMATE_GAS_PRICE=false ETHERS_ESTIMATE_GAS_LIMIT=false ETHERS_GAS_PRICE=15000000000 ETHERS_GAS_LIMIT=8000000 ETHERS_MOCK_FILTERS=true node dist/src/bin/ethers https://rpc.api.moonbeam.network 9531",
+    "moonbeam:mainnet": "cross-env-shell ETHERS_ESTIMATE_GAS_PRICE=false ETHERS_ESTIMATE_GAS_LIMIT=false ETHERS_GAS_PRICE=15000000000 ETHERS_GAS_LIMIT=8000000 ETHERS_MOCK_FILTERS=true node dist/src/bin/ethers https://rpc.api.moonbeam.network 9531",
     "polygon:goerli": "cross-env-shell ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=false ETHERS_GAS_PRICE=100000000000 node dist/src/bin/ethers https://matic-mumbai.chainstacklabs.com 8535",
     "polygon:mainnet": "cross-env-shell ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=false ETHERS_GAS_PRICE=100000000000 node dist/src/bin/ethers https://rpc-mainnet.maticvigil.com 9535"
   },

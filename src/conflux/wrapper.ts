@@ -211,7 +211,7 @@ export class WalletWrapper {
   ): Promise<any> {
     let gasPrice: BigInt | string
     if (this.estimateGasPrice) {
-      let gasPriceBI = await this.conflux.getGasPrice()      
+      let gasPriceBI = await this.conflux.getGasPrice()
       if (gasPriceBI > BigInt(this.conflux.defaultGasPrice)) {
         let reason = `Estimated gas price exceeds threshold (${gasPriceBI} > ${this.conflux.defaultGasPrice})`
         throw {
@@ -224,9 +224,11 @@ export class WalletWrapper {
           }
         }
       }
-      gasPrice = "0x" + BigInt(`${gasPriceBI}0`).toString(16)
+      gasPrice = '0x' + BigInt(`${gasPriceBI}0`).toString(16)
     } else {
-      gasPrice = params.gasPrice || "0x" + BigInt(this.conflux.defaultGasPrice).toString(16)
+      gasPrice =
+        params.gasPrice ||
+        '0x' + BigInt(this.conflux.defaultGasPrice).toString(16)
     }
 
     const nonce: number = parseInt(
@@ -239,7 +241,7 @@ export class WalletWrapper {
     let options = {
       from: params.from || this.account.toString(),
       to: params.to,
-      gasPrice, 
+      gasPrice,
       value: params.value ? params.value.toString(16) : '0x0',
       data: params.data || null,
       nonce: `0x${nonce.toString(16)}`,
@@ -256,7 +258,10 @@ export class WalletWrapper {
       estimation = { storageCollateralized: 0, gasLimit: params.gas }
     }
 
-    logger.verbose({ socket, message: `Cost estimation => ${JSON.stringify(estimation)}` })
+    logger.verbose({
+      socket,
+      message: `Cost estimation => ${JSON.stringify(estimation)}`
+    })
 
     let payload = {
       ...options,

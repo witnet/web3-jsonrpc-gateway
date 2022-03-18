@@ -121,12 +121,9 @@ class WalletWrapper {
   /**
    * Get block by number. Bypass eventual exceptions.
    */
-     async getBlockByNumber (
-      socket: SocketParams,
-      params: string
-  ) {
+  async getBlockByNumber (socket: SocketParams, params: string) {
     let res
-    try {      
+    try {
       res = await this.provider.getBlock(params)
       if (res.gasLimit) {
         res = { ...res, gasLimit: res.gasLimit.toHexString() }
@@ -135,27 +132,31 @@ class WalletWrapper {
         res = { ...res, gasUsed: res.gasUsed.toHexString() }
       }
       if (res.baseFeePerGas) {
-        res = { ...res, baseFeePerGas: res.baseFeePerGas.toHexString()}
+        res = { ...res, baseFeePerGas: res.baseFeePerGas.toHexString() }
       }
       if (res._difficulty) {
-        res = { ...res, _difficulty: res._difficulty.toHexString()}
+        res = { ...res, _difficulty: res._difficulty.toHexString() }
       }
     } catch (e) {
       logger.http({ socket, message: `> Exception bypass: ${e}` })
     }
-    return res;
+    return res
   }
 
   /**
    * Calculates suitable gas price depending on tx params, and gateway settings.
-   * 
+   *
    * @param params Transaction params
    * @returns Estimated gas price, as BigNumber
    */
-  async getGasPrice (tx: ethers.providers.TransactionRequest): Promise<BigNumber> {
+  async getGasPrice (
+    tx: ethers.providers.TransactionRequest
+  ): Promise<BigNumber> {
     let gasPrice: BigNumber
     if (this.estimateGasPrice) {
-      const providerGasPrice: any = BigNumber.from(await this.provider.getGasPrice())
+      const providerGasPrice: any = BigNumber.from(
+        await this.provider.getGasPrice()
+      )
       gasPrice = this.forceDefaults
         ? BigNumber.from(this.defaultGasPrice)
         : BigNumber.from(Math.ceil(providerGasPrice * this.gasPriceFactor))
@@ -184,11 +185,13 @@ class WalletWrapper {
 
   /**
    * Calculates suitable gas limit depending on tx params, and gateway settings.
-   * 
+   *
    * @param params Transaction params
    * @returns Estimated gas limit, as BigNumber
    */
-  async getGasLimit (tx: ethers.providers.TransactionRequest): Promise<BigNumber> {
+  async getGasLimit (
+    tx: ethers.providers.TransactionRequest
+  ): Promise<BigNumber> {
     let gasLimit: BigNumber
     if (this.estimateGasLimit) {
       gasLimit = this.forceDefaults
@@ -233,14 +236,9 @@ class WalletWrapper {
   /**
    * Gets eth filter changes. Only EthBlockFilters are currently supported.
    */
-   async mockEthFilterChanges (
-      socket: SocketParams,
-      id: string
-  ): Promise<any> {
+  async mockEthFilterChanges (socket: SocketParams, id: string): Promise<any> {
     logger.verbose({ socket, message: `> Filter id: ${id}` })
-    return [
-      await this.provider.getBlock("latest")
-    ]
+    return [await this.provider.getBlock('latest')]
   }
 
   /**
@@ -248,10 +246,13 @@ class WalletWrapper {
    */
   async processEthCall (
     socket: SocketParams,
-    params: TransactionParams  
+    params: TransactionParams
   ): Promise<any> {
     // Compose base transaction:
-    let tx: ethers.providers.TransactionRequest = await this.composeTransaction(socket, params)
+    let tx: ethers.providers.TransactionRequest = await this.composeTransaction(
+      socket,
+      params
+    )
     // Complete tx gas price, if necessary:
     if (params.gasPrice) {
       tx.gasPrice = params.gasPrice
@@ -311,15 +312,18 @@ class WalletWrapper {
     params: TransactionParams
   ): Promise<any> {
     // Compose base transaction:
-    let tx: ethers.providers.TransactionRequest = await this.composeTransaction(socket, params)
+    let tx: ethers.providers.TransactionRequest = await this.composeTransaction(
+      socket,
+      params
+    )
     tx.gasPrice = params.gasPrice
     tx.gasPrice = (await this.getGasPrice(tx)).toHexString()
     await logger.verbose({ socket, message: `> Gas price: ${tx.gasPrice}` })
 
     tx.gasLimit = params.gas
-    tx.gasLimit = (await this.getGasLimit(tx)).toHexString()    
+    tx.gasLimit = (await this.getGasLimit(tx)).toHexString()
     await logger.verbose({ socket, message: `> Gas limit: ${tx.gasLimit}` })
-    
+
     // Sign transaction:
     let wallet: Wallet | undefined = await this.getWalletByAddress(params.from)
     if (wallet == undefined) {
