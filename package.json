@@ -14,7 +14,7 @@
     "lint": "prettier-standard --format",
     "build": "tsc",
     "test": "jest",
-    "avalanche:mainnet": "cross-env-shell ETHERS_ALWAYS_SYNCED=true ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_GAS_PRICE=150000000000 ETHERS_GAS_PRICE_FACTOR=1.25 ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_GAS_LIMIT=8000000 node dist/src/bin/ethers https://api.avax.network/ext/bc/C/rpc 9533",
+    "avalanche:mainnet": "cross-env-shell ETHERS_ALWAYS_SYNCED=true ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_GAS_PRICE=150000000000 ETHERS_GAS_PRICE_FACTOR=1.25 ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_GAS_LIMIT=8000000 ETHER_MOCK_FILTERS=true node dist/src/bin/ethers https://api.avax.network/ext/bc/C/rpc 9533",
     "avalanche:testnet": "cross-env-shell ETHERS_ALWAYS_SYNCED=true ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_GAS_PRICE=50000000000 ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_GAS_LIMIT=8000000 node dist/src/bin/ethers https://api.avax-test.network/ext/bc/C/rpc 8533",
     "boba:mainnet": "cross-env-shell ETHERS_ESTIMATE_GAS_PRICE=true node dist/src/bin/ethers https://mainnet.boba.network 9539",
     "boba:rinkeby": "cross-env-shell ETHERS_ESTIMATE_GAS_PRICE=true node dist/src/bin/ethers https://rinkeby.boba.network 8539",
