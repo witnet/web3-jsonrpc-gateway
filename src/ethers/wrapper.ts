@@ -119,6 +119,34 @@ class WalletWrapper {
   }
 
   /**
+   * Get block by number. Bypass eventual exceptions.
+   */
+     async getBlockByNumber (
+      socket: SocketParams,
+      params: string
+  ) {
+    let res
+    try {      
+      res = await this.provider.getBlock(params)
+      if (res.gasLimit) {
+        res = { ...res, gasLimit: res.gasLimit.toHexString() }
+      }
+      if (res.gasUsed) {
+        res = { ...res, gasUsed: res.gasUsed.toHexString() }
+      }
+      if (res.baseFeePerGas) {
+        res = { ...res, baseFeePerGas: res.baseFeePerGas.toHexString()}
+      }
+      if (res._difficulty) {
+        res = { ...res, _difficulty: res._difficulty.toHexString()}
+      }
+    } catch (e) {
+      logger.http({ socket, message: `> Exception bypass: ${e}` })
+    }
+    return res;
+  }
+
+  /**
    * Calculates suitable gas price depending on tx params, and gateway settings.
    * 
    * @param params Transaction params
