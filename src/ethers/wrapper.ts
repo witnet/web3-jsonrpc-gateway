@@ -20,9 +20,10 @@ class WalletWrapper {
   provider: ethers.providers.JsonRpcProvider
   defaultGasPrice!: number
   defaultGasLimit!: number
-  forceDefaults: boolean
   estimateGasLimit: boolean
   estimateGasPrice: boolean
+  forceDefaults: boolean
+  gasPriceFactor!: number
 
   constructor (
     seed_phrase: string,
@@ -32,7 +33,8 @@ class WalletWrapper {
     force_defaults: boolean,
     num_addresses: number,
     estimate_gas_limit: boolean,
-    estimate_gas_price: boolean
+    estimate_gas_price: boolean,
+    gas_price_factor: number
   ) {
     this.wallets = []
     for (let ix = 0; ix < num_addresses; ix++) {
@@ -48,6 +50,7 @@ class WalletWrapper {
     this.forceDefaults = force_defaults
     this.estimateGasLimit = estimate_gas_limit
     this.estimateGasPrice = estimate_gas_price
+    this.gasPriceFactor = gas_price_factor
   }
 
   async composeTransaction (
@@ -124,9 +127,10 @@ class WalletWrapper {
   async getGasPrice (tx: ethers.providers.TransactionRequest): Promise<BigNumber> {
     let gasPrice: BigNumber
     if (this.estimateGasPrice) {
+      const providerGasPrice: any = BigNumber.from(await this.provider.getGasPrice())
       gasPrice = this.forceDefaults
         ? BigNumber.from(this.defaultGasPrice)
-        : (await this.provider.getGasPrice())
+        : BigNumber.from(Math.ceil(providerGasPrice * this.gasPriceFactor))
       const gasPriceThreshold = BigNumber.from(this.defaultGasPrice)
       if (gasPrice.gt(gasPriceThreshold)) {
         let reason = `Estimated gas price exceeds threshold (${gasPrice} > ${gasPriceThreshold})`

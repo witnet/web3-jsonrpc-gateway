@@ -94,6 +94,12 @@ if (process.env.ETHERS_MOCK_FILTERS) {
   mock_filters = JSON.parse(process.env.ETHERS_MOCK_FILTERS)
 }
 
+// Optional: gas price factor to be applied to when ETHERS_ESTIMATE_GAS_PRICE is true
+let gas_price_factor = 1.0
+if (process.env.ETHERS_GAS_PRICE_FACTOR) {
+  gas_price_factor = parseFloat(process.env.ETHERS_GAS_PRICE_FACTOR)
+}
+
 console.log('='.repeat(120))
 console.log(
   `${packageData.name} v${packageData.version} (ethers: ${packageData.dependencies.ethers})`
@@ -115,7 +121,8 @@ new WalletMiddlewareServer(
   estimate_gas_limit,
   estimate_gas_price,
   always_synced,
-  mock_filters
+  mock_filters,
+  gas_price_factor
 )
   .initialize()
   .listen(port)

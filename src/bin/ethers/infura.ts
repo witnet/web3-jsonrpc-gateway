@@ -81,6 +81,7 @@ new WalletMiddlewareServer(
   false, // estimate gas price
   false, // always synced
   false, // mock filters
+  1.0,   // gas price factor 
 )
   .initialize()
   .listen(port)

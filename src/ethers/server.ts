@@ -25,7 +25,8 @@ class WalletMiddlewareServer {
     estimate_gas_limit: boolean,
     estimate_gas_price: boolean,
     always_synced: boolean,
-    mock_filters: boolean
+    mock_filters: boolean,
+    gas_price_factor: number
   ) {
     this.alwaysSynced = always_synced
     this.expressServer = express()
@@ -38,10 +39,11 @@ class WalletMiddlewareServer {
       force_defaults,
       num_addresses,
       estimate_gas_limit,
-      estimate_gas_price
+      estimate_gas_price,
+      gas_price_factor
     )
 
-    traceKeyValue('Provider', [
+    let lines = [
       [
         'Entrypoint',
         `${provider.connection.url} ${
@@ -56,9 +58,12 @@ class WalletMiddlewareServer {
       [
         'Gas limit',
         estimate_gas_limit && !force_defaults ? '(self-estimated)' : gas_limit
-      ]
-    ])
-
+      ],
+    ]
+    if (gas_price_factor > 0) {
+      lines = [ ...lines, [ 'Gas price factor', `x ${gas_price_factor}` ] ]
+    }
+    traceKeyValue('Provider', lines)
     return this
   }
 
