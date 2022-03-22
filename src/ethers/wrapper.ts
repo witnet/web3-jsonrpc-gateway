@@ -194,12 +194,25 @@ class WalletWrapper {
   ): Promise<BigNumber> {
     let gasLimit: BigNumber
     if (this.estimateGasLimit) {
-      gasLimit = this.forceDefaults
-        ? BigNumber.from(this.defaultGasLimit)
-        : await this.provider.estimateGas(tx)
+      try {
+        gasLimit = this.forceDefaults
+          ? BigNumber.from(this.defaultGasLimit)
+          : await this.provider.estimateGas(tx)
+      } catch (ex) {
+        const reason = `Unpredictable gas limit. Please, check your balance`
+        throw {
+          reason,
+          body: {
+            error: {
+              code: -32099,
+              message: reason
+            }
+          }
+        }
+      }
       const gasLimitThreshold: BigNumber = BigNumber.from(this.defaultGasLimit)
       if (gasLimit.gt(gasLimitThreshold)) {
-        let reason = `Estimated gas limit exceeds threshold (${gasLimit} > ${gasLimitThreshold})`
+        const reason = `Estimated gas limit exceeds threshold (${gasLimit} > ${gasLimitThreshold})`
         throw {
           reason,
           body: {
