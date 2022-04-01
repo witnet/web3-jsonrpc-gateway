@@ -172,6 +172,17 @@ export class WalletWrapper {
   }
 
   /**
+   * Use Conflux SDK to process `eth_estimateGas`, while making response ETH compliant
+   */
+  async estimateGas(
+    params: TransactionOption,
+    _socket: SocketParams
+  ): Promise<any> {
+    let res: any = await this.conflux.estimateGasAndCollateral(params)
+    return res.gasLimit
+  }
+
+  /**
    * Signs a message using the wallet's private key.
    *
    * @remark Return type is made `any` here because the result needs to be a String, not a `Record`.

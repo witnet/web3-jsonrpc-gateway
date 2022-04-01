@@ -31,7 +31,6 @@ export class WalletMiddlewareServer {
   dictionaryEthCfx: { [K: string]: string } = {
     eth_blockNumber: 'cfx_epochNumber',
     eth_call: 'cfx_call',
-    eth_estimateGas: 'cfx_estimateGasAndCollateral',
     eth_gasPrice: 'cfx_gasPrice',
     eth_getBalance: 'cfx_getBalance',
     eth_getBlockByHash: 'cfx_getBlockByHash',
@@ -78,6 +77,7 @@ export class WalletMiddlewareServer {
 
     this.rpcMethodHandlers = {
       cfx_call: this.wrapper.call,
+      eth_estimateGas: this.wrapper.estimateGas,
       cfx_sendTransaction: this.wrapper.processTransaction,
       eth_accounts: this.wrapper.getAccounts,
       eth_getFilterChanges: this.wrapper.getEthFilterChanges,
