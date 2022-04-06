@@ -108,7 +108,8 @@ class WalletMiddlewareServer {
         if (this.mockFilters) {
           handlers = {
             ...handlers,
-            eth_getFilterChanges: this.wrapper.mockEthFilterChanges
+            eth_getFilterChanges: this.wrapper.mockEthFilterChanges,
+            eth_newBlockFilter: () => "0x1"
           }
         }
 
