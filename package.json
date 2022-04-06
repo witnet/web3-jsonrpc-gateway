@@ -23,6 +23,7 @@
     "conflux:core:testnet": "cross-env-shell CONFLUX_ESTIMATE_GAS_PRICE=true CONFLUX_GAS_PRICE=3000 node dist/src/bin/conflux https://test.confluxrpc.com 1 8540",
     "conflux:core:mainnet": "cross-env-shell CONFLUX_ESTIMATE_GAS_PRICE=true CONFLUX_GAS_PRICE=30000000000 node dist/src/bin/conflux https://main.confluxrpc.com 1029 9540",
     "conflux:espace:testnet": "cross-env-shell ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_GAS_LIMIT=15000000 ETHERS_MOCK_FILTERS=true node dist/src/bin/ethers https://evmtestnet.confluxrpc.com/ 8529",
+    "conflux:espace:mainnet": "cross-env-shell ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_GAS_LIMIT=15000000 ETHERS_MOCK_FILTERS=true node dist/src/bin/ethers https://evm.confluxrpc.com/ 9529",
     "ethereum:goerli": "node dist/src/bin/ethers/infura 8545 goerli",
     "ethereum:kovan": "node dist/src/bin/ethers/infura 8542 kovan",
     "ethereum:mainnet": "node dist/src/bin/ethers/infura 9545 homestead",
