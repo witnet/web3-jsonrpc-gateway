@@ -55,7 +55,8 @@ class WalletWrapper {
 
   async composeTransaction (
     socket: SocketParams,
-    params: TransactionParams
+    params: TransactionParams,
+    getNonce: boolean
   ): Promise<ethers.providers.TransactionRequest> {
     // Complete tx from, if necessary:
     if (!params.from) {
@@ -83,8 +84,12 @@ class WalletWrapper {
       data: params.data,
       gasPrice: params.gasPrice,
       gasLimit: params.gas,
-      nonce: await wallet.getTransactionCount(),
-      chainId: await wallet.getChainId()
+    }
+    if (getNonce) {
+      tx = {
+        ...tx,
+        nonce: await wallet.getTransactionCount(),
+      }
     }
     // Trace tx params
     await logger.verbose({ socket, message: `> From:      ${tx.from}` })
@@ -98,8 +103,9 @@ class WalletWrapper {
         tx.data ? tx.data.toString().substring(0, 10) + '...' : '(transfer)'
       }`
     })
-    await logger.verbose({ socket, message: `> Nonce:     ${tx.nonce}` })
-    await logger.verbose({ socket, message: `> Chain id:  ${tx.chainId}` })
+    if (tx.nonce) {
+      await logger.verbose({ socket, message: `> Nonce:     ${tx.nonce}` })
+    }
     await logger.verbose({
       socket,
       message: `> Value:     ${tx.value || 0} wei`
@@ -266,7 +272,8 @@ class WalletWrapper {
     // Compose base transaction:
     let tx: ethers.providers.TransactionRequest = await this.composeTransaction(
       socket,
-      params
+      params,
+      false
     )
     // Complete tx gas price, if necessary:
     if (params.gasPrice) {
@@ -329,7 +336,8 @@ class WalletWrapper {
     // Compose base transaction:
     let tx: ethers.providers.TransactionRequest = await this.composeTransaction(
       socket,
-      params
+      params,
+      true
     )
     tx.gasPrice = params.gasPrice
     tx.gasPrice = (await this.getGasPrice(tx)).toHexString()
