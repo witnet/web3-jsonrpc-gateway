@@ -49,7 +49,7 @@ export class WalletMiddlewareServer {
   constructor (
     url: string,
     networkId: number,
-    privateKey: string,
+    privateKeys: string[],
     defaultGas: BigInt,
     defaultGasPrice: number,
     estimateGasPrice: boolean
@@ -58,7 +58,7 @@ export class WalletMiddlewareServer {
 
     this.wrapper = new WalletWrapper(
       networkId,
-      privateKey,
+      privateKeys,
       defaultGas,
       estimateGasPrice,
       new Conflux({ url, networkId, defaultGasPrice })
@@ -265,27 +265,28 @@ export class WalletMiddlewareServer {
    */
   async listen (port: number, hostname?: string) {
     let info
-    try {
-      info = (await this.wrapper.getAccount(
-        this.wrapper.account.toString()
-      )) as WalletWrapperInfo
-    } catch (e) {
-      console.error(
-        'Service provider seems to be down or rejecting connections !!!'
-      )
-      console.error(e)
-      process.exit(-1)
-    }
-    traceKeyValue('Conflux wallet', [
-      ['Address   ', this.wrapper.account.toString()],
-      ['Admin     ', info.admin?.toLowerCase()],
-      ['Balance   ', `${ethers.utils.formatEther(info.balance)} CFX`],
-      [
-        'Collateral',
-        `${ethers.utils.formatEther(info.collateralForStorage)} CFX`
-      ],
-      ['Nonce     ', info.nonce]
-    ])
+    let count = 0
+    this.wrapper.getAccounts().forEach(async address => {
+      try {
+        info = (await this.wrapper.getAccountInfo(address)) as WalletWrapperInfo
+      } catch (e) {
+        console.error(
+          'Service provider seems to be down or rejecting connections !!!'
+        )
+        console.error(e)
+        process.exit(-1)
+      }   
+      traceKeyValue(`Conflux wallet #${count ++}`, [
+        ['Address   ', address],
+        ['Admin     ', info.admin?.toLowerCase()],
+        ['Balance   ', `${ethers.utils.formatEther(info.balance)} CFX`],
+        [
+          'Collateral',
+          `${ethers.utils.formatEther(info.collateralForStorage)} CFX`
+        ],
+        ['Nonce     ', info.nonce]
+      ])
+    })
 
     console.log(
       `Listening on ${hostname ||

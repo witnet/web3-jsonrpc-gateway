@@ -59,7 +59,7 @@ Required environment variables:
 
 - `PORT`: listening port for the server. Can also be passed from command-line as first parameter.
 - `NETWORK`: network id. Conflux providers currently supports: `1` for testnet, and `1029` for mainnet.
-- `PRIVATE_KEY`: the private key to use for generation the server's own wrapped wallet.
+- `PRIVATE_KEYS`: array of private keys to be used for signing transactions.
 - `PROVIDER_URL`: actual URL of the Web3 JSON-RPC provider.
 
 Optional environment variables:

@@ -26,7 +26,7 @@ interface ConfluxStatus {
  */
 
 export class WalletWrapper {
-  account: Account
+  accounts: Account[]
   defaultGas: BigInt
   conflux: Conflux
   networkId: number
@@ -34,7 +34,7 @@ export class WalletWrapper {
 
   constructor (
     networkId: number,
-    privateKey: string,
+    privateKeys: string[],
     defaultGas: BigInt,
     estimateGasPrice: boolean,
     conflux: Conflux
@@ -43,7 +43,11 @@ export class WalletWrapper {
     this.defaultGas = defaultGas
     this.conflux = conflux
     this.estimateGasPrice = estimateGasPrice
-    this.account = this.conflux.wallet.addPrivateKey(privateKey)
+    this.conflux = conflux
+    this.accounts = []
+    privateKeys.forEach(privateKey => {
+      this.accounts.push(this.conflux.wallet.addPrivateKey(privateKey))
+    })
   }
 
   /**
@@ -82,13 +86,35 @@ export class WalletWrapper {
     if (tx.chainId)
       logger.verbose({ socket, message: `> Chain id: ${tx.chainId}` })
 
-    return this.conflux.call(tx, epoch)
+  /**
+   * Create new eth_client block filter.
+   */
+  async createEthBlockFilter (_socket: SocketParams): Promise<string> {
+    return '0x1'
+  }
+  
+  /**
+   * Use Conflux SDK to process `eth_estimateGas`, while making response ETH compliant
+   */
+   async estimateGas (
+    params: TransactionOption,
+    _socket: SocketParams
+  ): Promise<any> {
+    let res: any = await this.conflux.estimateGasAndCollateral(params)
+    return res.gasLimit
   }
 
   /**
-   * Gets given account's metadata.
+   * Gets Account interaction object of given address, if available.
    */
-  async getAccount (address: string): Promise<any> {
+  getAccount (address: string): Account | undefined {
+    return this.accounts.find(account => account.toString().toLowerCase() === address.toLowerCase())
+  }
+
+  /**
+   * Gets account info of given address
+   */
+  async getAccountInfo (address: string): Promise<any> {
     return this.conflux.getAccount(address)
   }
 
@@ -195,8 +221,7 @@ export class WalletWrapper {
     console.log(this.getAccounts())
     if (this.getAccounts().includes(address)) {
       logger.verbose({ socket, message: `> Signing message "${message}"` })
-      let res = await this.account.signMessage(message)
-      return res
+      return this.getAccount(address)?.signMessage(message)
     } else {
       let reason = `No private key available as to sign messages from '${address}'`
       throw {
@@ -220,7 +245,7 @@ export class WalletWrapper {
     params: TransactionOption,
     socket: SocketParams
   ): Promise<any> {
-    let gasPrice: BigInt | string
+    let gasPrice: number | string
     if (this.estimateGasPrice) {
       let gasPriceBI = await this.conflux.getGasPrice()
       if (gasPriceBI > BigInt(this.conflux.defaultGasPrice)) {
@@ -242,15 +267,14 @@ export class WalletWrapper {
         '0x' + BigInt(this.conflux.defaultGasPrice).toString(16)
     }
 
-    const nonce: number = parseInt(
-      (await this.conflux.getNextNonce(this.account.toString())).toString()
-    )
-    const epoch: BigInt =
-      BigInt(await this.conflux.getEpochNumber()) + BigInt(100)
+    if (!params.from) {
+      params.from = this.getAccounts()[0]
+    }
+
 
     // Compose actual transaction:
     let options = {
-      from: params.from || this.account.toString(),
+      from: params.from,
       to: params.to,
       gasPrice,
       value: params.value ? params.value.toString(16) : '0x0',
@@ -308,8 +332,21 @@ export class WalletWrapper {
     })
     logger.verbose({ socket, message: `> Chain id: ${payload.chainId}` })
 
-    // Sign transaction:
-    const tx: Transaction = await this.account.signTransaction(payload)
+    // Sign transaction:    
+    const account: Account | undefined = await this.getAccount(params.from)
+    const tx: Transaction | undefined = await account?.signTransaction(payload)
+    if (!tx) {
+      let reason = `No private key available as to sign messages from '${params.from}'`
+      throw {
+        reason,
+        body: {
+          error: {
+            code: -32000,
+            message: reason
+          }
+        }
+      }
+    }
 
     // Trace signed transaction:
     const serialized = tx.serialize()

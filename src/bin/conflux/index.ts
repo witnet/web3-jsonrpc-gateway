@@ -38,10 +38,10 @@ if (process.argv.length >= 5) {
 }
 
 // Mandatory: the private key to use for generation the server's own wrapped wallet.
-const privateKey = process.env.PRIVATE_KEY
-if (!privateKey) {
+const privateKeys = JSON.parse(process.env.PRIVATE_KEYS || "")
+if (!privateKeys || privateKeys.length == 0) {
   throw Error(
-    'No private key provided. Please set the `PRIVATE_KEY` environment variable.'
+    'No private keys were provided. Please set the `PRIVATE_KEYS` environment variable.'
   )
 }
 
@@ -75,7 +75,7 @@ console.log()
 new WalletMiddlewareServer(
   providerUrl,
   networkId,
-  privateKey,
+  privateKeys,
   defaultGasLimit,
   defaultGasPrice,
   estimateGasPrice
