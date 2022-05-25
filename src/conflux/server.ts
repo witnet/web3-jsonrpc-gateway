@@ -482,6 +482,20 @@ export class WalletMiddlewareServer {
           obj['root'] = obj[key]
           break
 
+        case 'logs':
+          const logs: Array<Object> = <Array<Object>>obj['logs']
+          logs.forEach((_log, index) => {
+            obj['logs'][index] = {
+              ...obj['logs'][index],
+              logIndex: `0x${index.toString(16)}`,
+              transactionIndex: obj.transactionIndex,
+              transactionHash: obj.transactionHash,
+              blockNumber: obj.epochNumber,
+              blockHash: obj.blockHash
+            }
+          })
+          break;
+
         case 'status':
         case 'outcomeStatus':
           // In Cfx: "0" => tx ok,     "1" => tx failed (see http://developer.confluxnetwork.org/docs/js-conflux-sdk/docs/javascript_sdk/#confluxprototypegettransactionreceipt)
