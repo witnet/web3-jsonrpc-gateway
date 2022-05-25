@@ -38,6 +38,7 @@
     "metis:rinkeby": "cross-env-shell ETHERS_ESTIMATE_GAS_PRICE=false ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_GAS_LIMIT=30000000 node dist/src/bin/ethers https://stardust.metis.io/?owner=588 8536",
     "metis:mainnet": "cross-env-shell ETHERS_ESTIMATE_GAS_PRICE=false ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_GAS_LIMIT=50000000 node dist/src/bin/ethers https://andromeda.metis.io/?owner=1088 9536",
     "moonbeam:moonbase": "cross-env-shell ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=false ETHERS_GAS_PRICE=50000000000 ETHERS_GAS_LIMIT=8000000 ETHERS_MOCK_FILTERS=true node dist/src/bin/ethers https://rpc.testnet.moonbeam.network 8531",
+    "moonbeam:moonriver": "cross-env-shell ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=false ETHERS_GAS_PRICE=50000000000 ETHERS_GAS_LIMIT=8000000 ETHERS_MOCK_FILTERS=true node dist/src/bin/ethers https://rpc.api.moonriver.moonbeam.network 7531",
     "moonbeam:mainnet": "cross-env-shell ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=false ETHERS_GAS_PRICE=100000000000 ETHERS_GAS_LIMIT=8000000 ETHERS_MOCK_FILTERS=true node dist/src/bin/ethers https://rpc.api.moonbeam.network 9531",
     "okxchain:testnet": "cross-env-shell ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_GAS_LIMIT=8000000 node dist/src/bin/ethers https://exchaintestrpc.okex.org 8528",
     "okxchain:mainnet": "cross-env-shell ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_GAS_LIMIT=8000000 node dist/src/bin/ethers https://exchainrpc.okex.org 9528",
