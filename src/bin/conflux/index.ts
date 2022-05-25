@@ -45,6 +45,14 @@ if (!privateKeys || privateKeys.length == 0) {
   )
 }
 
+// Optional: Number of blocks before EVM's latest state on which EVM calls will be perfomed
+let confirmationEpochs
+if (process.env.CONFLUX_CONFIRMATION_EPOCHS) {
+  confirmationEpochs = parseInt(process.env.CONFLUX_CONFIRMATION_EPOCHS)
+} else {
+  confirmationEpochs = 0
+}
+
 // Optional: default gas price to be used before signing a transaction, if not specified by the caller.
 let defaultGasPrice
 if (process.env.CONFLUX_GAS_PRICE) {
@@ -66,6 +74,9 @@ const estimateGasPrice: boolean = JSON.parse(
   process.env.CONFLUX_ESTIMATE_GAS_PRICE || 'false'
 )
 
+// Optional: Epoch number tag to be used as default value on those RPC methods that may require it.
+const epochLabel = process.env.CONFLUX_DEFAULT_EPOCH_LABEL || "latest_finalized"
+
 console.log('='.repeat(120))
 console.log(
   `${packageData.name} v${packageData.version} (js-conflux-sdk: ${packageData.dependencies['js-conflux-sdk']})`
@@ -76,9 +87,11 @@ new WalletMiddlewareServer(
   providerUrl,
   networkId,
   privateKeys,
+  confirmationEpochs,
   defaultGasLimit,
   defaultGasPrice,
-  estimateGasPrice
+  estimateGasPrice,
+  epochLabel
 )
   .initialize()
   .listen(port)

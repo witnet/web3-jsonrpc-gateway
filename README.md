@@ -64,9 +64,11 @@ Required environment variables:
 
 Optional environment variables:
 
+- `CONFLUX_DEFAULT_EPOCH_LABEL`: default epoch label to be used on read-only RPC calls, if none is specified by the caller; this variable will default to `"latest_finalized"` if none is set.
 - `CONFLUX_ESTIMATE_GAS_PRICE`: if set to `true`, the provider will be asked to estimate the gas price, before signing the transaction; if the provider-estimated gas price is greater than `CONFLUX_GAS_PRICE`, the transaction will be rejected by the gateway.
 - `CONFLUX_GAS_LIMIT`: default gas limit to be used before signing a transaction, if not specified by the caller.
 - `CONFLUX_GAS_PRICE`: default gas price to be used before signing a transaction, if not specified by the caller.
+- `CONFLUX_CONFIRMATION_EPOCHS`: number of blocks before current epoch number upon which read-only RPC calls will be bound to; this variable defaults to zero.
 - `LOG_LEVEL`: max log level to be traced, can be any of the following: `error`, `warn`, `info`, `http`, `verbose`, `debug`, `silly`. If not specified, `verbose` will apply.
 
 ### Generic destination providers:

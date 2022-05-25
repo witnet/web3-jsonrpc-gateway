@@ -2,8 +2,8 @@ import express, { Express } from 'express'
 import cors from 'cors'
 import {
   Conflux,
-  format as confluxFormat,
-  TransactionOption
+  TransactionConfig as TransactionOption,
+  format as confluxFormat
 } from 'js-conflux-sdk'
 import { ethers } from 'ethers'
 import { logger, SocketParams, traceKeyValue } from '../Logger'
@@ -50,17 +50,21 @@ export class WalletMiddlewareServer {
     url: string,
     networkId: number,
     privateKeys: string[],
+    confirmationEpochs: number,
     defaultGas: BigInt,
     defaultGasPrice: number,
-    estimateGasPrice: boolean
+    estimateGasPrice: boolean,
+    epochLabel: string
   ) {
     this.expressServer = express()
 
     this.wrapper = new WalletWrapper(
       networkId,
       privateKeys,
+      confirmationEpochs,
       defaultGas,
       estimateGasPrice,
+      epochLabel,
       new Conflux({ url, networkId, defaultGasPrice })
     )
 
@@ -91,13 +95,15 @@ export class WalletMiddlewareServer {
     }
 
     traceKeyValue('Conflux provider', [
-      ['Network id', networkId],
-      ['Provider URL', url],
-      ['Def. gas limit', defaultGas],
+      ['Network id       ', networkId],
+      ['Provider URL     ', url],
+      ['Def. gas limit   ', defaultGas],
       [
-        'Def. gas price',
+        'Def. gas price    ',
         estimateGasPrice ? '(self-estimated)' : defaultGasPrice
-      ]
+      ],
+      ['Def. epoch tag   ', epochLabel],
+      ['Epochs interleave', confirmationEpochs]
     ])
 
     return this
@@ -410,7 +416,7 @@ export class WalletMiddlewareServer {
   translateTag (tag: string) {
     switch (tag) {
       case 'latest':
-        return 'latest_state'
+        return this.wrapper.epochLabel
       case 'pending':
         return 'latest_checkpoint'
       default:
