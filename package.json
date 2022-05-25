@@ -31,6 +31,7 @@
     "ethereum:mainnet": "node dist/src/bin/ethers/infura 9545 homestead",
     "ethereum:rinkeby": "node dist/src/bin/ethers/infura 8544 rinkeby",
     "harmony:testnet#0": "cross-env-shell ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_GAS_PRICE=33000000000 node dist/src/bin/ethers https://api.s0.b.hmny.io 8534",
+    "kava:testnet": "node dist/src/bin/ethers https://evm.evm-alpha.kava.io 8526",
     "kcc:testnet": "node dist/src/bin/ethers https://rpc-testnet.kcc.network 8537",
     "kcc:mainnet": "node dist/src/bin/ethers https://rpc-mainnet.kcc.network 9537",
     "klaytn:testnet": "cross-env-shell ETHERS_GAS_PRICE=0 ETHERS_MOCK_FILTERS=true node dist/src/bin/ethers https://public-node-api.klaytnapi.com/v1/baobab 8527",
