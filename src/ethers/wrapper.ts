@@ -16,6 +16,7 @@ interface TransactionParams {
  * `eth-json-rpc-middleware`.
  */
 class WalletWrapper {
+  chainId: number
   wallets: Wallet[]
   provider: ethers.providers.JsonRpcProvider
   defaultGasPrice!: number
@@ -51,6 +52,7 @@ class WalletWrapper {
     this.estimateGasLimit = estimate_gas_limit
     this.estimateGasPrice = estimate_gas_price
     this.gasPriceFactor = gas_price_factor
+    this.chainId = 0
   }
 
   async composeTransaction (
@@ -76,6 +78,10 @@ class WalletWrapper {
         }
       }
     }
+    // Get chainId for the first time, only:
+    if (!this.chainId) {
+      this.chainId = await wallet?.getChainId()
+    }
     // Compose actual transaction:
     let tx: ethers.providers.TransactionRequest = {
       from: params.from,
@@ -84,6 +90,7 @@ class WalletWrapper {
       data: params.data,
       gasPrice: params.gasPrice,
       gasLimit: params.gas,
+      chainId: this.chainId
     }
     if (getNonce) {
       tx = {
@@ -109,6 +116,10 @@ class WalletWrapper {
     await logger.verbose({
       socket,
       message: `> Value:     ${tx.value || 0} wei`
+    })
+    await logger.verbose({
+      socket,
+      message: `> ChainId:   ${tx.chainId}`
     })
     return tx
   }
