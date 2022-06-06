@@ -49,6 +49,7 @@ Optional environment variables:
 - `CELO_GAS_LIMIT_FACTOR`: factor by which the provider-estimated gas limit will be multiplied, before signing transactions.
 - `CELO_GAS_PRICE_FACTOR`: factor by which the provider-estimated gas price minimum will be multiplied, before signing transactions.
 - `CELO_GAS_PRICE_MAX`: maximum gas price the gateway is allowed to bid when signing transactions.
+- `EVM_CALL_INTERLEAVE_BLOCKS`: number of blocks before latest knwon upon which EVM read-only calls will be bound to; this variable defaults to zero.
 
 ### Conflux-compatible destination providers:
 

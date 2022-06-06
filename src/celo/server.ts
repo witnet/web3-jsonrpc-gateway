@@ -15,7 +15,7 @@ export class WalletMiddlewareServer {
   constructor (
     url: string,
     networkId: number,
-    privateKey: string,
+    interleaveBlocks: number,
     feeCurrency: string | undefined,
     gasLimitFactor: number,
     gasPriceFactor: number,
@@ -25,7 +25,7 @@ export class WalletMiddlewareServer {
     this.wrapper = new WalletWrapper(
       url,
       networkId,
-      privateKey,
+      interleaveBlocks,
       feeCurrency,
       gasLimitFactor,
       gasPriceFactor,
@@ -47,7 +47,8 @@ export class WalletMiddlewareServer {
         `${maxPrice
           .toString()
           .replace(/\B(?=(\d{3})+(?!\d))/g, ',')} weis / g.u.`
-      ]
+      ],
+      ['Interleave', `${interleaveBlocks} blocks`]
     ])
     return this
   }
@@ -79,7 +80,10 @@ export class WalletMiddlewareServer {
         })
 
         const handlers: { [K: string]: any } = {
-          eth_accounts: this.wrapper.getAccounts,
+          eth_accounts: this.wrapper.processEthAccounts,
+          eth_call: this.wrapper.processEthCall,
+          eth_estimateGas: this.wrapper.processEthEstimateGas,
+          eth_gasPrice: this.wrapper.processEthGasPrice,
           eth_sendTransaction: this.wrapper.processTransaction,
           eth_sign: this.wrapper.processEthSignMessage
         }
@@ -99,8 +103,8 @@ export class WalletMiddlewareServer {
         try {
           if (request.method in handlers) {
             result = await handlers[request.method].bind(this.wrapper)(
-              ...(request.params || []),
-              socket
+              socket,
+              ...(request.params || [])
             )
           } else {
             result = await this.wrapper.provider.send(

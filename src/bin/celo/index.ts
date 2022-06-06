@@ -45,6 +45,12 @@ if (!privateKey) {
   )
 }
 
+// Optional: Number of blocks before EVM's latest state on which EVM calls will be perfomed
+let interleaveBlocks = 0
+if (process.env.EVM_CALL_INTERLEAVE_BLOCKS) {
+  interleaveBlocks = parseInt(process.env.EVM_CALL_INTERLEAVE_BLOCKS)
+}
+
 // Optional: ERC20 token address to be used for paying tx gas.
 const feeCurrency = process.env.CELO_FEE_CURRENCY
 
@@ -77,7 +83,7 @@ console.log()
 new WalletMiddlewareServer(
   providerUrl,
   networkId,
-  privateKey,
+  interleaveBlocks,
   feeCurrency,
   gasLimitFactor,
   gasPriceFactor,

@@ -20,19 +20,22 @@ interface TransactionParams {
  * Wraps the `ether` wallet / signer abstraction so it's compatible with the wallet middleware of
  * `eth-json-rpc-middleware`.
  */
-class WalletWrapper {
-  kit: ContractKit
+class WalletWrapper {  
   feeCurrency?: string
   gasLimitFactor: number
   gasPriceFactor: number
   gasPriceMax: number
+  interleaveBlocks: number
+  kit: ContractKit
+  lastKnownBlock: number
+  networkId: number
   provider: Provider
   wallet: Wallet
 
   constructor (
     url: string,
     networkId: number,
-    privateKey: string,
+    interleaveBlocks: number,
     feeCurrency: string | undefined,
     gasLimitFactor: number,
     gasPriceFactor: number,
@@ -42,34 +45,13 @@ class WalletWrapper {
     this.feeCurrency = feeCurrency
     this.gasLimitFactor = gasLimitFactor
     this.gasPriceFactor = gasPriceFactor
-    this.provider = new Provider(url, networkId)
     this.gasPriceMax = gasPriceMax
-    this.wallet = new Wallet(privateKey, this.provider)
+    this.interleaveBlocks = interleaveBlocks
     this.kit.connection.addAccount(privateKey)
     // this.kit.setFeeCurrency(CeloContract.GoldToken)
-  }
-
-  /**
-   * Gets addresses of all managed wallets.
-   */
-  async getAccounts (): Promise<string[]> {
-    return [await this.wallet.getAddress()]
-  }
-
-  /**
-   * Signs a message using the wallet's private key.
-   *
-   * @remark Return type is made `any` here because the result needs to be a String, not a `Record`.
-   */
-  async processEthSignMessage (
-    address: string,
-    message: string,
-    socket: SocketParams
-  ): Promise<any> {
-    logger.log({
-      level: 'debug',
-      socket,
-      message: `=> Signing message: ${address} ${message}`
+    this.lastKnownBlock = 0
+    this.networkId = networkId
+    this.provider = new Provider(url, networkId)
     })
     logger.verbose({ socket, message: `> Signing message "${message}"` })
     let res = await this.wallet.signMessage(message)
@@ -77,17 +59,18 @@ class WalletWrapper {
   }
 
   /**
-   * Signs transactinon usings wallet's private key, before forwarding to provider.
-   *
-   * @remark Return type is made `any` here because the result needs to be a String, not a `Record`.
+   * Populate essential transaction parameters, self-estimating gas price and/or gas limit if required.
+   * @param socket Socket parms where the RPC call is coming from.
+   * @param params Input params, to be validated and completed, if necessary.
+   * @returns 
    */
-  async processTransaction (
-    params: TransactionParams,
-    socket: SocketParams
+   async composeTransaction (
+    socket: SocketParams,
+    params: TransactionParams
   ): Promise<any> {
-    // Estimate gas price
-    const gasPriceMinimum: any = await this.wallet.getGasPrice(this.feeCurrency)
-    const gasPrice = Math.ceil(gasPriceMinimum * this.gasPriceFactor) // wiggle room if gas price minimum changes before tx is sent
+
+    // Estimate gas price:
+    const gasPrice = await this.processEthGasPrice()
     if (gasPrice > this.gasPriceMax) {
       let reason = `Estimated gas price exceeds threshold (${this.gasPriceMax})`
       throw {
@@ -100,20 +83,26 @@ class WalletWrapper {
         }
       }
     }
-    // Compose actual transaction:
-    let tx = {
-      from: this.wallet.address,
+
+    // Compose base transaction:
+    let tx: any = {
+      from: params.from || this.getAccounts()[0],
       to: params.to,
       data: params.data,
-      value: params.value,
       gasPrice,
-      nonce: await this.wallet.getTransactionCount(),
-      chainId: await this.wallet.getChainId(),
+      value: params.value,
+      chainId: this.networkId,      
       feeCurrency: this.feeCurrency || ''
     }
-    let gasLimit = await this.wallet.estimateGas(tx)
-    const adjustedGasLimit = gasLimit.mul(this.gasLimitFactor)
 
+    // Estimate gas limit, if not specified, but `params.from` is:
+    const gasLimit = await this.processEthEstimateGas(socket, tx)
+    tx = {
+      ...tx,
+      gasLimit: gasLimit
+    }
+
+    // Trace tx params
     await logger.verbose({ socket, message: `> From:      ${tx.from}` })
     await logger.verbose({
       socket,
@@ -150,26 +139,162 @@ class WalletWrapper {
       message: `> Fee currency: ${tx.feeCurrency || 'default'}`
     })
 
-    // Sign transaction:
-    const signedTx = await this.wallet.signTransaction({
-      ...tx,
-      gasLimit: adjustedGasLimit
-    })
-    await logger.log({
-      level: 'debug',
-      socket,
-      message: `=> Signed tx:  ${signedTx}`
-    })
+    // Return tx object:
+    return tx
+  }
 
-    // Await transaction to be sent:
-    const res = await this.provider.sendTransaction(signedTx)
-    await logger.log({
-      level: 'http',
-      socket,
-      message: `<< ${res.hash}`
-    })
+  /**
+   * Check for possible rollbacks on the EVM side. 
+   * @param socket Socket parms where the RPC call is coming from
+   * @returns Last known block number.
+   */
+  async checkRollbacks(socket: SocketParams): Promise<number> {
+    const block = await this.provider.getBlockNumber()
+    if (block < this.lastKnownBlock) {
+      if (block <= this.lastKnownBlock - this.interleaveBlocks) {
+        logger.warn({
+          socket,
+          message: `Threatening rollback: from epoch ${this.lastKnownBlock} down to ${block}`
+        })
+      } else {
+        logger.warn({
+          socket,
+          message: `Harmless rollback: from epoch ${this.lastKnownBlock} down to ${block}`
+        })
+      }
+    }
+    this.lastKnownBlock = block
+    return block
+  }
+
+  async processEthAccounts (
+    _socket: SocketParams,
+    _params: TransactionParams
+  ): Promise<string[]> {
+    return this.getAccounts()
+  }
+
+  /**
+   * Surrogates call to provider, after estimating/setting gas, if necessary.
+   */
+  async processEthCall (
+    socket: SocketParams,
+    params: TransactionParams
+  ): Promise<any> {
+    // Check for rollbackas, and get block tag:
+    const blockTag = await this.checkRollbacks(socket) - this.interleaveBlocks
+    logger.verbose({ socket, message: `> Block tag: ${this.lastKnownBlock} --> ${blockTag}` })
+
+    // Compose base transaction:
+    const tx = await this.composeTransaction(socket, params)
+
+    // Make call:
+    return await this.provider.call(tx, blockTag)
+  }
+
+  /**
+   * Estimates gas limit by multiplying configured gasLimitFactor.
+   * @param _socket 
+   * @param params Transaction params.
+   * @returns 
+   */
+  async processEthEstimateGas (
+    _socket: SocketParams,
+    params: TransactionParams
+  ): Promise<any> {
+    // Compose transaction
+    let tx: any = {
+      from: params.from || this.getAccounts()[0],
+      to: params.to,
+      data: params.data,
+      value: params.value,
+      chainId: this.networkId,
+      feeCurrency: this.feeCurrency || ''
+    }
+    const gasLimit: BigNumber = await this.provider.estimateGas(tx)
+    const res = gasLimit.mul(this.gasLimitFactor)
+    return res.toHexString()
+  }
+
+  /**
+   * Estimates current gas price.
+   */
+  async processEthGasPrice (): Promise<any> {
+    const gasPriceMinimum: any = await this.provider.getGasPrice(this.feeCurrency)
+    return `0x${Math.ceil(gasPriceMinimum * this.gasPriceFactor).toString(16)}`
+  }
+
+  /**
+   * Signs a message using the wallet's private key.
+   *
+   * @remark Return type is made `any` here because the result needs to be a String, not a `Record`.
+   */
+  async processEthSignMessage (
+    socket: SocketParams,
+    address: string,
+    message: string,
+  ): Promise<any> {
+    const wallet = await this.getAccount(address)
+    if (!wallet) {
+      let reason = `No private key available as to sign messages from '${address}'`
+      throw {
+        reason,
+        body: {
+          error: {
+            code: -32000,
+            message: reason
+          }
+        }
+      }
+    }
+    logger.verbose({ socket, message: `> Sigining message "${message}" from ${address}...` })
+    return wallet?.signMessage(message)
+  }
+
+  /**
+   * Signs transactinon usings wallet's private key, before forwarding to provider.
+   *
+   * @remark Return type is made `any` here because the result needs to be a String, not a `Record`.
+   */
+  async processTransaction (
+    socket: SocketParams,
+    params: TransactionParams
+  ): Promise<any> {
+    // Check for rollbacks (and just trace a warning message if detected):
+    this.checkRollbacks(socket)
+
+    // Compose transaction
+    let tx: any = await this.composeTransaction(socket, params)
+
+    // Fetch Account interaction object:
+    const account = this.getAccount(tx.from)
+    if (!account) {
+      let reason = `No private key available as to sign messages from '${tx.from}'`
+      throw {
+        reason,
+        body: {
+          error: {
+            code: -32000,
+            message: reason
+          }
+        }
+      }
+    }
+
+    // Add current nonce:
+    tx = {
+      ...tx,
+      nonce: await account?.getTransactionCount()
+    }
+    await logger.verbose({ socket, message: `> Nonce:     ${tx.nonce}` })
+    
+    // Sign transaction:
+    const signedTx = await account?.signTransaction(tx)
+    await logger.debug({ socket, message: `=> Signed tx: ${signedTx}` })
 
     // Return transaction hash:
+    const res = await this.provider.sendTransaction(signedTx)
+    await logger.debug({ socket, message: `<= ${JSON.stringify(res)}` })
     return res.hash
   }
 }
