@@ -90,11 +90,22 @@ class WalletWrapper {
     await logger.verbose({ socket, message: `> Value:     ${tx.value || 0} wei` })
     await logger.verbose({ socket, message: `> ChainId:   ${tx.chainId}` })
 
+    // Complete tx gas price, if necessary:
+    if (params.from && !params.gasPrice) {
       tx.gasPrice = (await this.getGasPrice(tx)).toHexString()
+    } else if (params.gasPrice) {
+      tx.gasPrice = params.gasPrice
+    }
     if (tx.gasPrice) {
       await logger.verbose({ socket, message: `> Gas price: ${tx.gasPrice}` })
     }
+
+    // Complete tx gas limit, if necessary:    
+    if (params.from && !params.gas) {
       tx.gasLimit = (await this.getGasLimit(tx)).toHexString()
+    } else if (params.gas) {
+      tx.gasLimit = params.gas
+    }
     if (tx.gasLimit) {
       await logger.verbose({ socket, message: `> Gas limit: ${tx.gasLimit}` })
     }
