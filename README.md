@@ -41,7 +41,7 @@ Required environment variables:
 - `PORT`: listening port for the server. Can also be passed from command-line as first parameter.
 - `NETWORK`: Celo providers currently supports: `44787` for testnet, and `42220` for mainnet.
 - `PROVIDER_URL`: actual URL of the Web3 JSON-RPC provider.
-- `PRIVATE_KEY`: the private key to use for generation the server's own wrapped wallet.
+- `PRIVATE_KEYS`: array of private keys to be used for signing transactions.
 
 Optional environment variables:
 

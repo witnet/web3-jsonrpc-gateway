@@ -15,6 +15,7 @@ export class WalletMiddlewareServer {
   constructor (
     url: string,
     networkId: number,
+    privateKeys: string[],
     interleaveBlocks: number,
     feeCurrency: string | undefined,
     gasLimitFactor: number,
@@ -25,6 +26,7 @@ export class WalletMiddlewareServer {
     this.wrapper = new WalletWrapper(
       url,
       networkId,
+      privateKeys,
       interleaveBlocks,
       feeCurrency,
       gasLimitFactor,
@@ -193,7 +195,7 @@ export class WalletMiddlewareServer {
       console.error(e)
       process.exit(-1)
     }
-    traceKeyValue('Celo contracts', [
+    await traceKeyValue('Celo contracts', [
       [
         'GsPriceMinimum',
         await this.wrapper.kit.registry.addressFor(CeloContract.GasPriceMinimum)
@@ -210,17 +212,22 @@ export class WalletMiddlewareServer {
         'StableTokenEUR',
         await this.wrapper.kit.registry.addressFor(CeloContract.StableTokenEUR)
       ]
-    ])
-    const balance: any = await this.wrapper.wallet.getBalance()
+    ]);
+    
     const decimals: number = await (
-      await this.wrapper.kit.contracts.getGoldToken()
-    ).decimals()
-    traceKeyValue('Celo wallet', [
-      ['Address', await this.wrapper.wallet.getAddress()],
-      ['Balance', `${balance / 10 ** decimals} CELO`],
-      ['Chainid', await this.wrapper.wallet.getChainId()],
-      ['Nonce  ', await this.wrapper.wallet.getTransactionCount()]
-    ])
+        await this.wrapper.kit.contracts.getGoldToken()
+      ).decimals()
+    
+    this.wrapper.wallets.forEach(async (wallet, index) => {
+      const balance: any = await wallet.getBalance()      
+      await traceKeyValue(`Celo wallet #${index}`, [
+        ['Address', await wallet.getAddress()],
+        ['Balance', `${balance / 10 ** decimals} CELO`],
+        ['Chainid', await wallet.getChainId()],
+        ['Nonce  ', await wallet.getTransactionCount()]
+      ])
+    })
+    
     console.log(
       `Listening on ${hostname ||
         '0.0.0.0'}:${port} [${logger.level.toUpperCase()}]\n`

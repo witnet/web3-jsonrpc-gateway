@@ -30,32 +30,33 @@ class WalletWrapper {
   lastKnownBlock: number
   networkId: number
   provider: Provider
-  wallet: Wallet
+  wallets: Wallet[]
 
   constructor (
     url: string,
     networkId: number,
+    privateKeys: string[],
     interleaveBlocks: number,
     feeCurrency: string | undefined,
     gasLimitFactor: number,
     gasPriceFactor: number,
     gasPriceMax: number
   ) {
-    this.kit = newKit(url)
     this.feeCurrency = feeCurrency
     this.gasLimitFactor = gasLimitFactor
     this.gasPriceFactor = gasPriceFactor
     this.gasPriceMax = gasPriceMax
     this.interleaveBlocks = interleaveBlocks
-    this.kit.connection.addAccount(privateKey)
+    this.kit = newKit(url)
     // this.kit.setFeeCurrency(CeloContract.GoldToken)
     this.lastKnownBlock = 0
     this.networkId = networkId
     this.provider = new Provider(url, networkId)
+    this.wallets = []
+    privateKeys.forEach(privateKey => {
+      this.kit.connection.addAccount(privateKey)
+      this.wallets.push(new Wallet(privateKey, this.provider))
     })
-    logger.verbose({ socket, message: `> Signing message "${message}"` })
-    let res = await this.wallet.signMessage(message)
-    return res
   }
 
   /**
@@ -165,6 +166,20 @@ class WalletWrapper {
     }
     this.lastKnownBlock = block
     return block
+  }
+
+  /**
+   * Gets Wallet interaction object of given address, if available.
+   */
+  getAccount (address: string): Wallet | undefined {
+    return this.wallets.find(wallet => wallet.address.toLowerCase() === address.toLowerCase())
+  }
+
+  /**
+   * Gets addresses of all managed wallets.
+   */
+  getAccounts (): string[] {
+    return this.wallets.map(wallet => wallet.address)
   }
 
   async processEthAccounts (
