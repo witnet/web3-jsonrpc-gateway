@@ -60,8 +60,13 @@ let gas_limit = 6721975
 if (process.env.INFURA_GAS_LIMIT) {
   gas_limit = parseInt(process.env.INFURA_GAS_LIMIT)
 }
+
+// Optional: number of wallet addresses to be handled by the server, derived from path '`m/44'/60'/0'/0/*`'.
+let num_addresses
+if (process.env.INFURA_NUM_ADDRESSES) {
+  num_addresses = parseInt(process.env.INFURA_NUM_ADDRESSES)
 } else {
-  gas_limit = 6721975
+  num_addresses = 5
 }
 
 console.log('='.repeat(120))
@@ -82,7 +87,7 @@ new WalletMiddlewareServer(
   gas_price,
   gas_limit,
   false, // force defaults
-  1, // number of addresses
+  num_addresses, // number of addresses
   false, // estimate gas limit
   false, // estimate gas price
   false, // always synced
