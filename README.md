@@ -28,6 +28,7 @@ Optional environment variables:
 - `EVM_CALL_INTERLEAVE_BLOCKS`: number of blocks before latest knwon upon which EVM read-only calls will be bound to; this variable defaults to zero.
 - `INFURA_GAS_LIMIT`: default gas limit to be used before signing a transaction, if not specified by the caller.
 - `INFURA_GAS_PRICE`: default gas price to be used before signing a transaction, if not specified by the caller.
+- `INFURA_NUM_ADDRESSES`: number of wallet addresses to be handled by the gateway, derived from path '`m/44'/60'/0'/0/*`'.
 - `LOG_LEVEL`: max log level to be traced, can be any of the following: `error`, `warn`, `info`, `http`, `verbose`, `debug`, `silly`. If not specified, `verbose` will apply.
 
 ### Celo-compatible destination providers:
@@ -102,6 +103,7 @@ Optional environment variables:
 - `ETHERS_GAS_PRICE`: default gas price to be used before signing a transaction, if not specified by the caller.
 - `ETHERS_GAS_PRICE_FACTOR`: multiplier applied to estimated gas price, if `ETHERS_ESTIMATE_GAS_PRICE` is `true`.
 - `ETHERS_MOCK_FILTERS`: makes `eth_getFilterChanges` to always return latest known block.
+- `ETHERS_NUM_ADDRESSES`: number of wallet addresses to be handled by the gateway, derived from path '`m/44'/60'/0'/0/*`'.
 - `EVM_CALL_INTERLEAVE_BLOCKS`: number of blocks before latest knwon upon which EVM read-only calls will be bound to; this variable defaults to zero.
 
 ## Pre-configured JSON-RPC provider gateways:
@@ -113,6 +115,7 @@ There are several package scripts at your disposal for you to launch specific ga
 - `EVM_CALL_INTERLEAVE_BLOCKS`: number of blocks before latest knwon upon which EVM read-only calls will be bound to; this variable defaults to zero.
 - `INFURA_PROJECT_ID`: your Infura's project id to be used with `Infura`-connected servers.
 - `LOG_LEVEL`: max log level to be traced, can be any of the following: `error`, `warn`, `info`, `http`, `verbose`, `debug`, `silly`. If not specified, `verbose` will apply.
+- `PRIVATE_KEYS`: array of private keys to be used by `Conflux` and `Celo` -alike providers.
 - `SEED_PHRASE`: seed phrase to be used with either `Infura` or `Ethers.js` providers.
 
 ### Running gateways to Ethereum networks:
