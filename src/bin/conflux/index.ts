@@ -46,11 +46,9 @@ if (!privateKeys || privateKeys.length == 0) {
 }
 
 // Optional: Number of blocks before EVM's latest state on which EVM calls will be perfomed
-let confirmationEpochs
-if (process.env.CONFLUX_CONFIRMATION_EPOCHS) {
-  confirmationEpochs = parseInt(process.env.CONFLUX_CONFIRMATION_EPOCHS)
-} else {
-  confirmationEpochs = 0
+let interleaveEpochs = 0
+if (process.env.EVM_CALL_INTERLEAVE_BLOCKS) {
+  interleaveEpochs = parseInt(process.env.EVM_CALL_INTERLEAVE_BLOCKS)
 }
 
 // Optional: default gas price to be used before signing a transaction, if not specified by the caller.
@@ -87,7 +85,7 @@ new WalletMiddlewareServer(
   providerUrl,
   networkId,
   privateKeys,
-  confirmationEpochs,
+  interleaveEpochs,
   defaultGasLimit,
   defaultGasPrice,
   estimateGasPrice,

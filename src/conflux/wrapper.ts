@@ -21,14 +21,14 @@ export class WalletWrapper {
   defaultGas: BigInt
   epochLabel: EpochNumber
   estimateGasPrice: boolean  
-  confirmationEpochs: number
+  interleaveEpochs: number
   lastKnownEpochNumber: number
   networkId: number
   
   constructor (
     networkId: number,
     privateKeys: string[],
-    confirmationEpochs: number,
+    interleaveEpochs: number,
     defaultGas: BigInt,
     estimateGasPrice: boolean,
     epochLabel: string,
@@ -38,7 +38,7 @@ export class WalletWrapper {
     this.defaultGas = defaultGas
     this.epochLabel = <EPOCH_LABEL>epochLabel
     this.estimateGasPrice = estimateGasPrice    
-    this.confirmationEpochs = confirmationEpochs
+    this.interleaveEpochs = interleaveEpochs
     this.conflux = conflux
     this.accounts = []
     privateKeys.forEach(privateKey => {
@@ -59,10 +59,13 @@ export class WalletWrapper {
     socket: SocketParams
   ): Promise<any> {
     epoch = await this.checkRollbacks(socket)      
-    if (this.confirmationEpochs > 0) {
-      epoch = this.lastKnownEpochNumber - this.confirmationEpochs
+    epoch = this.lastKnownEpochNumber - this.interleaveEpochs
+    if (this.interleaveEpochs > 0) { 
+      logger.verbose({ socket, message: `> Epoch number: ${this.lastKnownEpochNumber} --> ${epoch}` })
+    } else {
+      logger.verbose({ socket, message: `> Epoch number: ${epoch}` })
     }
-    logger.verbose({ socket, message: `> Epoch number: ${epoch}` })
+    
     if (!tx.from) tx.from = this.getAccounts()[0]
     if (tx.from) logger.info({ socket, message: `> From: ${tx.from}` })
     if (tx.to)
@@ -90,16 +93,16 @@ export class WalletWrapper {
   /**
    * Check for possible rollbacks on the EVM side. 
    * @param socket Socket parms where the RPC call is coming from
-   * @returns True if a compromising rollback is detected.
+   * @returns Last known epoch number.
    */
   async checkRollbacks(socket: SocketParams): Promise<number> {
     const epoch = await this.conflux.getEpochNumber(this.epochLabel)
     if (epoch < this.lastKnownEpochNumber) {
-      if (epoch <= this.lastKnownEpochNumber - this.confirmationEpochs) {
-        logger.error({socket, message: `Detected compromising rollback: from epoch ${this.lastKnownEpochNumber} down to ${epoch}`})
+      if (epoch <= this.lastKnownEpochNumber - this.interleaveEpochs) {
+        logger.warn({socket, message: `Threatening rollback: from epoch ${this.lastKnownEpochNumber} down to ${epoch}`})
 
       } else {
-        logger.warn({socket, message: `Filtered possible rollback: from epoch ${this.lastKnownEpochNumber} down to ${epoch}`})
+        logger.info({socket, message: `Harmless rollback: from epoch ${this.lastKnownEpochNumber} down to ${epoch}`})
       }
     }
     this.lastKnownEpochNumber = epoch

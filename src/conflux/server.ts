@@ -50,7 +50,7 @@ export class WalletMiddlewareServer {
     url: string,
     networkId: number,
     privateKeys: string[],
-    confirmationEpochs: number,
+    interleaveEpochs: number,
     defaultGas: BigInt,
     defaultGasPrice: number,
     estimateGasPrice: boolean,
@@ -61,7 +61,7 @@ export class WalletMiddlewareServer {
     this.wrapper = new WalletWrapper(
       networkId,
       privateKeys,
-      confirmationEpochs,
+      interleaveEpochs,
       defaultGas,
       estimateGasPrice,
       epochLabel,
@@ -103,7 +103,7 @@ export class WalletMiddlewareServer {
         estimateGasPrice ? '(self-estimated)' : defaultGasPrice
       ],
       ['Def. epoch tag   ', epochLabel],
-      ['Epochs interleave', confirmationEpochs]
+      ['Epochs interleave', interleaveEpochs]
     ])
 
     return this
