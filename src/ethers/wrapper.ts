@@ -16,19 +16,21 @@ interface TransactionParams {
  * `eth-json-rpc-middleware`.
  */
 class WalletWrapper {
-  chainId: number
-  wallets: Wallet[]
-  provider: ethers.providers.JsonRpcProvider
   defaultGasPrice!: number
   defaultGasLimit!: number
   estimateGasLimit: boolean
   estimateGasPrice: boolean
   forceDefaults: boolean
   gasPriceFactor!: number
+  interleaveBlocks: number
+  lastKnownBlock: number
+  provider: ethers.providers.JsonRpcProvider
+  wallets: Wallet[]
 
   constructor (
-    seed_phrase: string,
     provider: ethers.providers.JsonRpcProvider,
+    seed_phrase: string,
+    interleave_blocks: number,
     gas_price: number,
     gas_limit: number,
     force_defaults: boolean,
@@ -37,91 +39,92 @@ class WalletWrapper {
     estimate_gas_price: boolean,
     gas_price_factor: number
   ) {
-    this.wallets = []
-    for (let ix = 0; ix < num_addresses; ix++) {
-      this.wallets.push(
-        Wallet.fromMnemonic(seed_phrase, `m/44'/60'/0'/0/${ix}`).connect(
-          provider
-        )
-      )
-    }
-    this.provider = provider
     this.defaultGasPrice = gas_price
     this.defaultGasLimit = gas_limit
     this.forceDefaults = force_defaults
     this.estimateGasLimit = estimate_gas_limit
     this.estimateGasPrice = estimate_gas_price
     this.gasPriceFactor = gas_price_factor
-    this.chainId = 0
+    this.interleaveBlocks = interleave_blocks
+    this.lastKnownBlock = 0
+    this.provider = provider
+    this.wallets = []
+    for (let ix = 0; ix < num_addresses; ix ++) {
+      this.wallets.push(
+        Wallet.fromMnemonic(seed_phrase, `m/44'/60'/0'/0/${ix}`).connect(
+          provider
+        )
+      )
+    }
   }
 
+  /**
+   * Populate essential transaction parameters, self-estimating gas price and/or gas limit if required.
+   * @param socket Socket parms where the RPC call is coming from.
+   * @param params Input params, to be validated and completed, if necessary.
+   * @returns 
+   */
   async composeTransaction (
     socket: SocketParams,
-    params: TransactionParams,
-    getNonce: boolean
+    params: TransactionParams
   ): Promise<ethers.providers.TransactionRequest> {
-    // Complete tx from, if necessary:
-    if (!params.from) {
-      params.from = (await this.getAccounts())[0]
-    }
-    // Get wallet by address
-    let wallet: Wallet | undefined = await this.getWalletByAddress(params.from)
-    if (wallet == undefined) {
-      let reason = `No private key available as to sign transactions from '${params.from}'`
-      throw {
-        reason,
-        body: {
-          error: {
-            code: -32000,
-            message: reason
-          }
-        }
-      }
-    }
-    // Get chainId for the first time, only:
-    if (!this.chainId) {
-      this.chainId = await wallet?.getChainId()
-    }
+    
     // Compose actual transaction:
     let tx: ethers.providers.TransactionRequest = {
       from: params.from,
       to: params.to,
       value: params.value,
       data: params.data,
-      gasPrice: params.gasPrice,
-      gasLimit: params.gas,
-      chainId: this.chainId
+      nonce: params.nonce,
+      chainId: this.provider.network.chainId
     }
-    if (getNonce) {
-      tx = {
-        ...tx,
-        nonce: await wallet.getTransactionCount(),
-      }
-    }
-    // Trace tx params
-    await logger.verbose({ socket, message: `> From:      ${tx.from}` })
-    await logger.verbose({
-      socket,
-      message: `> To:        ${tx.to || '(deploy)'}`
-    })
-    await logger.verbose({
-      socket,
+    if (tx.from) {
+      await logger.verbose({ socket, message: `> From:      ${tx.from}` })
+    }    
+    await logger.verbose({ socket, message: `> To:        ${tx.to || '(deploy)'}` })
+    await logger.verbose({ socket,
       message: `> Data:      ${
         tx.data ? tx.data.toString().substring(0, 10) + '...' : '(transfer)'
       }`
     })
-    if (tx.nonce) {
-      await logger.verbose({ socket, message: `> Nonce:     ${tx.nonce}` })
+    await logger.verbose({ socket, message: `> Value:     ${tx.value || 0} wei` })
+    await logger.verbose({ socket, message: `> ChainId:   ${tx.chainId}` })
+
+      tx.gasPrice = (await this.getGasPrice(tx)).toHexString()
+    if (tx.gasPrice) {
+      await logger.verbose({ socket, message: `> Gas price: ${tx.gasPrice}` })
     }
-    await logger.verbose({
-      socket,
-      message: `> Value:     ${tx.value || 0} wei`
-    })
-    await logger.verbose({
-      socket,
-      message: `> ChainId:   ${tx.chainId}`
-    })
+      tx.gasLimit = (await this.getGasLimit(tx)).toHexString()
+    if (tx.gasLimit) {
+      await logger.verbose({ socket, message: `> Gas limit: ${tx.gasLimit}` })
+    }
+
+    // Return tx object
     return tx
+  }
+
+  /**
+   * Check for possible rollbacks on the EVM side. 
+   * @param socket Socket parms where the RPC call is coming from
+   * @returns Last known block number.
+   */
+  async checkRollbacks(socket: SocketParams): Promise<number> {
+    const block = await this.provider.getBlockNumber()
+    if (block < this.lastKnownBlock) {
+      if (block <= this.lastKnownBlock - this.interleaveBlocks) {
+        logger.warn({
+          socket,
+          message: `Threatening rollback: from epoch ${this.lastKnownBlock} down to ${block}`
+        })
+      } else {
+        logger.warn({
+          socket,
+          message: `Harmelss rollback: from epoch ${this.lastKnownBlock} down to ${block}`
+        })
+      }
+    }
+    this.lastKnownBlock = block
+    return block
   }
 
   /**
@@ -280,25 +283,19 @@ class WalletWrapper {
     socket: SocketParams,
     params: TransactionParams
   ): Promise<any> {
+    // Check for rollbacks, and get block tag:
+    const blockTag = await this.checkRollbacks(socket) - this.interleaveBlocks
+    if (this.interleaveBlocks > 0) {
+      await logger.verbose({ socket, message: `> Block tag: ${this.lastKnownBlock} --> ${blockTag}` })  
+    } else {
+      await logger.verbose({ socket, message: `> Block tag: ${this.lastKnownBlock}` })
+    }    
+
     // Compose base transaction:
-    let tx: ethers.providers.TransactionRequest = await this.composeTransaction(
-      socket,
-      params,
-      false
-    )
-    // Complete tx gas price, if necessary:
-    if (params.gasPrice) {
-      tx.gasPrice = params.gasPrice
-      tx.gasPrice = (await this.getGasPrice(tx)).toHexString()
-      await logger.verbose({ socket, message: `> Gas price: ${tx.gasPrice}` })
-    }
-    // Complete tx gas limit, if necessary:
-    if (params.gas) {
-      tx.gasLimit = params.gas
-      tx.gasLimit = (await this.getGasLimit(tx)).toHexString()
-      await logger.verbose({ socket, message: `> Gas limit: ${tx.gasLimit}` })
-    }
-    return await this.provider.call(tx)
+    let tx: ethers.providers.TransactionRequest = await this.composeTransaction(socket, params)
+  
+    // Make call:
+    return await this.provider.call(tx, blockTag)
   }
 
   /**
@@ -311,17 +308,9 @@ class WalletWrapper {
     message: string,
     socket: SocketParams
   ): Promise<any> {
-    logger.log({
-      level: 'debug',
-      socket,
-      message: `=> Signing message: ${address} ${message}`
-    })
+    logger.verbose({ socket, message: `=> Signing message: ${address} ${message}`})
     let wallet: Wallet | undefined = await this.getWalletByAddress(address)
-    if (wallet != undefined) {
-      logger.verbose({ socket, message: `> Signing message "${message}"` })
-      let res = await wallet.signMessage(message)
-      return res
-    } else {
+    if (!wallet) {
       let reason = `No private key available as to sign messages from '${address}'`
       throw {
         reason,
@@ -333,6 +322,8 @@ class WalletWrapper {
         }
       }
     }
+    logger.verbose({ socket, message: `> Signing message "${message}"` })
+    return wallet?.signMessage(message)
   }
 
   /**
@@ -344,24 +335,16 @@ class WalletWrapper {
     socket: SocketParams,
     params: TransactionParams
   ): Promise<any> {
-    // Compose base transaction:
-    let tx: ethers.providers.TransactionRequest = await this.composeTransaction(
-      socket,
-      params,
-      true
-    )
-    tx.gasPrice = params.gasPrice
-    tx.gasPrice = (await this.getGasPrice(tx)).toHexString()
-    await logger.verbose({ socket, message: `> Gas price: ${tx.gasPrice}` })
+    // Check for rollbacks (and just trace a warning message if detected):
+    this.checkRollbacks(socket)
 
-    tx.gasLimit = params.gas
-    tx.gasLimit = (await this.getGasLimit(tx)).toHexString()
-    await logger.verbose({ socket, message: `> Gas limit: ${tx.gasLimit}` })
+    // Compose transaction:
+    let tx: ethers.providers.TransactionRequest = await this.composeTransaction(socket, params)
 
-    // Sign transaction:
-    let wallet: Wallet | undefined = await this.getWalletByAddress(params.from)
-    if (wallet == undefined) {
-      let reason = `No private key available as to sign transactions from '${params.from}'`
+    // Fetch Wallet interaction object:
+    let wallet: Wallet | undefined = await this.getWalletByAddress(tx.from || (await this.getAccounts())[0])
+    if (!wallet) {
+      let reason = `No private key available as to sign messages from '${params.from}'`
       throw {
         reason,
         body: {
@@ -372,22 +355,20 @@ class WalletWrapper {
         }
       }
     }
-    const signedTx = await wallet.signTransaction(tx)
-    await logger.log({
-      level: 'debug',
-      socket,
-      message: `=> Signed tx:  ${signedTx}`
-    })
 
-    // Await transaction to be sent:
-    const res = await this.provider.sendTransaction(signedTx)
-    await logger.log({
-      level: 'http',
-      socket,
-      message: `<< ${res.hash}`
-    })
+    // Add current nonce:
+    if (!tx.nonce) {
+      tx.nonce = await wallet?.getTransactionCount()
+    }    
+    await logger.verbose({ socket, message: `> Nonce:     ${tx.nonce}` })
+
+    // Sign transaction:    
+    const signedTx = await wallet?.signTransaction(tx)
+    await logger.debug({ socket, message: `=> Signed tx:  ${signedTx}` })
 
     // Return transaction hash:
+    const res = await this.provider.sendTransaction(signedTx)
+    await logger.debug({ socket, message: `<= ${res}` })
     return res.hash
   }
 }

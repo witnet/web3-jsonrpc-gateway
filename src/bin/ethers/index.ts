@@ -37,20 +37,22 @@ if (!seed_phrase) {
 // Optional: The network name to connect with. Can also be passed as third parameter.
 const network = process.argv[4] || process.env.NETWORK
 
+// Optional: Number of blocks before EVM's latest state on which EVM calls will be perfomed
+let interleave_blocks = 0
+if (process.env.EVM_CALL_INTERLEAVE_BLOCKS) {
+  interleave_blocks = parseInt(process.env.EVM_CALL_INTERLEAVE_BLOCKS)
+}
+
 // Optional: default gas price to be used before signing a transaction, if not specified by the caller.
-let gas_price
+let gas_price = 20e9
 if (process.env.ETHERS_GAS_PRICE) {
   gas_price = parseInt(process.env.ETHERS_GAS_PRICE)
-} else {
-  gas_price = 20e9
 }
 
 // Optional: default gas limit to be used before signing a transaction, if not specified by the caller.
-let gas_limit
+let gas_limit = 6721975
 if (process.env.ETHERS_GAS_LIMIT) {
   gas_limit = parseInt(process.env.ETHERS_GAS_LIMIT)
-} else {
-  gas_limit = 6721975
 }
 
 // Optional: if set to `true`, the server will set `gasPrice` and `gasLimit` values to the ones set by
@@ -112,8 +114,9 @@ const destinationProvider = new ethers.providers.JsonRpcProvider(
 )
 
 new WalletMiddlewareServer(
-  seed_phrase,
   destinationProvider,
+  seed_phrase,
+  interleave_blocks,  
   gas_price,
   gas_limit,
   force_defaults,

@@ -71,8 +71,9 @@ const destinationProvider = new ethers.providers.InfuraProvider(
 )
 
 new WalletMiddlewareServer(
-  seed_phrase,
   destinationProvider,
+  seed_phrase,
+  interleave_blocks,
   gas_price,
   gas_limit,
   false, // force defaults
@@ -81,7 +82,7 @@ new WalletMiddlewareServer(
   false, // estimate gas price
   false, // always synced
   false, // mock filters
-  1.0 // gas price factor
+  1.0, // gas price factor
 )
   .initialize()
   .listen(port)

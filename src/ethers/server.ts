@@ -16,8 +16,9 @@ class WalletMiddlewareServer {
   wrapper: WalletWrapper
 
   constructor (
-    seed_phrase: string,
     provider: ethers.providers.JsonRpcProvider,
+    seed_phrase: string,    
+    interleave_blocks: number,
     gas_price: number,
     gas_limit: number,
     force_defaults: boolean,
@@ -32,8 +33,9 @@ class WalletMiddlewareServer {
     this.expressServer = express()
     this.mockFilters = mock_filters
     this.wrapper = new WalletWrapper(
-      seed_phrase,
       provider,
+      seed_phrase,
+      interleave_blocks,
       gas_price,
       gas_limit,
       force_defaults,
@@ -62,6 +64,9 @@ class WalletMiddlewareServer {
     ]
     if (gas_price_factor > 0) {
       lines = [...lines, ['Gas price factor', `x ${gas_price_factor}`]]
+    }
+    if (interleave_blocks > 0) {
+      lines = [...lines, ['Interleave blocks', interleave_blocks]]
     }
     traceKeyValue('Provider', lines)
     return this
