@@ -3,6 +3,7 @@ import {
   CeloWallet as Wallet
 } from '@celo-tools/celo-ethers-wrapper'
 import { newKit, ContractKit } from '@celo/contractkit'
+import { BigNumber } from "@ethersproject/bignumber";
 import { logger, SocketParams } from '../Logger'
 
 interface TransactionParams {
@@ -112,11 +113,9 @@ class WalletWrapper {
     await logger.verbose({
       socket,
       message: `> Data:      ${
-        tx.data ? tx.data.substring(0, 10) + '...' : '(transfer)'
+        tx.data ? tx.data.toString().substring(0, 10) + '...' : '(transfer)'
       }`
     })
-    await logger.verbose({ socket, message: `> Nonce:     ${tx.nonce}` })
-    await logger.verbose({ socket, message: `> Chain id:  ${tx.chainId}` })
     await logger.verbose({
       socket,
       message: `> Value:     ${BigInt(tx.value ?? 0)
@@ -125,15 +124,11 @@ class WalletWrapper {
     })
     await logger.verbose({
       socket,
-      message: `> Gas limit: ${adjustedGasLimit
-        .toString()
-        .replace(/\B(?=(\d{3})+(?!\d))/g, ',')} gas`
+      message: `> Gas limit: ${tx.gasLimit.toString()} gas`
     })
     await logger.verbose({
       socket,
-      message: `> Gas price: ${tx.gasPrice
-        .toString()
-        .replace(/\B(?=(\d{3})+(?!\d))/g, ',')} wei / gas`
+      message: `> Gas price: ${tx.gasPrice.toString()} wei / gas`
     })
     await logger.verbose({
       socket,
