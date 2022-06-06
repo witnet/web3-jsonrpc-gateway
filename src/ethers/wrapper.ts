@@ -171,7 +171,7 @@ class WalletWrapper {
         }
       }
     } catch (e) {
-      logger.http({ socket, message: `> Exception bypass: ${e}` })
+      logger.warn({ socket, message: `> Exception bypass: ${e}` })
     }
     return res
   }
@@ -232,7 +232,7 @@ class WalletWrapper {
           ? BigNumber.from(this.defaultGasLimit)
           : await this.provider.estimateGas(tx)
       } catch (ex) {
-        const reason = `Unpredictable gas limit. Please, check your balance`
+        const reason = `Unpredictable gas limit: ${ex}`
         throw {
           reason,
           body: {

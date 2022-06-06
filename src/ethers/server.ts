@@ -199,7 +199,7 @@ class WalletMiddlewareServer {
           })
         } else {
           logger.log({
-            level: 'debug',
+            level: 'http',
             socket,
             message: `<< ${JSON.stringify(result)}`
           })
