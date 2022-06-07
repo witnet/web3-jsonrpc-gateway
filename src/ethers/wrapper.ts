@@ -20,7 +20,6 @@ class WalletWrapper {
   defaultGasLimit!: number
   estimateGasLimit: boolean
   estimateGasPrice: boolean
-  forceDefaults: boolean
   gasPriceFactor!: number
   interleaveBlocks: number
   lastKnownBlock: number
@@ -33,7 +32,6 @@ class WalletWrapper {
     interleave_blocks: number,
     gas_price: number,
     gas_limit: number,
-    force_defaults: boolean,
     num_addresses: number,
     estimate_gas_limit: boolean,
     estimate_gas_price: boolean,
@@ -41,7 +39,6 @@ class WalletWrapper {
   ) {
     this.defaultGasPrice = gas_price
     this.defaultGasLimit = gas_limit
-    this.forceDefaults = force_defaults
     this.estimateGasLimit = estimate_gas_limit
     this.estimateGasPrice = estimate_gas_price
     this.gasPriceFactor = gas_price_factor
@@ -92,9 +89,21 @@ class WalletWrapper {
 
     // Complete tx gas price, if necessary:
     if (params.from && !params.gasPrice) {
-      tx.gasPrice = (await this.getGasPrice(tx)).toHexString()
+      tx.gasPrice = (await this.getGasPrice()).toHexString()
     } else if (params.gasPrice) {
       tx.gasPrice = params.gasPrice
+      if (BigNumber.from(tx.gasPrice).gt(BigNumber.from(this.defaultGasPrice))) {
+        const reason = `Provided gas price exceeds threshold (${tx.gasPrice} > ${this.defaultGasPrice})`
+        throw {
+          reason,
+          body: {
+            error: {
+              code: -32099,
+              message: reason
+            }
+          }
+        }
+      }
     }
     if (tx.gasPrice) {
       await logger.verbose({ socket, message: `> Gas price: ${tx.gasPrice}` })
@@ -105,6 +114,18 @@ class WalletWrapper {
       tx.gasLimit = (await this.getGasLimit(tx)).toHexString()
     } else if (params.gas) {
       tx.gasLimit = params.gas
+      if (BigNumber.from(tx.gasLimit).gt(BigNumber.from(this.defaultGasLimit))) {
+        const reason = `Provided gas limit exceeds threshold (${tx.gasLimit} > ${this.defaultGasLimit})`
+        throw {
+          reason,
+          body: {
+            error: {
+              code: -32099,
+              message: reason
+            }
+          }
+        }
+      }
     }
     if (tx.gasLimit) {
       await logger.verbose({ socket, message: `> Gas limit: ${tx.gasLimit}` })
@@ -182,17 +203,13 @@ class WalletWrapper {
    * @param params Transaction params
    * @returns Estimated gas price, as BigNumber
    */
-  async getGasPrice (
-    tx: ethers.providers.TransactionRequest
-  ): Promise<BigNumber> {
+  async getGasPrice (): Promise<BigNumber> {
     let gasPrice: BigNumber
     if (this.estimateGasPrice) {
       const providerGasPrice: any = BigNumber.from(
         await this.provider.getGasPrice()
       )
-      gasPrice = this.forceDefaults
-        ? BigNumber.from(this.defaultGasPrice)
-        : BigNumber.from(Math.ceil(providerGasPrice * this.gasPriceFactor))
+      gasPrice = BigNumber.from(Math.ceil(providerGasPrice * this.gasPriceFactor))
       const gasPriceThreshold = BigNumber.from(this.defaultGasPrice)
       if (gasPrice.gt(gasPriceThreshold)) {
         let reason = `Estimated gas price exceeds threshold (${gasPrice} > ${gasPriceThreshold})`
@@ -207,11 +224,7 @@ class WalletWrapper {
         }
       }
     } else {
-      gasPrice = this.forceDefaults
-        ? BigNumber.from(this.defaultGasPrice)
-        : tx.gasPrice
-        ? BigNumber.from(tx.gasPrice)
-        : BigNumber.from(this.defaultGasPrice)
+      gasPrice = BigNumber.from(this.defaultGasPrice)
     }
     return gasPrice
   }
@@ -228,9 +241,7 @@ class WalletWrapper {
     let gasLimit: BigNumber
     if (this.estimateGasLimit) {
       try {
-        gasLimit = this.forceDefaults
-          ? BigNumber.from(this.defaultGasLimit)
-          : await this.provider.estimateGas(tx)
+        gasLimit = await this.provider.estimateGas(tx)
       } catch (ex) {
         const reason = `Unpredictable gas limit: ${ex}`
         throw {
@@ -257,11 +268,7 @@ class WalletWrapper {
         }
       }
     } else {
-      gasLimit = this.forceDefaults
-        ? BigNumber.from(this.defaultGasLimit)
-        : tx.gasLimit
-        ? BigNumber.from(tx.gasLimit)
-        : BigNumber.from(this.defaultGasLimit)
+      gasLimit = BigNumber.from(this.defaultGasLimit)
     }
     return gasLimit
   }

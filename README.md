@@ -26,8 +26,8 @@ Required environment variables:
 Optional environment variables:
 
 - `EVM_CALL_INTERLEAVE_BLOCKS`: number of blocks before latest knwon upon which EVM read-only calls will be bound to; this variable defaults to zero.
-- `INFURA_GAS_LIMIT`: default gas limit to be used before signing a transaction, if not specified by the caller.
-- `INFURA_GAS_PRICE`: maximum acceptable gas price upon estimation from provider.
+- `INFURA_GAS_LIMIT`: default gas limit, if not specified by the caller; or maximum gas limit threshold, otherwise.
+- `INFURA_GAS_PRICE`: default gas price, if not specified by the client; or maximum gas price threshold if either estimated by the provider, or provided by the client.
 - `INFURA_GAS_PRICE_FACTOR`: multiplier applied to gas prices estimated by provider.
 - `INFURA_NUM_ADDRESSES`: number of wallet addresses to be handled by the gateway, derived from path '`m/44'/60'/0'/0/*`'.
 - `LOG_LEVEL`: max log level to be traced, can be any of the following: `error`, `warn`, `info`, `http`, `verbose`, `debug`, `silly`. If not specified, `verbose` will apply.
@@ -99,9 +99,8 @@ Optional environment variables:
 - `ETHERS_ALWAYS_SYNCED`: if set to `true`, the gateway will intercept calls to `eth_syncing` as to return `false` in all cases..
 - `ETHERS_ESTIMATE_GAS_LIMIT`: if set to `true`, the provider will be asked to estimate the gas limit, before signing the transaction; if the provider-estimated gas limit is greater than `ETHERS_GAS_LIMIT`, the transaction will be rejected by the gateway.
 - `ETHERS_ESTIMATE_GAS_PRICE`: if set to `true`, the provider will be asked to estimate the gas price, before signing the transaction; if the provider-estimated gas price is greater than `ETHERS_GAS_PRICE`, the transaction will be rejected by the gateway.
-- `ETHERS_FORCE_DEFAULTS`: if set to `true`, the server will set `gasPrice` and `gasLimit` values to the ones set by respective environment variables, before signing a transaction.
-- `ETHERS_GAS_LIMIT`: default gas limit to be used before signing a transaction, if not specified by the caller.
-- `ETHERS_GAS_PRICE`: default gas price to be used before signing a transaction, if not specified by the caller.
+- `ETHERS_GAS_LIMIT`: default gas limit, if not specified by the client; or maximum gas limit threshold if either estimated by the provider, or provided by the client.
+- `ETHERS_GAS_PRICE`: default gas price, if not specified by the client; or maximum gas price threshold if either estimated by the provider, or provided by the client.
 - `ETHERS_GAS_PRICE_FACTOR`: multiplier applied to estimated gas price, if `ETHERS_ESTIMATE_GAS_PRICE` is `true`.
 - `ETHERS_MOCK_FILTERS`: makes `eth_getFilterChanges` to always return latest known block.
 - `ETHERS_NUM_ADDRESSES`: number of wallet addresses to be handled by the gateway, derived from path '`m/44'/60'/0'/0/*`'.

@@ -50,7 +50,7 @@ if (process.env.EVM_CALL_INTERLEAVE_BLOCKS) {
 }
 
 // Optional: default gas limit to be used before signing a transaction, if not specified by the caller.
-let gas_price = 20e9
+let gas_price = 100e9
 if (process.env.INFURA_GAS_PRICE) {
   gas_price = parseInt(process.env.INFURA_GAS_PRICE)
 }
@@ -92,7 +92,6 @@ new WalletMiddlewareServer(
   interleave_blocks,
   gas_price,
   gas_limit,
-  false, // force defaults
   num_addresses, // number of addresses
   false, // estimate gas limit
   true, // estimate gas price

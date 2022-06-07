@@ -21,7 +21,6 @@ class WalletMiddlewareServer {
     interleave_blocks: number,
     gas_price: number,
     gas_limit: number,
-    force_defaults: boolean,
     num_addresses: number,
     estimate_gas_limit: boolean,
     estimate_gas_price: boolean,
@@ -38,7 +37,6 @@ class WalletMiddlewareServer {
       interleave_blocks,
       gas_price,
       gas_limit,
-      force_defaults,
       num_addresses,
       estimate_gas_limit,
       estimate_gas_price,
@@ -52,21 +50,20 @@ class WalletMiddlewareServer {
           provider.connection.allowGzip ? '(gzip)' : ''
         }`
       ],
-      ['Force defs', force_defaults],
       [
-        'Gas price',
-        estimate_gas_price && !force_defaults ? '(self-estimated)' : gas_price
+        'Gas Price',
+        `${gas_price} ${estimate_gas_price ? "(max)": "(default)"}`
       ],
       [
         'Gas limit',
-        estimate_gas_limit && !force_defaults ? '(self-estimated)' : gas_limit
+        `${gas_limit} ${estimate_gas_limit ? "(max)": "(default)"}`
       ]
     ]
     if (gas_price_factor > 0) {
       lines = [...lines, ['Gas price factor', `x ${gas_price_factor}`]]
     }
     if (interleave_blocks > 0) {
-      lines = [...lines, ['Interleave blocks', interleave_blocks]]
+      lines = [...lines, ['Interleave blocks', interleave_blocks.toString()]]
     }
     traceKeyValue('Provider', lines)
     return this

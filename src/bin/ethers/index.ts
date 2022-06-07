@@ -55,15 +55,6 @@ if (process.env.ETHERS_GAS_LIMIT) {
   gas_limit = parseInt(process.env.ETHERS_GAS_LIMIT)
 }
 
-// Optional: if set to `true`, the server will set `gasPrice` and `gasLimit` values to the ones set by
-// respective environment variables, before signing a transaciton.
-let force_defaults
-if (process.env.ETHERS_FORCE_DEFAULTS) {
-  force_defaults = process.env.ETHERS_FORCE_DEFAULTS === 'true'
-} else {
-  force_defaults = false
-}
-
 // Optional: number of wallet addresses to be handled by the server, derived from path '`m/44'/60'/0'/0/*`'.
 let num_addresses
 if (process.env.ETHERS_NUM_ADDRESSES) {
@@ -119,7 +110,6 @@ new WalletMiddlewareServer(
   interleave_blocks,  
   gas_price,
   gas_limit,
-  force_defaults,
   num_addresses,
   estimate_gas_limit,
   estimate_gas_price,
