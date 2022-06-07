@@ -69,6 +69,12 @@ if (process.env.INFURA_NUM_ADDRESSES) {
   num_addresses = 5
 }
 
+// Optional: gas price factor to be applied to when ETHERS_ESTIMATE_GAS_PRICE is true
+let gas_price_factor = 1.0
+if (process.env.ETHERS_INFURA_PRICE_FACTOR) {
+  gas_price_factor = parseFloat(process.env.ETHERS_INFURA_PRICE_FACTOR)
+}
+
 console.log('='.repeat(120))
 console.log(
   `${packageData.name} v${packageData.version} (ethers: ${packageData.dependencies.ethers})`
@@ -92,7 +98,7 @@ new WalletMiddlewareServer(
   true, // estimate gas price
   false, // always synced
   false, // mock filters
-  1.0, // gas price factor
+  gas_price_factor, // gas price factor
 )
   .initialize()
   .listen(port)
