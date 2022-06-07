@@ -89,7 +89,7 @@ new WalletMiddlewareServer(
   false, // force defaults
   num_addresses, // number of addresses
   false, // estimate gas limit
-  false, // estimate gas price
+  true, // estimate gas price
   false, // always synced
   false, // mock filters
   1.0, // gas price factor
