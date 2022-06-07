@@ -26,7 +26,7 @@ Required environment variables:
 Optional environment variables:
 
 - `EVM_CALL_INTERLEAVE_BLOCKS`: number of blocks before latest knwon upon which EVM read-only calls will be bound to; this variable defaults to zero.
-- `INFURA_GAS_LIMIT`: default gas limit, if not specified by the caller; or maximum gas limit threshold, otherwise.
+- `INFURA_GAS_LIMIT`: default gas limit, if not specified by the client; or maximum gas limit threshold if either estimated by the provider, or provided by the client.
 - `INFURA_GAS_PRICE`: default gas price, if not specified by the client; or maximum gas price threshold if either estimated by the provider, or provided by the client.
 - `INFURA_GAS_PRICE_FACTOR`: multiplier applied to gas prices estimated by provider.
 - `INFURA_NUM_ADDRESSES`: number of wallet addresses to be handled by the gateway, derived from path '`m/44'/60'/0'/0/*`'.

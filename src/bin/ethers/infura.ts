@@ -93,7 +93,7 @@ new WalletMiddlewareServer(
   gas_price,
   gas_limit,
   num_addresses, // number of addresses
-  false, // estimate gas limit
+  true, // estimate gas limit
   true, // estimate gas price
   false, // always synced
   false, // mock filters
