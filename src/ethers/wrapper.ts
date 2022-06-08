@@ -76,16 +76,16 @@ class WalletWrapper {
       chainId: this.provider.network.chainId
     }
     if (tx.from) {
-      await logger.verbose({ socket, message: `> From:      ${tx.from}` })
+      logger.verbose({ socket, message: `> From:      ${tx.from}` })
     }    
-    await logger.verbose({ socket, message: `> To:        ${tx.to || '(deploy)'}` })
-    await logger.verbose({ socket,
+    logger.verbose({ socket, message: `> To:        ${tx.to || '(deploy)'}` })
+    logger.verbose({ socket,
       message: `> Data:      ${
         tx.data ? tx.data.toString().substring(0, 10) + '...' : '(transfer)'
       }`
     })
-    await logger.verbose({ socket, message: `> Value:     ${tx.value || 0} wei` })
-    await logger.verbose({ socket, message: `> ChainId:   ${tx.chainId}` })
+    logger.verbose({ socket, message: `> Value:     ${tx.value || 0} wei` })
+    logger.verbose({ socket, message: `> ChainId:   ${tx.chainId}` })
 
     // Complete tx gas price, if necessary:
     if (params.from && !params.gasPrice) {
@@ -106,7 +106,7 @@ class WalletWrapper {
       }
     }
     if (tx.gasPrice) {
-      await logger.verbose({ socket, message: `> Gas price: ${tx.gasPrice}` })
+      logger.verbose({ socket, message: `> Gas price: ${tx.gasPrice}` })
     }
 
     // Complete tx gas limit, if necessary:    
@@ -128,7 +128,7 @@ class WalletWrapper {
       }
     }
     if (tx.gasLimit) {
-      await logger.verbose({ socket, message: `> Gas limit: ${tx.gasLimit}` })
+      logger.verbose({ socket, message: `> Gas limit: ${tx.gasLimit}` })
     }
 
     // Return tx object
@@ -304,9 +304,9 @@ class WalletWrapper {
     // Check for rollbacks, and get block tag:
     const blockTag = await this.checkRollbacks(socket) - this.interleaveBlocks
     if (this.interleaveBlocks > 0) {
-      await logger.verbose({ socket, message: `> Block tag: ${this.lastKnownBlock} --> ${blockTag}` })  
+      logger.verbose({ socket, message: `> Block tag: ${this.lastKnownBlock} --> ${blockTag}` })  
     } else {
-      await logger.verbose({ socket, message: `> Block tag: ${this.lastKnownBlock}` })
+      logger.verbose({ socket, message: `> Block tag: ${this.lastKnownBlock}` })
     }    
 
     // Compose base transaction:
@@ -378,15 +378,15 @@ class WalletWrapper {
     if (!tx.nonce) {
       tx.nonce = await wallet?.getTransactionCount()
     }    
-    await logger.verbose({ socket, message: `> Nonce:     ${tx.nonce}` })
+    logger.verbose({ socket, message: `> Nonce:     ${tx.nonce}` })
 
     // Sign transaction:    
     const signedTx = await wallet?.signTransaction(tx)
-    await logger.debug({ socket, message: `=> Signed tx:  ${signedTx}` })
+    logger.debug({ socket, message: `=> Signed tx:  ${signedTx}` })
 
     // Return transaction hash:
     const res = await this.provider.sendTransaction(signedTx)
-    await logger.debug({ socket, message: `<= ${res}` })
+    logger.debug({ socket, message: `<= ${res}` })
     return res.hash
   }
 }

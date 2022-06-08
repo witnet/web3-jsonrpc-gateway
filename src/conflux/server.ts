@@ -271,8 +271,7 @@ export class WalletMiddlewareServer {
    */
   async listen (port: number, hostname?: string) {
     let info
-    let count = 0
-    this.wrapper.getAccounts().forEach(async address => {
+    this.wrapper.getAccounts().forEach(async (address, count) => {
       try {
         info = (await this.wrapper.getAccountInfo(address)) as WalletWrapperInfo
       } catch (e) {

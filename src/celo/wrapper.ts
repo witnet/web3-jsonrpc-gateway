@@ -105,32 +105,32 @@ class WalletWrapper {
     }
 
     // Trace tx params
-    await logger.verbose({ socket, message: `> From:      ${tx.from}` })
-    await logger.verbose({
+    logger.verbose({ socket, message: `> From:      ${tx.from}` })
+    logger.verbose({
       socket,
       message: `> To:        ${tx.to || '(deploy)'}`
     })
-    await logger.verbose({
+    logger.verbose({
       socket,
       message: `> Data:      ${
         tx.data ? tx.data.toString().substring(0, 10) + '...' : '(transfer)'
       }`
     })
-    await logger.verbose({
+    logger.verbose({
       socket,
       message: `> Value:     ${BigInt(tx.value ?? 0)
         .toString()
         .replace(/\B(?=(\d{3})+(?!\d))/g, ',') || 0} wei`
     })
-    await logger.verbose({
+    logger.verbose({
       socket,
       message: `> Gas limit: ${tx.gasLimit.toString()} gas`
     })
-    await logger.verbose({
+    logger.verbose({
       socket,
       message: `> Gas price: ${tx.gasPrice.toString()} wei / gas`
     })
-    await logger.verbose({
+    logger.verbose({
       socket,
       message: `> Fee currency: ${tx.feeCurrency || 'default'}`
     })
@@ -262,7 +262,7 @@ class WalletWrapper {
   }
 
   /**
-   * Signs transactinon usings wallet's private key, before forwarding to provider.
+   * Signs transaction using wallet's private key, before forwarding to provider.
    *
    * @remark Return type is made `any` here because the result needs to be a String, not a `Record`.
    */
@@ -296,15 +296,15 @@ class WalletWrapper {
       ...tx,
       nonce: await account?.getTransactionCount()
     }
-    await logger.verbose({ socket, message: `> Nonce:     ${tx.nonce}` })
+    logger.verbose({ socket, message: `> Nonce:     ${tx.nonce}` })
     
     // Sign transaction:
     const signedTx = await account?.signTransaction(tx)
-    await logger.debug({ socket, message: `=> Signed tx: ${signedTx}` })
+    logger.debug({ socket, message: `=> Signed tx: ${signedTx}` })
 
     // Return transaction hash:
     const res = await this.provider.sendTransaction(signedTx)
-    await logger.debug({ socket, message: `<= ${JSON.stringify(res)}` })
+    logger.debug({ socket, message: `<= ${JSON.stringify(res)}` })
     return res.hash
   }
 }
