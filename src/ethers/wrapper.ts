@@ -1,4 +1,4 @@
-import { BigNumber, ethers, Wallet } from 'ethers'
+import { ethers, BigNumber, Wallet } from 'ethers'
 import { logger, SocketParams } from '../Logger'
 
 interface TransactionParams {
@@ -21,6 +21,7 @@ class WalletWrapper {
   estimateGasLimit: boolean
   estimateGasPrice: boolean
   gasPriceFactor!: number
+  gasLimitFactor!: number
   interleaveBlocks: number
   lastKnownBlock: number
   provider: ethers.providers.JsonRpcProvider
@@ -35,13 +36,15 @@ class WalletWrapper {
     num_addresses: number,
     estimate_gas_limit: boolean,
     estimate_gas_price: boolean,
-    gas_price_factor: number
+    gas_price_factor: number,
+    gas_limit_factor: number
   ) {
     this.defaultGasPrice = gas_price
     this.defaultGasLimit = gas_limit
     this.estimateGasLimit = estimate_gas_limit
     this.estimateGasPrice = estimate_gas_price
     this.gasPriceFactor = gas_price_factor
+    this.gasLimitFactor = gas_limit_factor
     this.interleaveBlocks = interleave_blocks
     this.lastKnownBlock = 0
     this.provider = provider
@@ -241,7 +244,9 @@ class WalletWrapper {
     let gasLimit: BigNumber
     if (this.estimateGasLimit) {
       try {
+        const factor: number = Math.ceil(this.gasLimitFactor * 100)
         gasLimit = await this.provider.estimateGas(tx)
+        gasLimit = gasLimit.mul(factor).div(100)
       } catch (ex) {
         const reason = `Unpredictable gas limit: ${ex}`
         throw {
@@ -292,6 +297,18 @@ class WalletWrapper {
   async mockEthFilterChanges (socket: SocketParams, id: string): Promise<any> {
     logger.verbose({ socket, message: `> Filter id: ${id}` })
     return [await this.provider.getBlock('latest')]
+  }
+
+  async processEthEstimateGas (
+    socket: SocketParams,
+    params: TransactionParams
+  ): Promise<any> {
+    // avoid some providers to just echo input gas limit 
+    if (params.gas) {
+      params.gas = ""
+    }
+    const tx: ethers.providers.TransactionRequest = await this.composeTransaction(socket, params)
+    return tx.gasLimit
   }
 
   /**

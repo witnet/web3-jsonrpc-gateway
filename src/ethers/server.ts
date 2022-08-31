@@ -26,7 +26,8 @@ class WalletMiddlewareServer {
     estimate_gas_price: boolean,
     always_synced: boolean,
     mock_filters: boolean,
-    gas_price_factor: number
+    gas_price_factor: number,
+    gas_limit_factor: number
   ) {
     this.alwaysSynced = always_synced
     this.expressServer = express()
@@ -40,7 +41,8 @@ class WalletMiddlewareServer {
       num_addresses,
       estimate_gas_limit,
       estimate_gas_price,
-      gas_price_factor
+      gas_price_factor,
+      gas_limit_factor
     )
 
     let lines = [
@@ -59,8 +61,11 @@ class WalletMiddlewareServer {
         `${gas_limit} ${estimate_gas_limit ? "(max)": "(default)"}`
       ]
     ]
-    if (gas_price_factor > 0) {
+    if (gas_price_factor > 1) {
       lines = [...lines, ['Gas price factor', `x ${gas_price_factor}`]]
+    }
+    if (gas_limit_factor > 1) {
+      lines = [...lines, ['Gas limit factor', `x ${gas_limit_factor}`]]
     }
     if (interleave_blocks > 0) {
       lines = [...lines, ['Interleave blocks', interleave_blocks.toString()]]
@@ -97,6 +102,7 @@ class WalletMiddlewareServer {
         let handlers: { [K: string]: any } = {
           eth_accounts: this.wrapper.getAccounts,
           eth_call: this.wrapper.processEthCall,
+          eth_estimateGas: this.wrapper.processEthEstimateGas,
           eth_getBlockByNumber: this.wrapper.getBlockByNumber,
           eth_sendTransaction: this.wrapper.processTransaction,
           eth_sign: this.wrapper.processEthSignMessage

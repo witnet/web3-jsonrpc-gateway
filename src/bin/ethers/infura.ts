@@ -71,8 +71,14 @@ if (process.env.INFURA_NUM_ADDRESSES) {
 
 // Optional: gas price factor to be applied to when ETHERS_ESTIMATE_GAS_PRICE is true
 let gas_price_factor = 1.0
-if (process.env.ETHERS_INFURA_PRICE_FACTOR) {
-  gas_price_factor = parseFloat(process.env.ETHERS_INFURA_PRICE_FACTOR)
+if (process.env.INFURA_GAS_PRICE_FACTOR) {
+  gas_price_factor = parseFloat(process.env.INFURA_GAS_PRICE_FACTOR)
+}
+
+// Optional: gas limit factor to be applied to when ETHERS_ESTIMATE_GAS_LIMIT is true
+let gas_limit_factor = 1.0
+if (process.env.INFURA_GAS_LIMIT_FACTOR) {
+  gas_limit_factor = parseFloat(process.env.INFURA_GAS_LIMIT_FACTOR)
 }
 
 console.log('='.repeat(120))
@@ -97,7 +103,8 @@ new WalletMiddlewareServer(
   true, // estimate gas price
   false, // always synced
   false, // mock filters
-  gas_price_factor, // gas price factor
+  gas_price_factor,
+  gas_limit_factor,
 )
   .initialize()
   .listen(port)
