@@ -99,6 +99,15 @@ if (process.env.ETHERS_GAS_LIMIT_FACTOR) {
   gas_limit_factor = parseFloat(process.env.ETHERS_GAS_LIMIT_FACTOR)
 }
 
+// Optional: force EIP-1559's type 2 transactions
+let force_eip_1559: boolean = false
+if (process.env.ETHERS_FORCE_EIP_1559) {
+  force_eip_1559 = JSON.parse(process.env.ETHERS_FORCE_EIP_1559)
+}
+if (process.env.ETHERS_GAS_LIMIT_FACTOR) {
+  gas_limit_factor = parseFloat(process.env.ETHERS_GAS_LIMIT_FACTOR)
+}
+
 console.log('='.repeat(120))
 console.log(
   `${packageData.name} v${packageData.version} (ethers: ${packageData.dependencies.ethers})`
@@ -122,7 +131,8 @@ new WalletMiddlewareServer(
   always_synced,
   mock_filters,
   gas_price_factor,
-  gas_limit_factor
+  gas_limit_factor,
+  force_eip_1559
 )
   .initialize()
   .listen(port)

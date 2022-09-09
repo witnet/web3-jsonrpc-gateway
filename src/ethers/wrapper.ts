@@ -9,6 +9,9 @@ interface TransactionParams {
   value: string
   data: string
   nonce: string
+  type: number
+  maxFeePerGas: string
+  maxPriorityFeePerGas: string
 }
 
 /**
@@ -20,6 +23,7 @@ class WalletWrapper {
   defaultGasLimit!: number
   estimateGasLimit: boolean
   estimateGasPrice: boolean
+  forceType2Txs: boolean
   gasPriceFactor!: number
   gasLimitFactor!: number
   interleaveBlocks: number
@@ -37,12 +41,14 @@ class WalletWrapper {
     estimate_gas_limit: boolean,
     estimate_gas_price: boolean,
     gas_price_factor: number,
-    gas_limit_factor: number
+    gas_limit_factor: number,
+    force_eip_1559: boolean
   ) {
     this.defaultGasPrice = gas_price
     this.defaultGasLimit = gas_limit
     this.estimateGasLimit = estimate_gas_limit
     this.estimateGasPrice = estimate_gas_price
+    this.forceType2Txs = force_eip_1559
     this.gasPriceFactor = gas_price_factor
     this.gasLimitFactor = gas_limit_factor
     this.interleaveBlocks = interleave_blocks
@@ -76,7 +82,8 @@ class WalletWrapper {
       value: params.value,
       data: params.data,
       nonce: params.nonce,
-      chainId: this.provider.network.chainId
+      chainId: this.provider.network.chainId,
+      type: params.type || (this.forceType2Txs ? 2 : 1)
     }
     if (tx.from) {
       logger.verbose({ socket, message: `> From:      ${tx.from}` })
@@ -89,6 +96,9 @@ class WalletWrapper {
     })
     logger.verbose({ socket, message: `> Value:     ${tx.value || 0} wei` })
     logger.verbose({ socket, message: `> ChainId:   ${tx.chainId}` })
+    if (tx.type && tx.type > 1) {
+      logger.verbose({ socket, message: `> Type:      ${tx.type}`})
+    }
 
     // Complete tx gas price, if necessary:
     if (params.from && !params.gasPrice) {
@@ -133,7 +143,23 @@ class WalletWrapper {
     if (tx.gasLimit) {
       logger.verbose({ socket, message: `> Gas limit: ${tx.gasLimit}` })
     }
-
+    if (params.maxFeePerGas) {
+      tx.maxFeePerGas = params.maxFeePerGas
+    } else if (this.forceType2Txs) {
+      tx.maxFeePerGas = tx.gasPrice
+    }
+    if (tx.maxFeePerGas) {
+      logger.verbose({ socket, message: `> Max fee per gas: ${tx.maxFeePerGas}` })
+    }
+    if (params.maxPriorityFeePerGas) {
+      tx.maxPriorityFeePerGas = params.maxPriorityFeePerGas
+    } else if (this.forceType2Txs) {
+      tx.maxPriorityFeePerGas = tx.gasPrice
+    }
+    if (tx.maxPriorityFeePerGas) {
+      logger.verbose({ socket, message: `> Max priority fee per gas: ${tx.maxPriorityFeePerGas}` })
+    }
+    
     // Return tx object
     return tx
   }
