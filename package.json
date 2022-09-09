@@ -29,7 +29,7 @@
     "ethereum:mainnet": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=4 node dist/src/bin/ethers/infura 9545 homestead",
     "ethereum:rinkeby": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=4 node dist/src/bin/ethers/infura 8544 rinkeby",
     "harmony:testnet#0": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=16 ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_GAS_PRICE=33000000000 node dist/src/bin/ethers https://api.s0.b.hmny.io 8534",
-    "kava:testnet": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=6 ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_GAS_PRICE=10000000000 node dist/src/bin/ethers https://evm.evm-alpha.kava.io 8526",
+    "hsc:testnet": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=1 ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMT=true ETHERS_GAS_PRICE=10000000000 node dist/src/bin/ethers https://http-testnet.hoosmartchain.com 8524",
     "kava:mainnet": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=6 ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_GAS_PRICE=10000000000 node dist/src/bin/ethers https://evm.kava.io 9526",
     "kcc:testnet": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=10 node dist/src/bin/ethers https://rpc-testnet.kcc.network 8537",
     "kcc:mainnet": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=10 node dist/src/bin/ethers https://rpc-mainnet.kcc.network 9537",
