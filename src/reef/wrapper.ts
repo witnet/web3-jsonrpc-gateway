@@ -57,7 +57,7 @@ export class WalletWrapper {
     await this.provider.api.isReady
     const keyring = new Keyring({ type: "sr25519" });
     this.keyringPair = keyring.addFromUri(this.seedPhrase);
-    console.log("pair.address =>", this.keyringPair.address)
+    // console.log("pair.address =>", this.keyringPair.address)
     this.signingKey = new TestAccountSigningKey(this.provider.api.registry);
     this.signingKey.addKeyringPair(this.keyringPair);
     this.signer = new Signer(this.provider, this.keyringPair.address, this.signingKey);
@@ -164,7 +164,6 @@ export class WalletWrapper {
     const extrinsics: any[] = data?.extrinsic
     let res = null
     if (block) {
-      // const ts = block.timestamp?.replace("+00:00", "Z")
       const unixTs = Math.round(new Date(block.timestamp).getTime())/1000
       res = {
         hash: block.hash,
@@ -176,7 +175,7 @@ export class WalletWrapper {
         difficulty: 0,
         gasLimit: "0xffffffff",
         gasUsed: "0xffffffff",
-        miner: "0x0000000000000000000000000000000000000000", //block.author,
+        miner: "0x0000000000000000000000000000000000000000", 
         extraData: "0x",
         transactions: extrinsics.filter(obj => obj.events.length > 0).map(obj => obj.hash),
       }
@@ -354,7 +353,6 @@ export class WalletWrapper {
     socket: SocketParams,
     tx: any
   ): Promise<any> {
-    if (!tx.from) tx.from = await this.wallet.getAddress()
     if (tx.from) logger.verbose({ socket, message: `> From: ${tx.from}` })
     if (tx.to)
       logger.verbose({ socket, message: `> To: ${tx.to || '(deploy)'}` })
