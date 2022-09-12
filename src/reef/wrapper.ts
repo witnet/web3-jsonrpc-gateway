@@ -197,7 +197,8 @@ export class WalletWrapper {
     _socket: SocketParams,
     _params: any[]
   ): Promise<any> {
-    return this.provider.getBlockNumber()
+    const blockNumber = BigNumber.from(await this.provider.getBlockNumber())
+    return blockNumber.toHexString()
   }
 
   async getBlockByNumber(
@@ -206,7 +207,7 @@ export class WalletWrapper {
   ): Promise<any> {
     let blockNumber
     if (params === "latest") {
-      blockNumber = await this.getBlockNumber(socket, params)
+      blockNumber = await this.provider.getBlockNumber()
     } else {
       blockNumber = parseInt(params)
     }
