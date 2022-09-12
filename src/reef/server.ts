@@ -37,10 +37,10 @@ export class WalletMiddlewareServer {
     }
 
     this.rpcMethodHandlers = {
-      net_version: this.wrapper.version,
       eth_accounts: this.wrapper.getAccounts,
       eth_blockNumber: this.wrapper.getBlockNumber,
       eth_call: this.wrapper.call,
+      eth_chainId: this.wrapper.getNetVersion,      
       eth_estimateGas: this.wrapper.estimateGas,
       eth_gasPrice: this.wrapper.estimateGasPrice,
       eth_getBalance: this.wrapper.getBalance,
@@ -48,8 +48,9 @@ export class WalletMiddlewareServer {
       eth_getCode: this.wrapper.getCode,
       eth_getTransactionByHash: this.wrapper.getTransactionByHash,
       eth_getTransactionReceipt: this.wrapper.getTransactionReceipt,
-      eth_newBlockFilter: this.wrapper.createEthBlockFilter,
-      eth_sendTransaction: this.wrapper.sendTransaction
+      eth_syncing: this.wrapper.getSyncingStatus,
+      net_version: this.wrapper.getNetVersion,      
+      web3_clientVersion: this.wrapper.getWeb3Version
     }
 
     return this

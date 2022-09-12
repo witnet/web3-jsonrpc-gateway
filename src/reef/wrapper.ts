@@ -13,6 +13,8 @@ import { BigNumber } from "@ethersproject/bignumber";
 
 import { request, gql } from 'graphql-request'
 
+const pckg = require('../../package')
+
 interface TransactionParams {
   from: string
   to: string
@@ -68,11 +70,52 @@ export class WalletWrapper {
     this.seedPhrase = ""
   }
 
-  async version (
-    _socket: SocketParams,
-    _tx: TransactionParams    
+  /**
+   * Sends raw call to provider.
+   * @param method JSON-RPC method
+   * @param params JSON-RPC parameters
+   * @returns
+   */
+  async call (
+    socket: SocketParams,
+    tx: any
   ): Promise<any> {
-    return 13939
+    if (tx.from) {
+      logger.verbose({ socket, message: `> From: ${tx.from}` })
+    }
+    if (tx.to) {
+      logger.verbose({ socket, message: `> To: ${tx.to || '(deploy)'}` })
+    }
+    if (tx.data) {
+      logger.verbose({
+        socket,
+        message: `> Data: ${
+          tx.data ? tx.data.toString().substring(0, 10) + '...' : '(transfer)'
+        }`
+      })
+    }
+    if (tx.nonce) {
+      logger.verbose({ socket, message: `> Nonce: ${tx.nonce}` })
+    }
+    if (tx.value) {
+      logger.verbose({ socket, message: `> Value: ${tx.value || 0} wei` })
+    }
+    if (tx.gas) {
+      logger.verbose({ socket, message: `> Gas: ${tx.gas}` })
+    }
+    if (tx.gasPrice) {
+      logger.verbose({ socket, message: `> Gas price: ${tx.gasPrice}` })
+    }
+
+    // const call = this.api.tx.contracts.call(tx.to, tx.value, tx.gas, tx.data)
+    const res = await this.provider.call({
+      data: tx.data,
+      to: tx.to,
+      value: tx.value
+    })
+    // console.log("res =>", res)
+    return res
+  }
   }
 
   async estimateGas(
@@ -195,6 +238,13 @@ export class WalletWrapper {
     params: any
   ): Promise<any> {
     return this.provider.getCode(params)
+  }
+
+  async getNetVersion(
+    _socket: SocketParams
+  ): Promise<any> {
+    const network = await this.provider.getNetwork()
+    return network.chainId
   }
 
   async getTransactionByHash(
@@ -392,45 +442,16 @@ export class WalletWrapper {
    * Get syncing status from provider.
    */
   async getSyncingStatus (_socket: SocketParams): Promise<any> {
-    return await this.provider.api.isReady
+    return false
+  }
+    }    
   }
 
-  /**
-   * Populate essential transaction parameters, self-estimating gas price and/or gas limit if required.
-   * @param socket Socket parms where the RPC call is coming from.
-   * @param params Input params, to be validated and completed, if necessary.
-   * @returns 
-   */
-   async composeTransaction (
-    socket: SocketParams,
-    params: TransactionParams
-  ): Promise<ethers.providers.TransactionRequest> {
-    
-    // Compose actual transaction:
-    let tx: ethers.providers.TransactionRequest = {
-      from: params.from,
-      to: params.to,
-      value: params.value,
-      data: params.data,
-      nonce: params.nonce,
-      chainId: await this.signer.getChainId(),
-      gasLimit: params.gas,
-      gasPrice: params.gasPrice
-    }
-    if (tx.from) {
-      logger.verbose({ socket, message: `> From:      ${tx.from}` })
-    }    
-    logger.verbose({ socket, message: `> To:        ${tx.to || '(deploy)'}` })
-    logger.verbose({ socket,
-      message: `> Data:      ${
-        tx.data ? tx.data.toString().substring(0, 10) + '...' : '(transfer)'
-      }`
-    })
-    logger.verbose({ socket, message: `> Value:     ${tx.value || 0} wei` })
-    logger.verbose({ socket, message: `> ChainId:   ${tx.chainId}` })
-
-    // Return tx object
-    return tx
+  async getWeb3Version (
+    _socket: SocketParams,
+    _tx: TransactionParams    
+  ): Promise<any> {
+    return `${pckg.name} v${pckg.version}`
   }
 
   /**
