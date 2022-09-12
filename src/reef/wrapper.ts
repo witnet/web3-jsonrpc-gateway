@@ -113,7 +113,6 @@ export class WalletWrapper {
       to: tx.to,
       value: tx.value
     })
-    // console.log("res =>", res)
     return res
   }
 
@@ -284,7 +283,6 @@ export class WalletWrapper {
     `
     let data = await request(this.graphUrl, queryBlock)
     const block = data?.block[0]
-    console.log("block =>", block)
     data = await request(this.graphUrl, queryBlockExtrinsics)
     const extrinsics: any[] = data?.extrinsic
     let res = null
@@ -473,7 +471,6 @@ export class WalletWrapper {
     if (extrinsic && extrinsic.block.finalized) {
       const logsData = await request(this.graphUrl, logsQuery)
       const events: any[] = logsData?.extrinsic[0].events
-      // console.log("events ==>", events)
       try {
         const gas = BigNumber.from(extrinsic.signed_data.fee.weight)
         const fee = BigNumber.from(extrinsic.signed_data.fee.partialFee)
@@ -492,7 +489,6 @@ export class WalletWrapper {
             : "0x0",
           logs: events?.map((event: any, index) => {
             const log = event.data[0]
-            // console.log("log ===>", JSON.stringify(log))
             return {
               removed: false,
               logIndex: `0x${index.toString(16)}`,
@@ -518,7 +514,6 @@ export class WalletWrapper {
         return null
       }
     }
-    // console.log("res ====>", res)
     return res
   }
 
@@ -557,7 +552,6 @@ export class WalletWrapper {
     logger.verbose({ socket, message: `> Nonce:     ${tx.nonce}` })
 
     // Return transaction hash:
-    console.log("tx ====>", tx)
     const res = await this.signer.sendTransaction(tx)
     logger.debug({ socket, message: `<= ${res}` })
     return res.hash
