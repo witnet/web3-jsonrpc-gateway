@@ -11,14 +11,9 @@ import { WalletWrapper } from './wrapper'
  */
 export class WalletMiddlewareServer {
   expressServer: Express
+  rpcMethodHandlers: { [K: string]: any }
   totalRequests: number
   wrapper: WalletWrapper
-
-  dictionaryEthCfx: { [K: string]: string } = {
-  }
-
-  rpcMethodHandlers: { [K: string]: any }
-  rpcParamsHandlers: { [K: string]: any }
 
   constructor (
     rpcUrl: string,
@@ -32,9 +27,6 @@ export class WalletMiddlewareServer {
       graphUrl,
       seedPhrase
     )
-
-    this.rpcParamsHandlers = {
-    }
 
     this.rpcMethodHandlers = {
       eth_accounts: this.wrapper.getAccounts,
@@ -79,18 +71,8 @@ export class WalletMiddlewareServer {
           serverId: ++ this.totalRequests
         }
         let method = request.method
+        logger.log({ level: 'info', socket, message: `>> ${method}` })
 
-        // Translate incoming method, if necessary
-        if (method in this.dictionaryEthCfx) {
-          request.method = this.dictionaryEthCfx[request.method]
-          logger.log({
-            level: 'info',
-            socket,
-            message: `>> ${method} >> ${request.method}`
-          })
-        } else {
-          logger.log({ level: 'info', socket, message: `>> ${method}` })
-        }
         // Debug trace params, if any
         if (request.params && request.params.length > 0) {
           logger.log({
@@ -114,13 +96,6 @@ export class WalletMiddlewareServer {
         let result
 
         try {
-          // Pre-process params, if necessary:
-          if (method in this.rpcParamsHandlers) {
-            request.params = await this.rpcParamsHandlers[method].bind(this)(
-              socket,
-              ...(request.params || [])
-            )
-          }
           // Intercept method call, if required:
           if (request.method in this.rpcMethodHandlers) {
             result = await this.rpcMethodHandlers[request.method].bind(this.wrapper)(
@@ -139,7 +114,6 @@ export class WalletMiddlewareServer {
           } 
           response = { ...header, result }
         } catch (exception: any) {
-          // console.log("exception ====>", exception)
           if (!exception.code) {
             // if no error code is specified,
             //   assume the Conflux provider is actually reporting an execution error:
@@ -192,14 +166,6 @@ export class WalletMiddlewareServer {
             message: `<= Error: ${JSON.stringify(response.error)}`
           })
         } else {
-          if (
-            method.startsWith('eth_') &&
-            result &&
-            typeof result === 'object'
-          ) {
-            // TODO
-            // result = this.translateCfxResponseObject(result, socket)
-          }
           logger.log({
             level: 'http',
             socket,
@@ -255,10 +221,4 @@ export class WalletMiddlewareServer {
     return params
   }
 
-  /**
-   * Lambda function to perform actual translation of Eth addresses to Conflux alphanumeric format.
-   * See: https://github.com/Conflux-Chain/CIPs/blob/master/CIPs/cip-37.md
-   */
-  translateEthAddress (_address: string) {
-  }
 }
