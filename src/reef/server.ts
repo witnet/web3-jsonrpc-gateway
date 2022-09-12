@@ -46,8 +46,10 @@ export class WalletMiddlewareServer {
       eth_getBalance: this.wrapper.getBalance,
       eth_getBlockByNumber: this.wrapper.getBlockByNumber,
       eth_getCode: this.wrapper.getCode,
+      eth_getFilterChanges: this.wrapper.mockGetFilterChanges,
       eth_getTransactionByHash: this.wrapper.getTransactionByHash,
       eth_getTransactionReceipt: this.wrapper.getTransactionReceipt,
+      eth_newBlockFilter: this.wrapper.mockCreateBlockFilter,
       eth_syncing: this.wrapper.getSyncingStatus,
       net_version: this.wrapper.getNetVersion,      
       web3_clientVersion: this.wrapper.getWeb3Version
