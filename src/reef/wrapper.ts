@@ -382,27 +382,57 @@ export class WalletWrapper {
             }
           }
         ) {
+          args
           id
           block {
             id
             hash
             finalized
           }
-          status
-          timestamp
           events (
             where: {
-              section: {
-                _eq: "evm"
-              }
+              _and: [
+                { section: { _eq: "evm" }},
+                {
+                  _or: [
+                    { method: { _eq: "Executed" }},
+                    { method: { _eq: "Created" }}
+                  ]
+                }
+              ]
             }
           ) {
             data
-            method
             index
+            method
           }
-          args
+          index
           signed_data
+          status
+          timestamp
+        }
+      }
+    `
+    const logsQuery = gql`
+      {
+        extrinsic (
+          where: {
+            hash: {
+              _eq: "${txHash}"
+            }
+          }
+        ) {
+          events (
+            order_by: { index: asc },
+            where: {
+              _and: [
+                { section: { _eq: "evm" }},
+                { method: { _eq: "Log" }}
+              ]
+            }
+          ) {
+            data
+          }
         }
       }
     `
@@ -411,6 +441,9 @@ export class WalletWrapper {
     const extrinsic = data?.extrinsic[0]
     let res = null
     if (extrinsic && extrinsic.block.finalized) {
+      const logsData = await request(this.graphUrl, logsQuery)
+      const events: any[] = logsData?.extrinsic[0].events
+      // console.log("events ==>", events)
       try {
         const gas = BigNumber.from(extrinsic.signed_data.fee.weight)
         const fee = BigNumber.from(extrinsic.signed_data.fee.partialFee)
@@ -427,7 +460,21 @@ export class WalletWrapper {
           status: extrinsic.status === "success"
             ? "0x1"
             : "0x0",
-          logs: [],
+          logs: events?.map((event: any, index) => {
+            const log = event.data[0]
+            // console.log("log ===>", JSON.stringify(log))
+            return {
+              removed: false,
+              logIndex: `0x${index.toString(16)}`,
+              transactionIndex: `0x${extrinsic.index}`,
+              transactionHash: txHash,
+              blockHash: extrinsic.block.hash,
+              blockNumber: BigNumber.from(extrinsic.block.id).toHexString(),
+              address: log.address,
+              data: log.data,
+              topics: log.topics
+            }
+          }),
           logsBloom: "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
           from: extrinsic.events[0]!.data[0],
           to: extrinsic.events[0]!.method === "Created"
