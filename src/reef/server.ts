@@ -50,6 +50,7 @@ export class WalletMiddlewareServer {
       eth_getTransactionByHash: this.wrapper.getTransactionByHash,
       eth_getTransactionReceipt: this.wrapper.getTransactionReceipt,
       eth_newBlockFilter: this.wrapper.mockCreateBlockFilter,
+      eth_sendTransaction: this.wrapper.sendTransaction,
       eth_syncing: this.wrapper.getSyncingStatus,
       net_version: this.wrapper.getNetVersion,      
       web3_clientVersion: this.wrapper.getWeb3Version
@@ -216,9 +217,10 @@ export class WalletMiddlewareServer {
    */
   async listen (port: number, hostname?: string) {
     await this.wrapper.setup()
-
+    const network = await this.wrapper.provider.getNetwork()
     traceKeyValue('Reef provider', [
-      ['Chain name', await this.wrapper.provider.api.rpc.system.chain()],
+      ['Chain id', network.chainId],
+      ['Chain name', network.name],
       ['Node name', await this.wrapper.provider.api.rpc.system.name()],
       ['Node version', await this.wrapper.provider.api.rpc.system.version()],
     ])
