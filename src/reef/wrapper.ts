@@ -128,7 +128,7 @@ export class WalletWrapper {
    */
  async mockGetFilterChanges (socket: SocketParams, id: string): Promise<any> {
   logger.verbose({ socket, message: `> Filter id: ${id}` })
-  return [await this.provider.getBlock('latest')]
+  return [ await this.provider.getBlockNumber() ]
 }
 
   /**
