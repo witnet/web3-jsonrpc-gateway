@@ -179,37 +179,38 @@ export class WalletWrapper {
   }
 
   async estimateGasPrice(_socket: SocketParams) : Promise<any> {
-    const blockNumber = await this.provider.getBlockNumber()
-    const query = gql`
-      {
-        extrinsic (
-          where: {
-            _and: [
-              { block_id: { _gte: ${blockNumber - 3000} }},
-              { signed_data: { _is_null: false }}
-            ]
-          }
-        ) {
-          signed_data 
-        }
-      }
-    `
-    const data = await request(this.graphUrl, query)
-    if (data && data.extrinsic) {
-      const txs: any[] = data?.extrinsic
-      const gasPrices: BigNumber[] = txs.map(tx => {
-        const gas = BigNumber.from(tx.signed_data.fee.weight)
-        const fee = BigNumber.from(tx.signed_data.fee.partialFee)
-        return fee.div(gas)
-      })
-      if (gasPrices.length > 0) {
-        const sumGasPrices: BigNumber = gasPrices.reduce((acc: BigNumber, val: BigNumber) => {
-          return acc.add(val)
-        })
-        return sumGasPrices.div(gasPrices.length).toHexString()
-      }
-    } 
-    return 10 ** 10;
+    return "0x1"
+    // const blockNumber = await this.provider.getBlockNumber()
+    // const query = gql`
+    //   {
+    //     extrinsic (
+    //       where: {
+    //         _and: [
+    //           { block_id: { _gte: ${blockNumber - 3000} }},
+    //           { signed_data: { _is_null: false }}
+    //         ]
+    //       }
+    //     ) {
+    //       signed_data 
+    //     }
+    //   }
+    // `
+    // const data = await request(this.graphUrl, query)
+    // if (data && data.extrinsic) {
+    //   const txs: any[] = data?.extrinsic
+    //   const gasPrices: BigNumber[] = txs.map(tx => {
+    //     const gas = BigNumber.from(tx.signed_data.fee.weight)
+    //     const fee = BigNumber.from(tx.signed_data.fee.partialFee)
+    //     return fee.div(gas)
+    //   })
+    //   if (gasPrices.length > 0) {
+    //     const sumGasPrices: BigNumber = gasPrices.reduce((acc: BigNumber, val: BigNumber) => {
+    //       return acc.add(val)
+    //     })
+    //     return sumGasPrices.div(gasPrices.length).toHexString()
+    //   }
+    // } 
+    // return 10 ** 10;
   }
 
   /**
