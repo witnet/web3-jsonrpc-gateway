@@ -1,6 +1,6 @@
 {
   "name": "web3-jsonrpc-gateway",
-  "version": "1.6.4",
+  "version": "1.6.5",
   "description": "A Web3 provider that handles accounts on its own but delegates chain queries to a 3rd party service",
   "main": "src/bin/jsonrpc.js",
   "bin": {
@@ -50,7 +50,7 @@
     "moonbeam:mainnet": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=4 ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=false ETHERS_GAS_PRICE=100000000000 ETHERS_GAS_LIMIT=8000000 ETHERS_MOCK_FILTERS=true node dist/src/bin/ethers https://rpc.api.moonbeam.network 9531",
     "okxchain:testnet": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=16 ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_GAS_LIMIT=8000000 node dist/src/bin/ethers https://exchaintestrpc.okex.org 8528",
     "okxchain:mainnet": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=16 ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_GAS_LIMIT=8000000 node dist/src/bin/ethers https://exchainrpc.okex.org 9528",
-    "optimism:goerli": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=0 ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_GAS_LIMIT_FACTOR=1.25 node dist/src/bin/ethers https://optimism-goerli.infura.io/v3/3199c9172a13459caa4e25fd30827194 8521",
+    "optimism:goerli": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=0 ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_GAS_LIMIT_FACTOR=1.25 node dist/src/bin/ethers https://optimism-goerli.infura.io/v3/ 8520",
     "polygon:goerli": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=8 ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=false ETHERS_GAS_PRICE=100000000000 node dist/src/bin/ethers https://matic-mumbai.chainstacklabs.com 8535",
     "polygon:mainnet": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=8 ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=false ETHERS_GAS_PRICE=100000000000 node dist/src/bin/ethers https://rpc-mainnet.maticvigil.com 9535",
     "reef:testnet": "node dist/src/bin/reef wss://rpc-testnet.reefscan.com/ws 8532",
