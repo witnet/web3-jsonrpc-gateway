@@ -83,7 +83,6 @@ class WalletWrapper {
       data: params.data,
       nonce: params.nonce,
       chainId: this.provider.network.chainId,
-      type: params.type || (this.forceType2Txs ? 2 : 1)
     }
     if (tx.from) {
       logger.verbose({ socket, message: `> From:      ${tx.from}` })
@@ -96,7 +95,10 @@ class WalletWrapper {
     })
     logger.verbose({ socket, message: `> Value:     ${tx.value || 0} wei` })
     logger.verbose({ socket, message: `> ChainId:   ${tx.chainId}` })
-    if (tx.type && tx.type > 1) {
+    if (this.forceType2Txs) {
+      tx.type = 2
+    }
+    if (tx.type) {
       logger.verbose({ socket, message: `> Type:      ${tx.type}`})
     }
 
@@ -425,7 +427,7 @@ class WalletWrapper {
 
     // Sign transaction:    
     const signedTx = await wallet?.signTransaction(tx)
-    logger.debug({ socket, message: `=> Signed tx:  ${signedTx}` })
+    logger.debug({ socket, message: `=> Signed tx:  ${signedTx}`})
 
     // Return transaction hash:
     const res = await this.provider.sendTransaction(signedTx)
