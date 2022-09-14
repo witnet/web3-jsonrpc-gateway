@@ -75,6 +75,28 @@ Optional environment variables:
 - `EVM_CALL_INTERLEAVE_BLOCKS`: number of epochs before current epoch number upon which EVM read-only calls will be bound to; this variable defaults to zero.
 - `LOG_LEVEL`: max log level to be traced, can be any of the following: `error`, `warn`, `info`, `http`, `verbose`, `debug`, `silly`. If not specified, `verbose` will apply.
 
+### Reef-compatible destination providers:
+
+```console
+node ./dist/src/bin/reef
+```
+
+Required environment variables:
+
+- `GRAPHQL_URL`: the GraphQL endpoint serving EVM's data.
+- `PROVIDER_URL`: actual URL of the Web3 JSON-RPC provider.
+- `PORT`: listening port for the server. Can also be passed from command-line as first parameter.
+- `SEED_PHRASE`: seed phrase to be used with either `Infura` or `Ethers.js` providers.
+
+Optional environment variables:
+
+- `CONFLUX_DEFAULT_EPOCH_LABEL`: default epoch label to be used on read-only RPC calls, if none is specified by the caller; this variable will default to `"latest_finalized"` if none is set.
+- `CONFLUX_ESTIMATE_GAS_PRICE`: if set to `true`, the provider will be asked to estimate the gas price, before signing the transaction; if the provider-estimated gas price is greater than `CONFLUX_GAS_PRICE`, the transaction will be rejected by the gateway.
+- `CONFLUX_GAS_LIMIT`: default gas limit to be used before signing a transaction, if not specified by the caller.
+- `CONFLUX_GAS_PRICE`: default gas price to be used before signing a transaction, if not specified by the caller.
+- `EVM_CALL_INTERLEAVE_BLOCKS`: number of epochs before current epoch number upon which EVM read-only calls will be bound to; this variable defaults to zero.
+- `LOG_LEVEL`: max log level to be traced, can be any of the following: `error`, `warn`, `info`, `http`, `verbose`, `debug`, `silly`. If not specified, `verbose` will apply.
+
 ### Generic destination providers:
 
 ```console
