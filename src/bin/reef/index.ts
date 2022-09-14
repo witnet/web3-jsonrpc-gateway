@@ -7,7 +7,7 @@ const packageData = require('../../../package.json')
 
 // Mandatory: the actual URL of the Web3 JSON-RPC provider. Can also be passed as first parameter.
 const rpcUrl = process.argv[2] || process.env.PROVIDER_URL || ''
-if (rpcUrl.length < 1) {
+if (!rpcUrl.length) {
   throw Error(
     'No provider URL provided. Please set the `PROVIDER_URL` environment variable.'
   )
@@ -33,8 +33,9 @@ if (!seedPhrase) {
   )
 }
 
+// Mandatory: The graphql endpoint serving Reef's evm data
 const graphUrl = process.env.GRAPHQL_URL || ''
-if (graphUrl.length < 1) {
+if (!graphUrl) {
   throw Error(
     'No GraphQL endpoint provided. Please set the `GRAPHQL_URL` environment variable.'
   )
