@@ -95,6 +95,8 @@ class WalletWrapper {
     })
     logger.verbose({ socket, message: `> Value:     ${tx.value || 0} wei` })
     logger.verbose({ socket, message: `> ChainId:   ${tx.chainId}` })
+
+    // Complete tx type, if necessary:
     if (this.forceType2Txs) {
       tx.type = 2
     }
@@ -145,6 +147,8 @@ class WalletWrapper {
     if (tx.gasLimit) {
       logger.verbose({ socket, message: `> Gas limit: ${tx.gasLimit}` })
     }
+
+    // Complete tx maxFeePerGas, if necessary:
     if (params.maxFeePerGas) {
       tx.maxFeePerGas = params.maxFeePerGas
     } else if (this.forceType2Txs) {
@@ -153,6 +157,8 @@ class WalletWrapper {
     if (tx.maxFeePerGas) {
       logger.verbose({ socket, message: `> Max fee per gas: ${tx.maxFeePerGas}` })
     }
+
+    // Complete tx maxPriorityFeePerGas, if necesarry:
     if (params.maxPriorityFeePerGas) {
       tx.maxPriorityFeePerGas = params.maxPriorityFeePerGas
     } else if (this.forceType2Txs) {
