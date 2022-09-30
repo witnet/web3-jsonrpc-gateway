@@ -31,43 +31,54 @@ interface TransactionParams {
  */
 
 export class WalletWrapper {
+  accounts: string[]
   graphUrl: string
-  keyringPair: KeyringPair
+  keyring: Keyring
+  keyringPairs: KeyringPair[]
+  numAddresses: number
   provider: Provider
   seedPhrase: string
-  signer: Signer
+  signers: Signer[]
   signingKey: TestAccountSigningKey
-  wallet: ethers.Wallet
   
   constructor (
     rpcUrl: string,
     graphUrl: string,
-    seedPhrase: string
+    seedPhrase: string,
+    numAddresses: number
   ) {
+    this.accounts = []
     this.graphUrl = graphUrl
-    this.provider = new Provider(
-      {
-        provider: rpcUrl.startsWith("wss")
-          ? new WsProvider(rpcUrl) 
-          : new HttpProvider(rpcUrl)
-      }
-    )
+    this.keyringPairs = []
+    this.numAddresses = numAddresses
+    this.provider = new Provider({
+      provider: rpcUrl.startsWith("wss")
+        ? new WsProvider(rpcUrl) 
+        : new HttpProvider(rpcUrl)
+    })
     this.seedPhrase = seedPhrase
+    this.signers = []
   }
 
   async setup () {
     await this.provider.api.isReady
-    const keyring = new Keyring({ type: "sr25519" });
-    this.keyringPair = keyring.addFromUri(this.seedPhrase);
-    // console.log("pair.address =>", this.keyringPair.address)
-    this.signingKey = new TestAccountSigningKey(this.provider.api.registry);
-    this.signingKey.addKeyringPair(this.keyringPair);
-    this.signer = new Signer(this.provider, this.keyringPair.address, this.signingKey);
-    if (!(await this.signer.isClaimed())) {
-      console.info(`Warning: No claimed EVM account found -> claimed default EVM account: ${await this.signer.getAddress()}`)
-      await this.signer.claimDefaultAccount();
+    this.keyring = new Keyring({ type: "sr25519" })
+    this.signingKey = new TestAccountSigningKey(this.provider.api.registry) 
+    for (let j = 0; j < this.numAddresses; j ++) {
+      const uri = j == 0 ? this.seedPhrase : `${this.seedPhrase}//${j}`
+      const keyringPair = this.keyring.addFromUri(uri)
+      const signer = new Signer(this.provider, keyringPair.address, this.signingKey)
+      if (!(await signer.isClaimed())) {
+        console.info(`Warning: no claimed EVM account found for ${keyringPair.address}:`)
+        await signer.claimDefaultAccount();
+        console.info(`=> claimed ${await signer.getAddress()}`)
+      }
+      this.accounts.push(await signer.getAddress())
+      this.signers.push(signer)
+      this.keyringPairs.push(keyringPair)
     }
     this.seedPhrase = ""
+    this.signingKey.addKeyringPair(this.keyringPairs)
   }
 
   /**
@@ -117,21 +128,6 @@ export class WalletWrapper {
   }
 
   /**
-   * Create new eth_client block filter.
-   */
-  async mockCreateBlockFilter (_socket: SocketParams): Promise<string> {
-    return '0x1'
-  }
-
-  /**
-   * Gets eth filter changes. Only EthBlockFilters are currently supported.
-   */
- async mockGetFilterChanges (socket: SocketParams, id: string): Promise<any> {
-  logger.verbose({ socket, message: `> Filter id: ${id}` })
-  return [ await this.provider.getBlockNumber() ]
-}
-
-  /**
    * Populate essential transaction parameters, self-estimating gas price and/or gas limit if required.
    * @param socket Socket parms where the RPC call is coming from.
    * @param params Input params, to be validated and completed, if necessary.
@@ -149,7 +145,6 @@ export class WalletWrapper {
       value: params.value,
       data: params.data,
       nonce: params.nonce,
-      chainId: await this.signer.getChainId(),
       gasLimit: params.gas,
       gasPrice: params.gasPrice
     }
@@ -163,7 +158,12 @@ export class WalletWrapper {
       }`
     })
     logger.verbose({ socket, message: `> Value:     ${tx.value || 0} wei` })
-    logger.verbose({ socket, message: `> ChainId:   ${tx.chainId}` })
+    if (tx.gasPrice) {
+      logger.verbose({ socket, message: `> Gas price: ${tx.gasPrice}`})
+    }
+    if (tx.gasLimit) {
+      logger.verbose({ socket, message: `> Gas limit: ${tx.gasLimit}`})
+    }
 
     // Return tx object
     return tx
@@ -174,7 +174,16 @@ export class WalletWrapper {
     params: TransactionParams
   ): Promise<any> {
     const tx = await this.composeTransaction(socket, params)
+    if (!tx.from) {
+      const accounts: string[] = await this.getAccounts()
+      tx.from = accounts[0]
+    }
+    // console.log("tx ==>", tx)
+    // const resources = await this.provider.estimateResources(tx)
+    // console.log("resources =>", resources)    
     const gas = await this.provider.estimateGas(tx)
+    // console.log("tx.gas ==>", tx.gasLimit)
+    // console.log("gas ==>", gas)
     return gas.toHexString()
   }
 
@@ -216,10 +225,28 @@ export class WalletWrapper {
   /**
    * Gets addresses of the wallet.
    */
-   async getAccounts () {
-    let addresses = []
-    addresses.push(await this.signer.queryEvmAddress())
-    return addresses
+  getAccounts (): string[] {
+    return this.accounts
+  }
+
+  async getSignerFromEvmAddress(evmAddress: string): Promise<any> {
+    for (let j = 0; j < this.signers.length; j ++) {
+      const signer = this.signers[j]
+      const addr = await signer?.getAddress()
+      if (addr.toLowerCase() === evmAddress.toLowerCase()) {
+        return signer
+      }
+    }
+    const reason = `No private key available as to sign messages from '${evmAddress}'`
+    throw {
+      reason,
+      body: {
+        error: {
+          code: -32000,
+          message: reason
+        }
+      }
+    }
   }
 
   async getBlockNumber (
@@ -284,8 +311,6 @@ export class WalletWrapper {
         }
       `
       data = await request(this.graphUrl, queryBlockExtrinsics)
-      const extrinsics: any[] = data?.extrinsic     
-    const extrinsics: any[] = data?.extrinsic
       const extrinsics: any[] = data?.extrinsic     
       const unixTs = Math.round(new Date(block.timestamp).getTime())/1000
       res = {
@@ -517,8 +542,6 @@ export class WalletWrapper {
     return res
   }
 
-  
-
   /**
    * Get syncing status from provider.
    */
@@ -534,6 +557,21 @@ export class WalletWrapper {
   }
 
   /**
+   * Create new eth_client block filter.
+   */
+  async mockCreateBlockFilter (_socket: SocketParams): Promise<string> {
+    return '0x1'
+  }
+  
+  /**
+   * Gets eth filter changes. Only EthBlockFilters are currently supported.
+   */
+  async mockGetFilterChanges (socket: SocketParams, id: string): Promise<any> {
+    logger.verbose({ socket, message: `> Filter id: ${id}` })
+    return [ await this.provider.getBlockNumber() ]
+  }
+
+  /**
    * Signs transactinon usings wallet's private key, before forwarding to provider.
    *
    * @remark Return type is made `any` here because the result needs to be a String, not a `Record`.
@@ -542,18 +580,21 @@ export class WalletWrapper {
     socket: SocketParams,
     params: any
   ): Promise<any> {
-    (await this.provider.resolveApi).isReady
-    
+    (await this.provider.resolveApi).isReady    
     let tx: ethers.providers.TransactionRequest = await this.composeTransaction(socket, params)
+    const signer = await this.getSignerFromEvmAddress(tx.from || '')
+    // make sure `tx.from` syntax is just as expected from a Reef Signer
+    tx.from = await signer.getAddress()
+
     // Add current nonce:
     if (!tx.nonce) {
-      tx.nonce = await this.signer.getTransactionCount()
+      tx.nonce = await signer?.getTransactionCount()
     }    
     logger.verbose({ socket, message: `> Nonce:     ${tx.nonce}` })
 
     // Return transaction hash:
-    const res = await this.signer.sendTransaction(tx)
-    logger.debug({ socket, message: `<= ${res}` })
+    const res = await signer?.sendTransaction(tx)
+    logger.debug({ socket, message: `<= ${JSON.stringify(res)}` })
     return res.hash
   }
 }

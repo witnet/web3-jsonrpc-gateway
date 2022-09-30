@@ -193,11 +193,14 @@ export class WalletMiddlewareServer {
       ['Node version', await this.wrapper.provider.api.rpc.system.version()],
     ])
 
-    traceKeyValue('Reef wallet', [
-      ['Address   ', await this.wrapper.signer.getAddress()],
-      ['Balance   ', `${ethers.utils.formatEther(await this.wrapper.signer.getBalance())} REEF`],
-      ['Nonce     ', await this.wrapper.signer.getTransactionCount()]
-    ])
+    this.wrapper.signers.forEach(async (signer, index) => {
+      traceKeyValue(`Reef wallet #${index + 1}`, [
+        ['Address   ', await signer.getAddress()],
+        ['Balance   ', `${ethers.utils.formatEther(await signer.getBalance())} REEF`],
+        ['Nonce     ', await signer.getTransactionCount()]
+      ])
+    })
+    
 
     console.log(
       `Listening on ${hostname ||
