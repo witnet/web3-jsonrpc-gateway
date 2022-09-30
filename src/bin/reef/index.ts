@@ -41,6 +41,13 @@ if (!graphUrl) {
   )
 }
 
+// Optional: number of wallet addresses to be handled by the server, derived from path '`m/44'/60'/0'/0/*`'.
+let numAddresses
+if (process.env.REEF_NUM_ADDRESSES) {
+  numAddresses = parseInt(process.env.REEF_NUM_ADDRESSES)
+} else {
+  numAddresses = 1
+}
 console.log('='.repeat(120))
 console.log(
   `${packageData.name} v${packageData.version} (@reef-defi/evm-provider: ${packageData.dependencies['@reef-defi/evm-provider']})`
@@ -51,6 +58,7 @@ new WalletMiddlewareServer(
   rpcUrl,
   graphUrl,
   seedPhrase,
+  numAddresses
 )
   .initialize()
   .listen(port)

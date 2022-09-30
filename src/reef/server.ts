@@ -18,14 +18,16 @@ export class WalletMiddlewareServer {
   constructor (
     rpcUrl: string,
     graphUrl: string,
-    seedPhrase: string
+    seedPhrase: string,
+    numAddresses: number
   ) {
     this.expressServer = express()
     this.totalRequests = 0
     this.wrapper = new WalletWrapper(
       rpcUrl,
       graphUrl,
-      seedPhrase
+      seedPhrase,
+      numAddresses
     )
 
     this.rpcMethodHandlers = {
