@@ -232,24 +232,21 @@ export class WalletWrapper {
 
   async getBlockByNumber(
     socket: SocketParams,
-    params: any    
+    _params: any    
   ): Promise<any> {
-    let blockNumber
-    if (params === "latest") {
-      blockNumber = await this.provider.getBlockNumber()
-    } else {
-      blockNumber = parseInt(params)
-    }
     logger.verbose({ socket, message: `=> querying data to ${this.graphUrl} ...`})
     const queryBlock = gql`
       {
         block (
+          order_by: { id: desc_nulls_last },
+          limit: 1, 
           where: {
-            id: {
-              _eq: ${blockNumber}
+            finalized: {
+              _eq: true
             }
           }
         ) {
+          id
           author
           hash
           parent_hash
@@ -260,39 +257,41 @@ export class WalletWrapper {
         }
       }
     `
-    const queryBlockExtrinsics = gql`
-      {
-        extrinsic (
-          where: {
-            block_id: {
-              _eq: ${blockNumber}
-            }
-          }
-        ) {
-          hash
-          events (
+    let res = null
+    let data = await request(this.graphUrl, queryBlock)
+    const block = data?.block[0]    
+    if (block?.id) {
+      const queryBlockExtrinsics = gql`
+        {
+          extrinsic (
             where: {
-              section: {
-                _eq: "evm"
+              block_id: {
+                _eq: ${block.id}
               }
             }
           ) {
-            method
+            hash
+            events (
+              where: {
+                section: {
+                  _eq: "evm"
+                }
+              }
+            ) {
+              method
+            }
           }
         }
-      }
-    `
-    let data = await request(this.graphUrl, queryBlock)
-    const block = data?.block[0]
-    data = await request(this.graphUrl, queryBlockExtrinsics)
+      `
+      data = await request(this.graphUrl, queryBlockExtrinsics)
+      const extrinsics: any[] = data?.extrinsic     
     const extrinsics: any[] = data?.extrinsic
-    let res = null
-    if (block) {
+      const extrinsics: any[] = data?.extrinsic     
       const unixTs = Math.round(new Date(block.timestamp).getTime())/1000
       res = {
         hash: block.hash,
         parentHash: block.parent_hash,
-        number: blockNumber,
+        number: block.id,
         stateRoot: block.state_root,
         timestamp: unixTs,
         nonce: "0x0000000000000000",
