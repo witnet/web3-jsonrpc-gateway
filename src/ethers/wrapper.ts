@@ -2,16 +2,16 @@ import { ethers, BigNumber, Wallet } from 'ethers'
 import { logger, SocketParams } from '../Logger'
 
 interface TransactionParams {
-  from: string
+  from?: string
   to: string
-  gas: string
-  gasPrice: string
-  value: string
+  gas?: string
+  gasPrice?: string
+  value?: string
   data: string
-  nonce: string
-  type: number
-  maxFeePerGas: string
-  maxPriorityFeePerGas: string
+  nonce?: string
+  type?: number
+  maxFeePerGas?: string
+  maxPriorityFeePerGas?: string
 }
 
 /**
