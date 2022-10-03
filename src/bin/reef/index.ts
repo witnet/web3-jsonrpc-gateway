@@ -43,8 +43,8 @@ if (!graphUrl) {
 
 // Optional: number of wallet addresses to be handled by the server, derived from path '`m/44'/60'/0'/0/*`'.
 let numAddresses
-if (process.env.REEF_NUM_ADDRESSES) {
-  numAddresses = parseInt(process.env.REEF_NUM_ADDRESSES)
+if (process.env.NUM_WALLETS) {
+  numAddresses = parseInt(process.env.NUM_WALLETS)
 } else {
   numAddresses = 1
 }

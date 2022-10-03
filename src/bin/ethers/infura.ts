@@ -63,8 +63,8 @@ if (process.env.INFURA_GAS_LIMIT) {
 
 // Optional: number of wallet addresses to be handled by the server, derived from path '`m/44'/60'/0'/0/*`'.
 let num_addresses
-if (process.env.INFURA_NUM_ADDRESSES) {
-  num_addresses = parseInt(process.env.INFURA_NUM_ADDRESSES)
+if (process.env.NUM_WALLETS) {
+  num_addresses = parseInt(process.env.NUM_WALLETS)
 } else {
   num_addresses = 5
 }
