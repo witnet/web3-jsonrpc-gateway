@@ -7,16 +7,24 @@ const packageData = require('../../../package.json')
 
 // Mandatory: the actual URL of the Web3 JSON-RPC provider. Can also be passed as first parameter.
 const rpcUrl = process.argv[2] || process.env.PROVIDER_URL || ''
-if (!rpcUrl.length) {
+if (!rpcUrl) {
   throw Error(
     'No provider URL provided. Please set the `PROVIDER_URL` environment variable.'
   )
 }
 
+// Mandatory: the graphql endpoint serving Reef's evm data. Can also be passed as second parameter.
+const graphUrl = process.argv[3] || process.env.GRAPHQL_URL || ''
+if (!graphUrl) {
+  throw Error(
+    'No GraphQL endpoint provided. Please set the `GRAPHQL_URL` environment variable.'
+  )
+}
+
 // Mandatory: Listening port for the server. Can also be passed from command-line as third parameter:
 let port
-if (process.argv.length >= 4) {
-  port = parseInt(process.argv[3])
+if (process.argv.length >= 5) {
+  port = parseInt(process.argv[4])
 } else if (process.env.PORT) {
   port = parseInt(process.env.PORT)
 } else {
@@ -30,14 +38,6 @@ const seedPhrase = process.env.SEED_PHRASE
 if (!seedPhrase) {
   throw Error(
     'No mnemonic phrase provided. Please set the `SEED_PHRASE` environment variable.'
-  )
-}
-
-// Mandatory: The graphql endpoint serving Reef's evm data
-const graphUrl = process.env.GRAPHQL_URL || ''
-if (!graphUrl) {
-  throw Error(
-    'No GraphQL endpoint provided. Please set the `GRAPHQL_URL` environment variable.'
   )
 }
 
