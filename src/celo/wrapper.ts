@@ -3,7 +3,7 @@ import {
   CeloWallet as Wallet
 } from '@celo-tools/celo-ethers-wrapper'
 import { newKit, ContractKit } from '@celo/contractkit'
-import { BigNumber } from "@ethersproject/bignumber";
+import { BigNumber } from '@ethersproject/bignumber'
 import { logger, SocketParams } from '../Logger'
 
 interface TransactionParams {
@@ -21,7 +21,7 @@ interface TransactionParams {
  * Wraps the `ether` wallet / signer abstraction so it's compatible with the wallet middleware of
  * `eth-json-rpc-middleware`.
  */
-class WalletWrapper {  
+class WalletWrapper {
   feeCurrency?: string
   gasLimitFactor: number
   gasPriceFactor: number
@@ -64,13 +64,12 @@ class WalletWrapper {
    * Populate essential transaction parameters, self-estimating gas price and/or gas limit if required.
    * @param socket Socket parms where the RPC call is coming from.
    * @param params Input params, to be validated and completed, if necessary.
-   * @returns 
+   * @returns
    */
-   async composeTransaction (
+  async composeTransaction (
     socket: SocketParams,
     params: TransactionParams
   ): Promise<any> {
-
     // Estimate gas price:
     const gasPrice = await this.processEthGasPrice()
     if (gasPrice > this.gasPriceMax) {
@@ -93,7 +92,7 @@ class WalletWrapper {
       data: params.data,
       gasPrice,
       value: params.value,
-      chainId: this.networkId,      
+      chainId: this.networkId,
       feeCurrency: this.feeCurrency || ''
     }
 
@@ -140,11 +139,11 @@ class WalletWrapper {
   }
 
   /**
-   * Check for possible rollbacks on the EVM side. 
+   * Check for possible rollbacks on the EVM side.
    * @param socket Socket parms where the RPC call is coming from
    * @returns Last known block number.
    */
-  async checkRollbacks(socket: SocketParams): Promise<number> {
+  async checkRollbacks (socket: SocketParams): Promise<number> {
     const block = await this.provider.getBlockNumber()
     if (block < this.lastKnownBlock) {
       if (block <= this.lastKnownBlock - this.interleaveBlocks) {
@@ -167,7 +166,9 @@ class WalletWrapper {
    * Gets Wallet interaction object of given address, if available.
    */
   getAccount (address: string): Wallet | undefined {
-    return this.wallets.find(wallet => wallet.address.toLowerCase() === address.toLowerCase())
+    return this.wallets.find(
+      wallet => wallet.address.toLowerCase() === address.toLowerCase()
+    )
   }
 
   /**
@@ -192,8 +193,11 @@ class WalletWrapper {
     params: TransactionParams
   ): Promise<any> {
     // Check for rollbackas, and get block tag:
-    const blockTag = await this.checkRollbacks(socket) - this.interleaveBlocks
-    logger.verbose({ socket, message: `> Block tag: ${this.lastKnownBlock} --> ${blockTag}` })
+    const blockTag = (await this.checkRollbacks(socket)) - this.interleaveBlocks
+    logger.verbose({
+      socket,
+      message: `> Block tag: ${this.lastKnownBlock} --> ${blockTag}`
+    })
 
     // Compose base transaction:
     const tx = await this.composeTransaction(socket, params)
@@ -204,9 +208,9 @@ class WalletWrapper {
 
   /**
    * Estimates gas limit by multiplying configured gasLimitFactor.
-   * @param _socket 
+   * @param _socket
    * @param params Transaction params.
-   * @returns 
+   * @returns
    */
   async processEthEstimateGas (
     _socket: SocketParams,
@@ -230,7 +234,9 @@ class WalletWrapper {
    * Estimates current gas price.
    */
   async processEthGasPrice (): Promise<any> {
-    const gasPriceMinimum: any = await this.provider.getGasPrice(this.feeCurrency)
+    const gasPriceMinimum: any = await this.provider.getGasPrice(
+      this.feeCurrency
+    )
     return `0x${Math.ceil(gasPriceMinimum * this.gasPriceFactor).toString(16)}`
   }
 
@@ -242,7 +248,7 @@ class WalletWrapper {
   async processEthSignMessage (
     socket: SocketParams,
     address: string,
-    message: string,
+    message: string
   ): Promise<any> {
     const wallet = await this.getAccount(address)
     if (!wallet) {
@@ -257,7 +263,10 @@ class WalletWrapper {
         }
       }
     }
-    logger.verbose({ socket, message: `> Sigining message "${message}" from ${address}...` })
+    logger.verbose({
+      socket,
+      message: `> Sigining message "${message}" from ${address}...`
+    })
     return wallet?.signMessage(message)
   }
 
@@ -297,7 +306,7 @@ class WalletWrapper {
       nonce: await account?.getTransactionCount()
     }
     logger.verbose({ socket, message: `> Nonce:     ${tx.nonce}` })
-    
+
     // Sign transaction:
     const signedTx = await account?.signTransaction(tx)
     logger.debug({ socket, message: `=> Signed tx: ${signedTx}` })

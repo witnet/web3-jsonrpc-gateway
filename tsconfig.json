@@ -27,8 +27,9 @@
     ] /* List of folders to include type definitions from. */,
     "esModuleInterop": true /* Enables emit interoperability between CommonJS and ES Modules via creation of namespace objects for all imports. Implies 'allowSyntheticDefaultImports'. */,
     "skipLibCheck": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "rootDir": "src"
   },
-  "include": ["src/**/*", "./package.json"],
+  "include": ["src/**/*"],
   "exclude": ["**/*.d.ts", "node_modules"]
 }

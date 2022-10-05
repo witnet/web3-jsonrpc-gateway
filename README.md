@@ -13,7 +13,7 @@ yarn build
 ### Infura as destination provider:
 
 ```console
-node dist/src/bin/ethers/infura
+node dist/bin/ethers/infura
 ```
 
 Required environment variables:
@@ -35,7 +35,7 @@ Optional environment variables:
 ### Celo-compatible destination providers:
 
 ```console
-node dist/src/bin/celo
+node dist/bin/celo
 ```
 
 Required environment variables:
@@ -56,7 +56,7 @@ Optional environment variables:
 ### Conflux-compatible destination providers:
 
 ```console
-node ./dist/src/bin/conflux
+node ./dist/bin/conflux
 ```
 
 Required environment variables:
@@ -78,7 +78,7 @@ Optional environment variables:
 ### Reef-compatible destination providers:
 
 ```console
-node ./dist/src/bin/reef
+node ./dist/bin/reef
 ```
 
 Required environment variables:
@@ -96,7 +96,7 @@ Optional environment variables:
 ### Generic destination providers:
 
 ```console
-node ./dist/src/bin/ethers
+node ./dist/bin/ethers
 ```
 
 Generic destination providers need to comply with the `JsonRpcProvider` type from the `Ethers.js` library:
@@ -137,6 +137,7 @@ There are several package scripts at your disposal for you to launch specific ga
 - `SEED_PHRASE`: seed phrase to be used with either `Infura` or `Ethers.js` providers.
 
 ### Running gateways to Ethereum networks:
+
 - Rinkeby: `npm run ethereum:rinkeby`
 - Goerli: `npm run ethereum:goerli`
 - Kovan: `npm run ethereum:kovan`
@@ -144,30 +145,38 @@ There are several package scripts at your disposal for you to launch specific ga
 - Mainnet: `npm run ethereum:mainnet`
 
 ### Running gateways to BOBA Layer-2 networks:
+
 - Rinkeby: `npm run boba:rinkeby`
 - Mainnet: `npm run boba:mainnet`
 
 ### Running gateways to CELO networks:
+
 - Alfajores: `npm run celo:alfajores`
 - Mainnet: `npm run celo:mainnet`
 
 ### Running gateways to Conflux networks:
+
 - Testnet: `npm run conflux:testnet`
 - Mainnet: `npm run conflux:mainnet`
 
 ### Running gateways to HARMONY networks:
+
 - Testnet (Shard #0): `npm run harmony:testnet#0`
 
 ### Running gateways to KCC networks:
+
 - Testnet: `npm run kcc:testnet`
 
 ### Running gateways to METIS networks:
+
 - Stardust (Rinkeby): `npm run metis:rinkeby`
 
 ### Running gateways to POLYGON networks:
+
 - Mumbai (Goerli): `npm run polygon:goerli`
 
 ### Running gateways to REEF CHAIN networks:
+
 - Testnet: `npm run reef:testnet`
 
 ## How to create a server for any other provider

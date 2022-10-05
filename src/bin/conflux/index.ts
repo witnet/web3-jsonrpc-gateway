@@ -38,7 +38,7 @@ if (process.argv.length >= 5) {
 }
 
 // Mandatory: the private key to use for generation the server's own wrapped wallet.
-const privateKeys = JSON.parse(process.env.PRIVATE_KEYS || "")
+const privateKeys = JSON.parse(process.env.PRIVATE_KEYS || '')
 if (!privateKeys || privateKeys.length === 0) {
   throw Error(
     'No private keys were provided. Please set the `PRIVATE_KEYS` environment variable.'
@@ -73,7 +73,7 @@ const estimateGasPrice: boolean = JSON.parse(
 )
 
 // Optional: Epoch number tag to be used as default value on those RPC methods that may require it.
-const epochLabel = process.env.CONFLUX_DEFAULT_EPOCH_LABEL || "latest_finalized"
+const epochLabel = process.env.CONFLUX_DEFAULT_EPOCH_LABEL || 'latest_finalized'
 
 console.log('='.repeat(120))
 console.log(

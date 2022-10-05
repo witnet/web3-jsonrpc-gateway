@@ -17,7 +17,7 @@ class WalletMiddlewareServer {
 
   constructor (
     provider: ethers.providers.JsonRpcProvider,
-    seed_phrase: string,    
+    seed_phrase: string,
     interleave_blocks: number,
     gas_price: number,
     gas_limit: number,
@@ -56,11 +56,11 @@ class WalletMiddlewareServer {
       ],
       [
         'Gas Price',
-        `${gas_price} ${estimate_gas_price ? "(max)": "(default)"}`
+        `${gas_price} ${estimate_gas_price ? '(max)' : '(default)'}`
       ],
       [
         'Gas limit',
-        `${gas_limit} ${estimate_gas_limit ? "(max)": "(default)"}`
+        `${gas_limit} ${estimate_gas_limit ? '(max)' : '(default)'}`
       ]
     ]
     if (gas_price_factor > 1) {
@@ -119,7 +119,7 @@ class WalletMiddlewareServer {
           handlers = {
             ...handlers,
             eth_getFilterChanges: this.wrapper.mockEthFilterChanges,
-            eth_newBlockFilter: () => "0x1"
+            eth_newBlockFilter: () => '0x1'
           }
         }
 

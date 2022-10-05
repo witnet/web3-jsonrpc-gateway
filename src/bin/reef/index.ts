@@ -54,11 +54,6 @@ console.log(
 )
 console.log()
 
-new WalletMiddlewareServer(
-  rpcUrl,
-  graphUrl,
-  seedPhrase,
-  numAddresses
-)
+new WalletMiddlewareServer(rpcUrl, graphUrl, seedPhrase, numAddresses)
   .initialize()
   .listen(port)

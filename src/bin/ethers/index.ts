@@ -122,7 +122,7 @@ const destinationProvider = new ethers.providers.JsonRpcProvider(
 new WalletMiddlewareServer(
   destinationProvider,
   seed_phrase,
-  interleave_blocks,  
+  interleave_blocks,
   gas_price,
   gas_limit,
   num_addresses,

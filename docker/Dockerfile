@@ -23,7 +23,7 @@ WORKDIR /data
 RUN npm install yarn
 RUN yarn
 RUN yarn build
-RUN chmod +x dist/src/bin/*
+RUN chmod +x dist/bin/*
 RUN yarn link
 
 # Set the entrypoint and main command

@@ -2,14 +2,14 @@ import {
   TestAccountSigningKey,
   Provider,
   Signer
-} from "@reef-defi/evm-provider";
+} from '@reef-defi/evm-provider'
 
-import { HttpProvider, WsProvider, Keyring } from "@polkadot/api";
-import { KeyringPair } from "@polkadot/keyring/types";
+import { HttpProvider, WsProvider, Keyring } from '@polkadot/api'
+import { KeyringPair } from '@polkadot/keyring/types'
 
 import { logger, SocketParams } from '../Logger'
-import { ethers } from "ethers";
-import { BigNumber } from "@ethersproject/bignumber";
+import { ethers } from 'ethers'
+import { BigNumber } from '@ethersproject/bignumber'
 
 import { request, gql } from 'graphql-request'
 
@@ -40,7 +40,7 @@ export class WalletWrapper {
   seedPhrase: string
   signers: Signer[]
   signingKey: TestAccountSigningKey
-  
+
   constructor (
     rpcUrl: string,
     graphUrl: string,
@@ -52,8 +52,8 @@ export class WalletWrapper {
     this.keyringPairs = []
     this.numAddresses = numAddresses
     this.provider = new Provider({
-      provider: rpcUrl.startsWith("wss")
-        ? new WsProvider(rpcUrl) 
+      provider: rpcUrl.startsWith('wss')
+        ? new WsProvider(rpcUrl)
         : new HttpProvider(rpcUrl)
     })
     this.seedPhrase = seedPhrase
@@ -62,22 +62,28 @@ export class WalletWrapper {
 
   async setup () {
     await this.provider.api.isReady
-    this.keyring = new Keyring({ type: "sr25519" })
-    this.signingKey = new TestAccountSigningKey(this.provider.api.registry) 
-    for (let j = 0; j < this.numAddresses; j ++) {
+    this.keyring = new Keyring({ type: 'sr25519' })
+    this.signingKey = new TestAccountSigningKey(this.provider.api.registry)
+    for (let j = 0; j < this.numAddresses; j++) {
       const uri = j == 0 ? this.seedPhrase : `${this.seedPhrase}//${j}`
       const keyringPair = this.keyring.addFromUri(uri)
-      const signer = new Signer(this.provider, keyringPair.address, this.signingKey)
+      const signer = new Signer(
+        this.provider,
+        keyringPair.address,
+        this.signingKey
+      )
       if (!(await signer.isClaimed())) {
-        console.info(`Warning: no claimed EVM account found for ${keyringPair.address}:`)
-        await signer.claimDefaultAccount();
+        console.info(
+          `Warning: no claimed EVM account found for ${keyringPair.address}:`
+        )
+        await signer.claimDefaultAccount()
         console.info(`=> claimed ${await signer.getAddress()}`)
       }
       this.accounts.push(await signer.getAddress())
       this.signers.push(signer)
       this.keyringPairs.push(keyringPair)
     }
-    this.seedPhrase = ""
+    this.seedPhrase = ''
     this.signingKey.addKeyringPair(this.keyringPairs)
   }
 
@@ -87,10 +93,7 @@ export class WalletWrapper {
    * @param params JSON-RPC parameters
    * @returns
    */
-  async call (
-    socket: SocketParams,
-    tx: any
-  ): Promise<any> {
+  async call (socket: SocketParams, tx: any): Promise<any> {
     if (tx.from) {
       logger.verbose({ socket, message: `> From: ${tx.from}` })
     }
@@ -131,13 +134,12 @@ export class WalletWrapper {
    * Populate essential transaction parameters, self-estimating gas price and/or gas limit if required.
    * @param socket Socket parms where the RPC call is coming from.
    * @param params Input params, to be validated and completed, if necessary.
-   * @returns 
+   * @returns
    */
-   async composeTransaction (
+  async composeTransaction (
     socket: SocketParams,
     params: TransactionParams
   ): Promise<ethers.providers.TransactionRequest> {
-    
     // Compose actual transaction:
     let tx: ethers.providers.TransactionRequest = {
       from: params.from,
@@ -150,26 +152,27 @@ export class WalletWrapper {
     }
     if (tx.from) {
       logger.verbose({ socket, message: `> From:      ${tx.from}` })
-    }    
+    }
     logger.verbose({ socket, message: `> To:        ${tx.to || '(deploy)'}` })
-    logger.verbose({ socket,
+    logger.verbose({
+      socket,
       message: `> Data:      ${
         tx.data ? tx.data.toString().substring(0, 10) + '...' : '(transfer)'
       }`
     })
     logger.verbose({ socket, message: `> Value:     ${tx.value || 0} wei` })
     if (tx.gasPrice) {
-      logger.verbose({ socket, message: `> Gas price: ${tx.gasPrice}`})
+      logger.verbose({ socket, message: `> Gas price: ${tx.gasPrice}` })
     }
     if (tx.gasLimit) {
-      logger.verbose({ socket, message: `> Gas limit: ${tx.gasLimit}`})
+      logger.verbose({ socket, message: `> Gas limit: ${tx.gasLimit}` })
     }
 
     // Return tx object
     return tx
   }
 
-  async estimateGas(
+  async estimateGas (
     socket: SocketParams,
     params: TransactionParams
   ): Promise<any> {
@@ -182,8 +185,8 @@ export class WalletWrapper {
     return gas.toHexString()
   }
 
-  async estimateGasPrice(_socket: SocketParams) : Promise<any> {
-    return "0x1"
+  async estimateGasPrice (_socket: SocketParams): Promise<any> {
+    return '0x1'
     // const blockNumber = await this.provider.getBlockNumber()
     // const query = gql`
     //   {
@@ -195,7 +198,7 @@ export class WalletWrapper {
     //         ]
     //       }
     //     ) {
-    //       signed_data 
+    //       signed_data
     //     }
     //   }
     // `
@@ -213,7 +216,7 @@ export class WalletWrapper {
     //     })
     //     return sumGasPrices.div(gasPrices.length).toHexString()
     //   }
-    // } 
+    // }
     // return 10 ** 10;
   }
 
@@ -224,8 +227,8 @@ export class WalletWrapper {
     return this.accounts
   }
 
-  async getSignerFromEvmAddress(evmAddress: string): Promise<any> {
-    for (let j = 0; j < this.signers.length; j ++) {
+  async getSignerFromEvmAddress (evmAddress: string): Promise<any> {
+    for (let j = 0; j < this.signers.length; j++) {
       const signer = this.signers[j]
       const addr = await signer?.getAddress()
       if (addr.toLowerCase() === evmAddress.toLowerCase()) {
@@ -244,29 +247,22 @@ export class WalletWrapper {
     }
   }
 
-  async getBlockNumber (
-    _socket: SocketParams,
-    _params: any[]
-  ): Promise<any> {
+  async getBlockNumber (_socket: SocketParams, _params: any[]): Promise<any> {
     const blockNumber = BigNumber.from(await this.provider.getBlockNumber())
     return blockNumber.toHexString()
   }
 
-  async getBlockByNumber(
-    socket: SocketParams,
-    _params: any    
-  ): Promise<any> {
-    logger.verbose({ socket, message: `=> querying data to ${this.graphUrl} ...`})
+  async getBlockByNumber (socket: SocketParams, _params: any): Promise<any> {
+    logger.verbose({
+      socket,
+      message: `=> querying data to ${this.graphUrl} ...`
+    })
     const queryBlock = gql`
       {
-        block (
-          order_by: { id: desc_nulls_last },
-          limit: 1, 
-          where: {
-            finalized: {
-              _eq: true
-            }
-          }
+        block(
+          order_by: { id: desc_nulls_last }
+          limit: 1
+          where: { finalized: { _eq: true } }
         ) {
           id
           author
@@ -281,7 +277,7 @@ export class WalletWrapper {
     `
     let res = null
     let data = await request(this.graphUrl, queryBlock)
-    const block = data?.block[0]    
+    const block = data?.block[0]
     if (block?.id) {
       const queryBlockExtrinsics = gql`
         {
@@ -306,48 +302,42 @@ export class WalletWrapper {
         }
       `
       data = await request(this.graphUrl, queryBlockExtrinsics)
-      const extrinsics: any[] = data?.extrinsic     
-      const unixTs = Math.round(new Date(block.timestamp).getTime())/1000
+      const extrinsics: any[] = data?.extrinsic
+      const unixTs = Math.round(new Date(block.timestamp).getTime()) / 1000
       res = {
         hash: block.hash,
         parentHash: block.parent_hash,
         number: block.id,
         stateRoot: block.state_root,
         timestamp: unixTs,
-        nonce: "0x0000000000000000",
+        nonce: '0x0000000000000000',
         difficulty: 0,
-        gasLimit: "0xffffffff",
-        gasUsed: "0xffffffff",
-        miner: "0x0000000000000000000000000000000000000000", 
-        extraData: "0x",
-        transactions: extrinsics.filter(obj => obj.events.length > 0).map(obj => obj.hash),
+        gasLimit: '0xffffffff',
+        gasUsed: '0xffffffff',
+        miner: '0x0000000000000000000000000000000000000000',
+        extraData: '0x',
+        transactions: extrinsics
+          .filter(obj => obj.events.length > 0)
+          .map(obj => obj.hash)
       }
     }
     return res
   }
 
-  async getBalance(
-    _socket: SocketParams,
-    params: any
-  ): Promise<any> {
+  async getBalance (_socket: SocketParams, params: any): Promise<any> {
     return (await this.provider.getBalance(params)).toHexString()
   }
 
-  async getCode(
-    _socket: SocketParams,
-    params: any
-  ): Promise<any> {
+  async getCode (_socket: SocketParams, params: any): Promise<any> {
     return this.provider.getCode(params)
   }
 
-  async getNetVersion(
-    _socket: SocketParams
-  ): Promise<any> {
+  async getNetVersion (_socket: SocketParams): Promise<any> {
     const network = await this.provider.getNetwork()
     return network.chainId
   }
 
-  async getTransactionByHash(
+  async getTransactionByHash (
     socket: SocketParams,
     txHash: string
   ): Promise<any> {
@@ -384,14 +374,20 @@ export class WalletWrapper {
         }
       }
     `
-    logger.verbose({ socket, message: `=> querying data to ${this.graphUrl} ...`})
+    logger.verbose({
+      socket,
+      message: `=> querying data to ${this.graphUrl} ...`
+    })
     const data = await request(this.graphUrl, query)
     const extrinsic = data?.extrinsic[0]
     let res = null
     if (extrinsic && extrinsic.block.finalized) {
       try {
         const from = extrinsic.events[0]!.data[0]
-        const nonce = await this.provider.getTransactionCount(from, extrinsic.block.hash)
+        const nonce = await this.provider.getTransactionCount(
+          from,
+          extrinsic.block.hash
+        )
         const gas = BigNumber.from(extrinsic.signed_data.fee.weight)
         const fee = BigNumber.from(extrinsic.signed_data.fee.partialFee)
         res = {
@@ -401,25 +397,26 @@ export class WalletWrapper {
           blockNumber: BigNumber.from(extrinsic.block.id).toHexString(),
           transactionIndex: `0x${extrinsic.events[0]!.index.toString(16)}`,
           from,
-          to: extrinsic.events[0]!.method === "Created"
-            ? null
-            : extrinsic.events[0]!.data[1],
+          to:
+            extrinsic.events[0]!.method === 'Created'
+              ? null
+              : extrinsic.events[0]!.data[1],
           value: BigNumber.from(extrinsic.args[1]).toHexString(),
           gasPrice: fee.div(gas).toHexString(),
           gas: gas.toHexString(),
           input: extrinsic.args[0]
         }
       } catch (ex) {
-        logger.warn({ socket, message: `>< exception: ${ex}`})
+        logger.warn({ socket, message: `>< exception: ${ex}` })
         return null
       }
     }
     return res
   }
 
-  async getTransactionReceipt(
+  async getTransactionReceipt (
     socket: SocketParams,
-    txHash: string    
+    txHash: string
   ): Promise<any> {
     const query = gql`
       {
@@ -484,7 +481,10 @@ export class WalletWrapper {
         }
       }
     `
-    logger.verbose({ socket, message: `=> querying data to ${this.graphUrl} ...`})
+    logger.verbose({
+      socket,
+      message: `=> querying data to ${this.graphUrl} ...`
+    })
     const data = await request(this.graphUrl, query)
     const extrinsic = data?.extrinsic[0]
     let res = null
@@ -499,14 +499,13 @@ export class WalletWrapper {
           transactionIndex: `0x${extrinsic.events[0]!.index.toString(16)}`,
           blockHash: extrinsic.block.hash,
           blockNumber: BigNumber.from(extrinsic.block.id).toHexString(),
-          cumulativeGasUsed: gas.toHexString(), 
+          cumulativeGasUsed: gas.toHexString(),
           gasUsed: gas.toHexString(),
-          contractAddress: extrinsic.events[0]!.method === "Created"
-            ? extrinsic.events[0]!.data[1]
-            : null,
-          status: extrinsic.status === "success"
-            ? "0x1"
-            : "0x0",
+          contractAddress:
+            extrinsic.events[0]!.method === 'Created'
+              ? extrinsic.events[0]!.data[1]
+              : null,
+          status: extrinsic.status === 'success' ? '0x1' : '0x0',
           logs: events?.map((event: any, index) => {
             const log = event.data[0]
             return {
@@ -521,16 +520,18 @@ export class WalletWrapper {
               topics: log.topics
             }
           }),
-          logsBloom: "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          logsBloom:
+            '0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
           from: extrinsic.events[0]!.data[0],
-          to: extrinsic.events[0]!.method === "Created"
-            ? null
-            : extrinsic.events[0]!.data[1],
+          to:
+            extrinsic.events[0]!.method === 'Created'
+              ? null
+              : extrinsic.events[0]!.data[1],
           effectiveGasPrice: fee.div(gas).toHexString(),
-          type: "0x0",
+          type: '0x0'
         }
       } catch (ex) {
-        logger.warn({ socket, message: `>< exception: ${ex}`})
+        logger.warn({ socket, message: `>< exception: ${ex}` })
         return null
       }
     }
@@ -546,7 +547,7 @@ export class WalletWrapper {
 
   async getWeb3Version (
     _socket: SocketParams,
-    _tx: TransactionParams    
+    _tx: TransactionParams
   ): Promise<any> {
     return `${pckg.name} v${pckg.version}`
   }
@@ -557,13 +558,13 @@ export class WalletWrapper {
   async mockCreateBlockFilter (_socket: SocketParams): Promise<string> {
     return '0x1'
   }
-  
+
   /**
    * Gets eth filter changes. Only EthBlockFilters are currently supported.
    */
   async mockGetFilterChanges (socket: SocketParams, id: string): Promise<any> {
     logger.verbose({ socket, message: `> Filter id: ${id}` })
-    return [ await this.provider.getBlockNumber() ]
+    return [await this.provider.getBlockNumber()]
   }
 
   /**
@@ -571,12 +572,12 @@ export class WalletWrapper {
    *
    * @remark Return type is made `any` here because the result needs to be a String, not a `Record`.
    */
-  async sendTransaction (
-    socket: SocketParams,
-    params: any
-  ): Promise<any> {
-    (await this.provider.resolveApi).isReady    
-    let tx: ethers.providers.TransactionRequest = await this.composeTransaction(socket, params)
+  async sendTransaction (socket: SocketParams, params: any): Promise<any> {
+    ;(await this.provider.resolveApi).isReady
+    let tx: ethers.providers.TransactionRequest = await this.composeTransaction(
+      socket,
+      params
+    )
     const signer = await this.getSignerFromEvmAddress(tx.from || '')
     // make sure `tx.from` syntax is just as expected from a Reef Signer
     tx.from = await signer.getAddress()
@@ -584,7 +585,7 @@ export class WalletWrapper {
     // Add current nonce:
     if (!tx.nonce) {
       tx.nonce = await signer?.getTransactionCount()
-    }    
+    }
     logger.verbose({ socket, message: `> Nonce:     ${tx.nonce}` })
 
     // Return transaction hash:

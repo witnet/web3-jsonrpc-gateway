@@ -17,14 +17,14 @@ import { logger, SocketParams } from '../Logger'
 
 export class WalletWrapper {
   accounts: Account[]
-  conflux: Conflux  
+  conflux: Conflux
   defaultGas: BigInt
   epochLabel: EpochNumber
-  estimateGasPrice: boolean  
+  estimateGasPrice: boolean
   interleaveEpochs: number
   lastKnownEpochNumber: number
   networkId: number
-  
+
   constructor (
     networkId: number,
     privateKeys: string[],
@@ -37,7 +37,7 @@ export class WalletWrapper {
     this.networkId = networkId
     this.defaultGas = defaultGas
     this.epochLabel = <EPOCH_LABEL>epochLabel
-    this.estimateGasPrice = estimateGasPrice    
+    this.estimateGasPrice = estimateGasPrice
     this.interleaveEpochs = interleaveEpochs
     this.conflux = conflux
     this.accounts = []
@@ -58,18 +58,20 @@ export class WalletWrapper {
     epoch: EpochNumber,
     socket: SocketParams
   ): Promise<any> {
-    epoch = await this.checkRollbacks(socket)      
+    epoch = await this.checkRollbacks(socket)
     epoch = this.lastKnownEpochNumber - this.interleaveEpochs
-    if (this.interleaveEpochs > 0) { 
-      logger.verbose({ socket, message: `> Epoch number: ${this.lastKnownEpochNumber} --> ${epoch}` })
+    if (this.interleaveEpochs > 0) {
+      logger.verbose({
+        socket,
+        message: `> Epoch number: ${this.lastKnownEpochNumber} --> ${epoch}`
+      })
     } else {
       logger.verbose({ socket, message: `> Epoch number: ${epoch}` })
     }
-    
+
     if (!tx.from) tx.from = this.getAccounts()[0]
     if (tx.from) logger.info({ socket, message: `> From: ${tx.from}` })
-    if (tx.to)
-      logger.info({ socket, message: `> To: ${tx.to || '(deploy)'}` })
+    if (tx.to) logger.info({ socket, message: `> To: ${tx.to || '(deploy)'}` })
     if (tx.data)
       logger.info({
         socket,
@@ -91,18 +93,23 @@ export class WalletWrapper {
   }
 
   /**
-   * Check for possible rollbacks on the EVM side. 
+   * Check for possible rollbacks on the EVM side.
    * @param socket Socket parms where the RPC call is coming from
    * @returns Last known epoch number.
    */
-  async checkRollbacks(socket: SocketParams): Promise<number> {
+  async checkRollbacks (socket: SocketParams): Promise<number> {
     const epoch = await this.conflux.getEpochNumber(this.epochLabel)
     if (epoch < this.lastKnownEpochNumber) {
       if (epoch <= this.lastKnownEpochNumber - this.interleaveEpochs) {
-        logger.warn({socket, message: `Threatening rollback: from epoch ${this.lastKnownEpochNumber} down to ${epoch}`})
-
+        logger.warn({
+          socket,
+          message: `Threatening rollback: from epoch ${this.lastKnownEpochNumber} down to ${epoch}`
+        })
       } else {
-        logger.info({socket, message: `Harmless rollback: from epoch ${this.lastKnownEpochNumber} down to ${epoch}`})
+        logger.info({
+          socket,
+          message: `Harmless rollback: from epoch ${this.lastKnownEpochNumber} down to ${epoch}`
+        })
       }
     }
     this.lastKnownEpochNumber = epoch
@@ -115,11 +122,11 @@ export class WalletWrapper {
   async createEthBlockFilter (_socket: SocketParams): Promise<string> {
     return '0x1'
   }
-  
+
   /**
    * Use Conflux SDK to process `eth_estimateGas`, while making response ETH compliant
    */
-   async estimateGas (
+  async estimateGas (
     params: TransactionOption,
     _socket: SocketParams
   ): Promise<any> {
@@ -131,7 +138,9 @@ export class WalletWrapper {
    * Gets Account interaction object of given address, if available.
    */
   getAccount (address: string): Account | undefined {
-    return this.accounts.find(account => account.toString().toLowerCase() === address.toLowerCase())
+    return this.accounts.find(
+      account => account.toString().toLowerCase() === address.toLowerCase()
+    )
   }
 
   /**
@@ -269,8 +278,11 @@ export class WalletWrapper {
       params.from = this.getAccounts()[0]
     }
 
-    const epoch: BigInt = BigInt(await this.conflux.getEpochNumber()) + BigInt(100)
-    const nonce: number = parseInt((await this.conflux.getNextNonce(params.from)).toString())
+    const epoch: BigInt =
+      BigInt(await this.conflux.getEpochNumber()) + BigInt(100)
+    const nonce: number = parseInt(
+      (await this.conflux.getNextNonce(params.from)).toString()
+    )
 
     // Compose actual transaction:
     let options = {
@@ -332,7 +344,7 @@ export class WalletWrapper {
     })
     logger.verbose({ socket, message: `> Chain id: ${payload.chainId}` })
 
-    // Sign transaction:    
+    // Sign transaction:
     const account: Account | undefined = await this.getAccount(params.from)
     const tx: Transaction | undefined = await account?.signTransaction(payload)
     if (!tx) {

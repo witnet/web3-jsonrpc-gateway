@@ -212,14 +212,14 @@ export class WalletMiddlewareServer {
         'StableTokenEUR',
         await this.wrapper.kit.registry.addressFor(CeloContract.StableTokenEUR)
       ]
-    ]);
-    
+    ])
+
     const decimals: number = await (
-        await this.wrapper.kit.contracts.getGoldToken()
-      ).decimals()
-    
+      await this.wrapper.kit.contracts.getGoldToken()
+    ).decimals()
+
     this.wrapper.wallets.forEach(async (wallet, index) => {
-      const balance: any = await wallet.getBalance()      
+      const balance: any = await wallet.getBalance()
       await traceKeyValue(`Celo wallet #${index}`, [
         ['Address', await wallet.getAddress()],
         ['Balance', `${balance / 10 ** decimals} CELO`],
@@ -227,7 +227,7 @@ export class WalletMiddlewareServer {
         ['Nonce  ', await wallet.getTransactionCount()]
       ])
     })
-    
+
     console.log(
       `Listening on ${hostname ||
         '0.0.0.0'}:${port} [${logger.level.toUpperCase()}]\n`

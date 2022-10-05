@@ -55,7 +55,7 @@ class WalletWrapper {
     this.lastKnownBlock = 0
     this.provider = provider
     this.wallets = []
-    for (let ix = 0; ix < num_addresses; ix ++) {
+    for (let ix = 0; ix < num_addresses; ix++) {
       this.wallets.push(
         Wallet.fromMnemonic(seed_phrase, `m/44'/60'/0'/0/${ix}`).connect(
           provider
@@ -68,13 +68,12 @@ class WalletWrapper {
    * Populate essential transaction parameters, self-estimating gas price and/or gas limit if required.
    * @param socket Socket parms where the RPC call is coming from.
    * @param params Input params, to be validated and completed, if necessary.
-   * @returns 
+   * @returns
    */
   async composeTransaction (
     socket: SocketParams,
     params: TransactionParams
   ): Promise<ethers.providers.TransactionRequest> {
-    
     // Compose actual transaction:
     let tx: ethers.providers.TransactionRequest = {
       from: params.from,
@@ -82,13 +81,14 @@ class WalletWrapper {
       value: params.value,
       data: params.data,
       nonce: params.nonce,
-      chainId: this.provider.network.chainId,
+      chainId: this.provider.network.chainId
     }
     if (tx.from) {
       logger.verbose({ socket, message: `> From:      ${tx.from}` })
-    }    
+    }
     logger.verbose({ socket, message: `> To:        ${tx.to || '(deploy)'}` })
-    logger.verbose({ socket,
+    logger.verbose({
+      socket,
       message: `> Data:      ${
         tx.data ? tx.data.toString().substring(0, 10) + '...' : '(transfer)'
       }`
@@ -101,7 +101,7 @@ class WalletWrapper {
       tx.type = 2
     }
     if (tx.type) {
-      logger.verbose({ socket, message: `> Type:      ${tx.type}`})
+      logger.verbose({ socket, message: `> Type:      ${tx.type}` })
     }
 
     // Complete tx gas price, if necessary:
@@ -109,7 +109,9 @@ class WalletWrapper {
       tx.gasPrice = (await this.getGasPrice()).toHexString()
     } else if (params.gasPrice) {
       tx.gasPrice = params.gasPrice
-      if (BigNumber.from(tx.gasPrice).gt(BigNumber.from(this.defaultGasPrice))) {
+      if (
+        BigNumber.from(tx.gasPrice).gt(BigNumber.from(this.defaultGasPrice))
+      ) {
         const reason = `Provided gas price exceeds threshold (${tx.gasPrice} > ${this.defaultGasPrice})`
         throw {
           reason,
@@ -126,12 +128,14 @@ class WalletWrapper {
       logger.verbose({ socket, message: `> Gas price: ${tx.gasPrice}` })
     }
 
-    // Complete tx gas limit, if necessary:    
+    // Complete tx gas limit, if necessary:
     if (params.from && !params.gas) {
       tx.gasLimit = (await this.getGasLimit(tx)).toHexString()
     } else if (params.gas) {
       tx.gasLimit = params.gas
-      if (BigNumber.from(tx.gasLimit).gt(BigNumber.from(this.defaultGasLimit))) {
+      if (
+        BigNumber.from(tx.gasLimit).gt(BigNumber.from(this.defaultGasLimit))
+      ) {
         const reason = `Provided gas limit exceeds threshold (${tx.gasLimit} > ${this.defaultGasLimit})`
         throw {
           reason,
@@ -155,7 +159,10 @@ class WalletWrapper {
       tx.maxFeePerGas = tx.gasPrice
     }
     if (tx.maxFeePerGas) {
-      logger.verbose({ socket, message: `> Max fee per gas: ${tx.maxFeePerGas}` })
+      logger.verbose({
+        socket,
+        message: `> Max fee per gas: ${tx.maxFeePerGas}`
+      })
     }
 
     // Complete tx maxPriorityFeePerGas, if necesarry:
@@ -165,19 +172,22 @@ class WalletWrapper {
       tx.maxPriorityFeePerGas = tx.gasPrice
     }
     if (tx.maxPriorityFeePerGas) {
-      logger.verbose({ socket, message: `> Max priority fee per gas: ${tx.maxPriorityFeePerGas}` })
+      logger.verbose({
+        socket,
+        message: `> Max priority fee per gas: ${tx.maxPriorityFeePerGas}`
+      })
     }
-    
+
     // Return tx object
     return tx
   }
 
   /**
-   * Check for possible rollbacks on the EVM side. 
+   * Check for possible rollbacks on the EVM side.
    * @param socket Socket parms where the RPC call is coming from
    * @returns Last known block number.
    */
-  async checkRollbacks(socket: SocketParams): Promise<number> {
+  async checkRollbacks (socket: SocketParams): Promise<number> {
     const block = await this.provider.getBlockNumber()
     if (block < this.lastKnownBlock) {
       if (block <= this.lastKnownBlock - this.interleaveBlocks) {
@@ -246,7 +256,9 @@ class WalletWrapper {
       const providerGasPrice: any = BigNumber.from(
         await this.provider.getGasPrice()
       )
-      gasPrice = BigNumber.from(Math.ceil(providerGasPrice * this.gasPriceFactor))
+      gasPrice = BigNumber.from(
+        Math.ceil(providerGasPrice * this.gasPriceFactor)
+      )
       const gasPriceThreshold = BigNumber.from(this.defaultGasPrice)
       if (gasPrice.gt(gasPriceThreshold)) {
         let reason = `Estimated gas price exceeds threshold (${gasPrice} > ${gasPriceThreshold})`
@@ -337,11 +349,14 @@ class WalletWrapper {
     socket: SocketParams,
     params: TransactionParams
   ): Promise<any> {
-    // avoid some providers to just echo input gas limit 
+    // avoid some providers to just echo input gas limit
     if (params.gas) {
-      params.gas = ""
+      params.gas = ''
     }
-    const tx: ethers.providers.TransactionRequest = await this.composeTransaction(socket, params)
+    const tx: ethers.providers.TransactionRequest = await this.composeTransaction(
+      socket,
+      params
+    )
     return tx.gasLimit
   }
 
@@ -353,16 +368,22 @@ class WalletWrapper {
     params: TransactionParams
   ): Promise<any> {
     // Check for rollbacks, and get block tag:
-    const blockTag = await this.checkRollbacks(socket) - this.interleaveBlocks
+    const blockTag = (await this.checkRollbacks(socket)) - this.interleaveBlocks
     if (this.interleaveBlocks > 0) {
-      logger.verbose({ socket, message: `> Block tag: ${this.lastKnownBlock} --> ${blockTag}` })  
+      logger.verbose({
+        socket,
+        message: `> Block tag: ${this.lastKnownBlock} --> ${blockTag}`
+      })
     } else {
       logger.verbose({ socket, message: `> Block tag: ${this.lastKnownBlock}` })
-    }    
+    }
 
     // Compose base transaction:
-    let tx: ethers.providers.TransactionRequest = await this.composeTransaction(socket, params)
-  
+    let tx: ethers.providers.TransactionRequest = await this.composeTransaction(
+      socket,
+      params
+    )
+
     // Make call:
     return await this.provider.call(tx, blockTag)
   }
@@ -377,7 +398,10 @@ class WalletWrapper {
     message: string,
     socket: SocketParams
   ): Promise<any> {
-    logger.verbose({ socket, message: `=> Signing message: ${address} ${message}`})
+    logger.verbose({
+      socket,
+      message: `=> Signing message: ${address} ${message}`
+    })
     let wallet: Wallet | undefined = await this.getWalletByAddress(address)
     if (!wallet) {
       let reason = `No private key available as to sign messages from '${address}'`
@@ -408,10 +432,15 @@ class WalletWrapper {
     this.checkRollbacks(socket)
 
     // Compose transaction:
-    let tx: ethers.providers.TransactionRequest = await this.composeTransaction(socket, params)
+    let tx: ethers.providers.TransactionRequest = await this.composeTransaction(
+      socket,
+      params
+    )
 
     // Fetch Wallet interaction object:
-    let wallet: Wallet | undefined = await this.getWalletByAddress(tx.from || (await this.getAccounts())[0])
+    let wallet: Wallet | undefined = await this.getWalletByAddress(
+      tx.from || (await this.getAccounts())[0]
+    )
     if (!wallet) {
       let reason = `No private key available as to sign messages from '${params.from}'`
       throw {
@@ -428,12 +457,12 @@ class WalletWrapper {
     // Add current nonce:
     if (!tx.nonce) {
       tx.nonce = await wallet?.getTransactionCount()
-    }    
+    }
     logger.verbose({ socket, message: `> Nonce:     ${tx.nonce}` })
 
-    // Sign transaction:    
+    // Sign transaction:
     const signedTx = await wallet?.signTransaction(tx)
-    logger.debug({ socket, message: `=> Signed tx:  ${signedTx}`})
+    logger.debug({ socket, message: `=> Signed tx:  ${signedTx}` })
 
     // Return transaction hash:
     const res = await this.provider.sendTransaction(signedTx)

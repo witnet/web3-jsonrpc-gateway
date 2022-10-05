@@ -280,8 +280,8 @@ export class WalletMiddlewareServer {
         )
         console.error(e)
         process.exit(-1)
-      }   
-      traceKeyValue(`Conflux wallet #${count ++}`, [
+      }
+      traceKeyValue(`Conflux wallet #${count++}`, [
         ['Address   ', address],
         ['Admin     ', info.admin?.toLowerCase()],
         ['Balance   ', `${ethers.utils.formatEther(info.balance)} CFX`],
@@ -493,7 +493,7 @@ export class WalletMiddlewareServer {
               blockHash: obj.blockHash
             }
           })
-          break;
+          break
 
         case 'status':
         case 'outcomeStatus':

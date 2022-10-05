@@ -23,18 +23,13 @@ export class WalletMiddlewareServer {
   ) {
     this.expressServer = express()
     this.totalRequests = 0
-    this.wrapper = new WalletWrapper(
-      rpcUrl,
-      graphUrl,
-      seedPhrase,
-      numAddresses
-    )
+    this.wrapper = new WalletWrapper(rpcUrl, graphUrl, seedPhrase, numAddresses)
 
     this.rpcMethodHandlers = {
       eth_accounts: this.wrapper.getAccounts,
       eth_blockNumber: this.wrapper.getBlockNumber,
       eth_call: this.wrapper.call,
-      eth_chainId: this.wrapper.getNetVersion,      
+      eth_chainId: this.wrapper.getNetVersion,
       eth_estimateGas: this.wrapper.estimateGas,
       eth_gasPrice: this.wrapper.estimateGasPrice,
       eth_getBalance: this.wrapper.getBalance,
@@ -46,7 +41,7 @@ export class WalletMiddlewareServer {
       eth_newBlockFilter: this.wrapper.mockCreateBlockFilter,
       eth_sendTransaction: this.wrapper.sendTransaction,
       eth_syncing: this.wrapper.getSyncingStatus,
-      net_version: this.wrapper.getNetVersion,      
+      net_version: this.wrapper.getNetVersion,
       web3_clientVersion: this.wrapper.getWeb3Version
     }
 
@@ -70,7 +65,7 @@ export class WalletMiddlewareServer {
           clientAddr: req.connection.remoteAddress || 'unknownAddr',
           clientPort: req.connection.remotePort || 0,
           clientId: request.id,
-          serverId: ++ this.totalRequests
+          serverId: ++this.totalRequests
         }
         let method = request.method
         logger.log({ level: 'info', socket, message: `>> ${method}` })
@@ -100,12 +95,11 @@ export class WalletMiddlewareServer {
         try {
           // Intercept method call, if required:
           if (request.method in this.rpcMethodHandlers) {
-            result = await this.rpcMethodHandlers[request.method].bind(this.wrapper)(
-              socket,
-              ...(request.params || [])
-            )
+            result = await this.rpcMethodHandlers[request.method].bind(
+              this.wrapper
+            )(socket, ...(request.params || []))
           } else {
-            const reason = `Unsupported ${request.method}` 
+            const reason = `Unsupported ${request.method}`
             throw {
               reason,
               body: {
@@ -113,7 +107,7 @@ export class WalletMiddlewareServer {
                 message: reason
               }
             }
-          } 
+          }
           response = { ...header, result }
         } catch (exception: any) {
           if (!exception.code) {
@@ -146,9 +140,8 @@ export class WalletMiddlewareServer {
                     data: exception.data
                   }
                 })
-          body = typeof body !== 'string' ? JSON.stringify(body) : body
           try {
-            response = { ...header, error: JSON.parse(body).error }
+            response = { ...header, error: body.error }
           } catch (e) {
             logger.log({
               level: 'error',
@@ -190,17 +183,19 @@ export class WalletMiddlewareServer {
       ['Chain id', network.chainId],
       ['Chain name', network.name],
       ['Node name', await this.wrapper.provider.api.rpc.system.name()],
-      ['Node version', await this.wrapper.provider.api.rpc.system.version()],
+      ['Node version', await this.wrapper.provider.api.rpc.system.version()]
     ])
 
     this.wrapper.signers.forEach(async (signer, index) => {
       traceKeyValue(`Reef wallet #${index + 1}`, [
         ['Address   ', await signer.getAddress()],
-        ['Balance   ', `${ethers.utils.formatEther(await signer.getBalance())} REEF`],
+        [
+          'Balance   ',
+          `${ethers.utils.formatEther(await signer.getBalance())} REEF`
+        ],
         ['Nonce     ', await signer.getTransactionCount()]
       ])
     })
-    
 
     console.log(
       `Listening on ${hostname ||
@@ -225,5 +220,4 @@ export class WalletMiddlewareServer {
     })
     return params
   }
-
 }
