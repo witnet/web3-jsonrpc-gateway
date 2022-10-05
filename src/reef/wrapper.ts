@@ -178,12 +178,7 @@ export class WalletWrapper {
       const accounts: string[] = await this.getAccounts()
       tx.from = accounts[0]
     }
-    // console.log("tx ==>", tx)
-    // const resources = await this.provider.estimateResources(tx)
-    // console.log("resources =>", resources)    
     const gas = await this.provider.estimateGas(tx)
-    // console.log("tx.gas ==>", tx.gasLimit)
-    // console.log("gas ==>", gas)
     return gas.toHexString()
   }
 

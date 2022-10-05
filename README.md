@@ -84,7 +84,7 @@ node ./dist/src/bin/reef
 Required environment variables:
 
 - `PROVIDER_URL`: actual URL of the Web3 JSON-RPC provider. Can also be passed from command-line as a first parameter.
-- `GRAPHQL_URL`: the GraphQL endpoint serving EVM's data. Can also be passed from command-line as a second paramter.
+- `GRAPHQL_URL`: the GraphQL endpoint serving EVM's data. Can also be passed from command-line as a second parameter.
 - `PORT`: listening port for the server. Can also be passed from command-line as a third parameter.
 - `SEED_PHRASE`: seed phrase to be used with either `Infura` or `Ethers.js` providers.
 
