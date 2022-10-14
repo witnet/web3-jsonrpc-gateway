@@ -1,9 +1,5 @@
 FROM node:14-alpine3.12
 
-# Read the GitHub API token and release version from --build-arg
-ARG GITHUB_API_TOKEN
-ARG VERSION
-
 # Install dependencies not included in the base image
 RUN apk update
 RUN apk upgrade
@@ -27,6 +23,6 @@ RUN chmod +x dist/bin/*
 RUN yarn link
 
 # Set the entrypoint and main command
-# Runs the bot by default, but CMD can be overriden when running a container so it runs the reactions monitor server
+# Runs the default Infura gateway, but CMD can be overriden when running a container so it runs the reactions monitor server
 ENTRYPOINT ["npx"]
 CMD ["w3gw-infura"]
