@@ -253,12 +253,27 @@ class WalletWrapper {
   async getGasPrice (): Promise<BigNumber> {
     let gasPrice: BigNumber
     if (this.estimateGasPrice) {
-      const providerGasPrice: any = BigNumber.from(
-        await this.provider.getGasPrice()
-      )
-      gasPrice = BigNumber.from(
-        Math.ceil(providerGasPrice * this.gasPriceFactor)
-      )
+      try {
+        const factor: number = Math.ceil(this.gasPriceFactor * 100)
+        const providerGasPrice: any = BigNumber.from(
+          await this.provider.getGasPrice()
+        )
+        gasPrice = BigNumber.from(
+          Math.ceil(providerGasPrice * this.gasPriceFactor)
+        )
+        gasPrice = gasPrice.mul(factor).div(100)
+      } catch (ex) {
+        const reason = `Unpredictable gas price: ${ex}`
+        throw {
+          reason,
+          body: {
+            error: {
+              code: -32099,
+              message: reason
+            }
+          }
+        }
+      }
       const gasPriceThreshold = BigNumber.from(this.defaultGasPrice)
       if (gasPrice.gt(gasPriceThreshold)) {
         let reason = `Estimated gas price exceeds threshold (${gasPrice} > ${gasPriceThreshold})`
