@@ -255,12 +255,7 @@ class WalletWrapper {
     if (this.estimateGasPrice) {
       try {
         const factor: number = Math.ceil(this.gasPriceFactor * 100)
-        const providerGasPrice: any = BigNumber.from(
-          await this.provider.getGasPrice()
-        )
-        gasPrice = BigNumber.from(
-          Math.ceil(providerGasPrice * this.gasPriceFactor)
-        )
+        gasPrice = BigNumber.from(await this.provider.getGasPrice())
         gasPrice = gasPrice.mul(factor).div(100)
       } catch (ex) {
         const reason = `Unpredictable gas price: ${ex}`
