@@ -20,7 +20,7 @@
     "lint": "prettier-standard --format",
     "build": "tsc",
     "arbitrum:goerli": "cross-env-shell ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_GAS_LIMIT_FACTOR=1.25 ETHERS_MOCK_FILTERS=true node dist/bin/ethers https://goerli-rollup.arbitrum.io/rpc 8517",
-    "avalanche:mainnet": "cross-env-shell ETHERS_ALWAYS_SYNCED=true ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_GAS_PRICE=150000000000 ETHERS_GAS_PRICE_FACTOR=1.25 ETHERS_ESTIMATE_GASPRICE=true ETHERS_MOCK_FILTERS=true node dist/bin/ethers https://api.avax.network/ext/bc/C/rpc 9533",
+    "avalanche:mainnet": "cross-env-shell ETHERS_ALWAYS_SYNCED=true ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_GAS_PRICE=150000000000 ETHERS_GAS_PRICE_FACTOR=1.25 ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_MOCK_FILTERS=true node dist/bin/ethers https://api.avax.network/ext/bc/C/rpc 9533",
     "avalanche:testnet": "cross-env-shell ETHERS_ALWAYS_SYNCED=true ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_GAS_PRICE=50000000000 ETHERS_GAS_PRICE_FACTOR=1.0 ETHERS_GAS_LIMIT=8000000  ETHERS_MOCK_FILTERS=true node dist/bin/ethers https://api.avax-test.network/ext/bc/C/rpc 8533",
     "boba:ethereum:mainnet": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=0 ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_GAS_LIMIT_FACTOR=1.2 node dist/bin/ethers https://mainnet.boba.network 9539",
     "boba:ethereum:rinkeby": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=0 ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_GAS_LIMIT_FACTOR=1.1 node dist/bin/ethers https://rinkeby.boba.network 8539",
