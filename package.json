@@ -68,7 +68,9 @@
     "smartbch:amber": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=5 node dist/bin/ethers http://35.220.203.194:8545 8525",
     "smartbch:mainnet": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=0 ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_GAS_PRICE=10000000000 node dist/bin/ethers https://smartbch.fountainhead.cash/mainnet 9525",
     "syscoin:testnet": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=0 ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_FORCE_EIP_1559=true node dist/bin/ethers https://rpc.tanenbaum.io 8521",
-    "syscoin:mainnet": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=0 ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_FORCE_EIP_1559=true node dist/bin/ethers https://rpc.syscoin.org 9521"
+    "syscoin:mainnet": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=0 ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_FORCE_EIP_1559=true node dist/bin/ethers https://rpc.syscoin.org 9521",
+    "ultron:testnet": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=0 ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_MOCK_FILTERS=true node dist/bin/ethers https://ultron-dev.io 8516",
+    "ultron:mainnet": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=0 ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_MOCK_FILTERS=true node dist/bin/ethers https://ultron-rpc.net/ 9516"
   },
   "repository": {
     "type": "git",
