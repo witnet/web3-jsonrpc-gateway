@@ -65,7 +65,7 @@ export class WalletWrapper {
     this.keyring = new Keyring({ type: 'sr25519' })
     this.signingKey = new TestAccountSigningKey(this.provider.api.registry)
     for (let j = 0; j < this.numAddresses; j++) {
-      const uri = j == 0 ? this.seedPhrase : `${this.seedPhrase}//${j}`
+      const uri = j == 0 ? this.seedPhrase : `${this.seedPhrase}//${j - 1}`
       const keyringPair = this.keyring.addFromUri(uri)
       const signer = new Signer(
         this.provider,
