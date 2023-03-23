@@ -117,7 +117,7 @@ console.log()
 const destinationProvider = new ethers.providers.JsonRpcProvider(
   providerUrl,
   network
-)
+) 
 
 new WalletMiddlewareServer(
   destinationProvider,
@@ -135,4 +135,4 @@ new WalletMiddlewareServer(
   force_eip_1559
 )
   .initialize()
-  .listen(port)
+  .listen(port, "localhost")
