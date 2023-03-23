@@ -367,7 +367,7 @@ class WalletWrapper {
       socket,
       params
     )
-    return tx.gasLimit
+    return tx.gasLimit || this.defaultGasLimit
   }
 
   /**
