@@ -64,6 +64,7 @@
     "polygon:goerli": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=0 ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_GAS_PRICE=100000000000 ETHERS_GAS_LIMIT=15000000 node dist/bin/ethers https://matic-mumbai.chainstacklabs.com 8535",
     "polygon:mainnet": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=0 ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_GAS_PRICE=1000000000000 ETHERS_GAS_PRICE_FACTOR=1.1 ETHERS_GAS_LIMIT=25000000 node dist/bin/ethers https://rpc-mainnet.maticvigil.com 9535",
     "reef:testnet": "cross-env-shell node dist/bin/reef wss://rpc-testnet.reefscan.com/ws https://testnet.reefscan.com/graphql 8532",
+    "reef:mainnet": "cross-env-shell node dist/bin/reef wss://rpc.reefscan.com/ws https://reefscan.com/graphql 9532",
     "smartbch:amber": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=5 node dist/bin/ethers http://35.220.203.194:8545 8525",
     "smartbch:mainnet": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=0 ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_GAS_PRICE=10000000000 node dist/bin/ethers https://smartbch.fountainhead.cash/mainnet 9525",
     "syscoin:testnet": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=0 ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_FORCE_EIP_1559=true node dist/bin/ethers https://rpc.tanenbaum.io 8521",
