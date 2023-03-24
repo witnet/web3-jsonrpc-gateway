@@ -135,4 +135,4 @@ new WalletMiddlewareServer(
   force_eip_1559
 )
   .initialize()
-  .listen(port, "localhost")
+  .listen(port)
