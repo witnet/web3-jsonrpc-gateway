@@ -108,4 +108,4 @@ new WalletMiddlewareServer(
   false // force EIP-1559 txs
 )
   .initialize()
-  .listen(port, "localhost")
+  .listen(port)
