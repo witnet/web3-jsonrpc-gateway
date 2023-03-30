@@ -23,6 +23,7 @@ class WalletWrapper {
   defaultGasLimit!: number
   estimateGasLimit: boolean
   estimateGasPrice: boolean
+  ethGasPriceFactor: boolean
   forceType2Txs: boolean
   gasPriceFactor!: number
   gasLimitFactor!: number
@@ -42,12 +43,14 @@ class WalletWrapper {
     estimate_gas_price: boolean,
     gas_price_factor: number,
     gas_limit_factor: number,
-    force_eip_1559: boolean
+    force_eip_1559: boolean,
+    eth_gas_price_factor: boolean
   ) {
     this.defaultGasPrice = gas_price
     this.defaultGasLimit = gas_limit
     this.estimateGasLimit = estimate_gas_limit
     this.estimateGasPrice = estimate_gas_price
+    this.ethGasPriceFactor = eth_gas_price_factor
     this.forceType2Txs = force_eip_1559
     this.gasPriceFactor = gas_price_factor
     this.gasLimitFactor = gas_limit_factor
@@ -374,7 +377,11 @@ class WalletWrapper {
     _socket: SocketParams,
     _params: TransactionParams
   ): Promise<any> {
-    return (await this.getGasPrice()).toHexString()
+    if (this.ethGasPriceFactor) {
+      return (await this.getGasPrice()).toHexString()
+    } else {
+      (await this.provider.getGasPrice()).toHexString()
+    }
   }
 
   /**

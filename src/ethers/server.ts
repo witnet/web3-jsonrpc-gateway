@@ -28,7 +28,8 @@ class WalletMiddlewareServer {
     mock_filters: boolean,
     gas_price_factor: number,
     gas_limit_factor: number,
-    force_eip_1559: boolean
+    force_eip_1559: boolean,
+    eth_gas_price_factor: boolean,
   ) {
     this.alwaysSynced = always_synced
     this.expressServer = express()
@@ -44,7 +45,8 @@ class WalletMiddlewareServer {
       estimate_gas_price,
       gas_price_factor,
       gas_limit_factor,
-      force_eip_1559
+      force_eip_1559,
+      eth_gas_price_factor,
     )
 
     let lines = [

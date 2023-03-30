@@ -87,13 +87,15 @@ if (process.env.ETHERS_MOCK_FILTERS) {
   mock_filters = JSON.parse(process.env.ETHERS_MOCK_FILTERS)
 }
 
-// Optional: gas price factor to be applied to when ETHERS_ESTIMATE_GAS_PRICE is true
+// Optional: gas price factor to be applied to transactions 
+// with no gas price specified when ETHERS_ESTIMATE_GAS_PRICE is true
 let gas_price_factor = 1.0
 if (process.env.ETHERS_GAS_PRICE_FACTOR) {
   gas_price_factor = parseFloat(process.env.ETHERS_GAS_PRICE_FACTOR)
 }
 
-// Optional: gas limit factor to be applied to when ETHERS_ESTIMATE_GAS_LIMIT is true
+// Optional: gas limit factor to be applied to transactions
+// with no gas limit specified when ETHERS_ESTIMATE_GAS_LIMIT is true
 let gas_limit_factor = 1.0
 if (process.env.ETHERS_GAS_LIMIT_FACTOR) {
   gas_limit_factor = parseFloat(process.env.ETHERS_GAS_LIMIT_FACTOR)
@@ -104,8 +106,11 @@ let force_eip_1559: boolean = false
 if (process.env.ETHERS_FORCE_EIP_1559) {
   force_eip_1559 = JSON.parse(process.env.ETHERS_FORCE_EIP_1559)
 }
-if (process.env.ETHERS_GAS_LIMIT_FACTOR) {
-  gas_limit_factor = parseFloat(process.env.ETHERS_GAS_LIMIT_FACTOR)
+
+// Optional: if true, will apply ETHERS_GAS_PRICE_FACTOR to eth_gasPrice calls
+let eth_gas_price_factor: boolean = true
+if (process.env.ETHERS_ETH_GAS_PRICE_FACTOR) {
+  eth_gas_price_factor = JSON.parse(process.env.ETHERS_ETH_GAS_PRICE_FACTOR)
 }
 
 console.log('='.repeat(120))
@@ -132,7 +137,8 @@ new WalletMiddlewareServer(
   mock_filters,
   gas_price_factor,
   gas_limit_factor,
-  force_eip_1559
+  force_eip_1559,
+  eth_gas_price_factor,
 )
   .initialize()
   .listen(port)
