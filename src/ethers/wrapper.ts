@@ -370,6 +370,13 @@ class WalletWrapper {
     return tx.gasLimit || this.defaultGasLimit
   }
 
+  async processEthGasPrice (
+    _socket: SocketParams,
+    _params: TransactionParams
+  ): Promise<any> {
+    return (await this.getGasPrice()).toHexString()
+  }
+
   /**
    * Surrogates call to provider, after estimating/setting gas, if necessary.
    */
