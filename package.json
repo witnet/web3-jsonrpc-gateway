@@ -38,6 +38,7 @@
     "cube:mainnet": "cross-env-shell ETHERS_ESTIMATE_GAS_PRICE=false ETHERS_ESTIMATE_GAS_LIMIT=false ETHERS_GAS_PRICE=500000000000 node dist/bin/ethers https://http-mainnet-sg.cube.network 9522",
     "dogechain:testnet": "cross-env-shell ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_GAS_PRICE=150000000000 node dist/bin/ethers https://rpc-testnet.dogechain.dog/ 8519",
     "dogechain:mainnet": "cross-env-shell ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_GAS_PRICE=750000000000 ETHERS_GAS_PRICE_FACTOR=1.25 node dist/bin/ethers https://rpc01.dogechain.dog/ 9519",
+    "elastos:testnet": "cross-env-shell ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_GAS_PRICE=50000000000 ETHERS_GAS_LIMIT=8000000 node dist/bin/ethers https://api-testnet.elastos.io/esc 8513",
     "ethereum:goerli": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=0 node dist/bin/ethers/infura 8545 goerli",
     "ethereum:kovan": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=0 node dist/bin/ethers/infura 8542 kovan",
     "ethereum:mainnet": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=0 ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=true node dist/bin/ethers https://mainnet.infura.io/v3/6f4dade254984586b9d6ae727e384ca4 9545",
