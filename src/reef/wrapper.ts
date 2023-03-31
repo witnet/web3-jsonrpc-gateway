@@ -259,42 +259,42 @@ export class WalletWrapper {
     })
     const queryBlock = gql`
       {
-        block(
-          order_by: { id: desc_nulls_last }
-          limit: 1
-          where: { finalized: { _eq: true } }
+        blocks(
+          limit: 1,
+          orderBy: height_DESC,
+          where: { finalized_eq: true }
         ) {
-          id
+          height
           author
           hash
-          parent_hash
+          parentHash
           finalized
-          extrinsic_root
-          state_root
+          extrinsicRoot
+          stateRoot
           timestamp
         }
       }
     `
     let res = null
     let data = await request(this.graphUrl, queryBlock)
-    const block = data?.block[0]
+    const block = data?.blocks[0]
     if (block?.id) {
       const queryBlockExtrinsics = gql`
         {
-          extrinsic (
+          extrinsics (
+            offset: 0,
+            limit: 256,
             where: {
-              block_id: {
-                _eq: ${block.id}
+              block: {
+                height_eq: ${block.height}
               }
             }
           ) {
             hash
             events (
-              where: {
-                section: {
-                  _eq: "evm"
-                }
-              }
+              offset: 0,
+              limit: 1,
+              where: { section_eq: "EVM" }
             ) {
               method
             }
@@ -302,13 +302,13 @@ export class WalletWrapper {
         }
       `
       data = await request(this.graphUrl, queryBlockExtrinsics)
-      const extrinsics: any[] = data?.extrinsic
+      const extrinsics: any[] = data?.extrinsics
       const unixTs = Math.round(new Date(block.timestamp).getTime()) / 1000
       res = {
         hash: block.hash,
-        parentHash: block.parent_hash,
-        number: block.id,
-        stateRoot: block.state_root,
+        parentHash: block.parentHash,
+        number: block.height,
+        stateRoot: block.stateRoot,
         timestamp: unixTs,
         nonce: '0x0000000000000000',
         difficulty: 0,
@@ -343,34 +343,29 @@ export class WalletWrapper {
   ): Promise<any> {
     const query = gql`
       {
-        extrinsic (
-          where: {
-            hash: {
-              _eq: "${txHash}"
-            }
-          }
+        extrinsics (
+          offset: 0,
+          limit: 1,
+          where: { hash_eq: "${txHash}" }
         ) {
-          id
-          block {
-            id
-            hash
-            finalized
-          }
+          args
+          signedData
           status
           timestamp
+          block {
+            hash
+            height
+            finalized
+          }
           events (
-            where: {
-              section: {
-                _eq: "evm"
-              }
-            }
+            offset: 0,
+            limit: 256,
+            where: { section_eq: "EVM" }
           ) {
             data
             method
             index
           }
-          args
-          signed_data
         }
       }
     `
@@ -379,7 +374,7 @@ export class WalletWrapper {
       message: `=> querying data to ${this.graphUrl} ...`
     })
     const data = await request(this.graphUrl, query)
-    const extrinsic = data?.extrinsic[0]
+    const extrinsic = data?.extrinsics[0]
     let res = null
     if (extrinsic && extrinsic.block.finalized) {
       try {
@@ -388,13 +383,13 @@ export class WalletWrapper {
           from,
           extrinsic.block.hash
         )
-        const gas = BigNumber.from(extrinsic.signed_data.fee.weight)
-        const fee = BigNumber.from(extrinsic.signed_data.fee.partialFee)
+        const gas = BigNumber.from(extrinsic.signedData.fee.weight)
+        const fee = BigNumber.from(extrinsic.signedData.fee.partialFee)
         res = {
           hash: txHash,
           nonce: BigNumber.from(nonce).toHexString(),
           blockHash: extrinsic.block.hash,
-          blockNumber: BigNumber.from(extrinsic.block.id).toHexString(),
+          blockNumber: BigNumber.from(extrinsic.block.height).toHexString(),
           transactionIndex: `0x${extrinsic.events[0]!.index.toString(16)}`,
           from,
           to:
@@ -420,30 +415,31 @@ export class WalletWrapper {
   ): Promise<any> {
     const query = gql`
       {
-        extrinsic (
-          where: {
-            hash: {
-              _eq: "${txHash}"
-            }
-          }
+        extrinsics (
+          offset: 0,
+          limit: 1,
+          where: { hash_eq: "${txHash}" }
         ) {
           args
-          id
+          index
+          signedData
+          status
+          timestamp
           block {
-            id
             hash
+            height
             finalized
           }
           events (
+            offset: 0,
+            limit: 1,
             where: {
-              _and: [
-                { section: { _eq: "evm" }},
-                {
-                  _or: [
-                    { method: { _eq: "Executed" }},
-                    { method: { _eq: "Created" }}
-                  ]
-                }
+              AND: [
+                { section_eq: "${txHash}" },
+                { OR: [
+                  { method_eq: "Executed" },
+                  { method_eq: "Created" },
+                ]}
               ]
             }
           ) {
@@ -451,28 +447,25 @@ export class WalletWrapper {
             index
             method
           }
-          index
-          signed_data
-          status
-          timestamp
         }
       }
     `
     const logsQuery = gql`
       {
-        extrinsic (
-          where: {
-            hash: {
-              _eq: "${txHash}"
-            }
-          }
+        extrinsics (
+          offset: 0, 
+          limit: 1, 
+          where: { hash_eq: "${txHash}" }
         ) {
+          hash
           events (
-            order_by: { index: asc },
+            offset: 0,
+            limit: 256,
+            orderBy: index_ASC,
             where: {
-              _and: [
-                { section: { _eq: "evm" }},
-                { method: { _eq: "Log" }}
+              AND: [
+                { section_eq: "EVM" },
+                { method_eq: "Log" }
               ]
             }
           ) {
@@ -486,19 +479,19 @@ export class WalletWrapper {
       message: `=> querying data to ${this.graphUrl} ...`
     })
     const data = await request(this.graphUrl, query)
-    const extrinsic = data?.extrinsic[0]
+    const extrinsic = data?.extrinsics[0]
     let res = null
     if (extrinsic && extrinsic.block.finalized) {
       const logsData = await request(this.graphUrl, logsQuery)
-      const events: any[] = logsData?.extrinsic[0].events
+      const events: any[] = logsData?.extrinsics[0].events
       try {
-        const gas = BigNumber.from(extrinsic.signed_data.fee.weight)
-        const fee = BigNumber.from(extrinsic.signed_data.fee.partialFee)
+        const gas = BigNumber.from(extrinsic.signedData.fee.weight)
+        const fee = BigNumber.from(extrinsic.signedData.fee.partialFee)
         res = {
           transactionHash: txHash,
           transactionIndex: `0x${extrinsic.events[0]!.index.toString(16)}`,
           blockHash: extrinsic.block.hash,
-          blockNumber: BigNumber.from(extrinsic.block.id).toHexString(),
+          blockNumber: BigNumber.from(extrinsic.block.height).toHexString(),
           cumulativeGasUsed: gas.toHexString(),
           gasUsed: gas.toHexString(),
           contractAddress:
@@ -514,7 +507,7 @@ export class WalletWrapper {
               transactionIndex: `0x${extrinsic.index}`,
               transactionHash: txHash,
               blockHash: extrinsic.block.hash,
-              blockNumber: BigNumber.from(extrinsic.block.id).toHexString(),
+              blockNumber: BigNumber.from(extrinsic.block.height).toHexString(),
               address: log.address,
               data: log.data,
               topics: log.topics
