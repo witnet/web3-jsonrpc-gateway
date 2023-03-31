@@ -112,14 +112,13 @@ export class WalletMiddlewareServer {
         } catch (exception: any) {
           if (!exception.code) {
             // if no error code is specified,
-            //   assume the Conflux provider is actually reporting an execution error:
+            //   assume the Reef provider is actually reporting an execution error:
             exception = {
               reason: exception.toString(),
               body: {
                 error: {
                   code: -32015,
                   message: exception.toString(),
-                  data: exception
                 }
               }
             }
@@ -137,11 +136,11 @@ export class WalletMiddlewareServer {
                   error: {
                     code: exception.code || -32099,
                     message: `"${message}"`,
-                    data: exception.data
                   }
                 })
+          body = typeof body !== 'string' ? JSON.stringify(body) : body
           try {
-            response = { ...header, error: body.error }
+            response = { ...header, error: JSON.parse(body).error  }
           } catch (e) {
             logger.log({
               level: 'error',

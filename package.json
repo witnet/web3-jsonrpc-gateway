@@ -64,7 +64,7 @@
     "optimism:mainnet": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=0 ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_GAS_LIMIT_FACTOR=1.1 ETHERS_MOCK_FILTERS=true node dist/bin/ethers https://optimism-mainnet.infura.io/v3/6f4dade254984586b9d6ae727e384ca4 9520",
     "polygon:goerli": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=0 ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_GAS_PRICE=100000000000 ETHERS_GAS_LIMIT=15000000 node dist/bin/ethers https://matic-mumbai.chainstacklabs.com 8535",
     "polygon:mainnet": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=0 ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_GAS_PRICE=300000000000 ETHERS_GAS_PRICE_FACTOR=1.1 ETHERS_GAS_LIMIT=25000000 node dist/bin/ethers https://polygon-mainnet.infura.io/v3/6f4dade254984586b9d6ae727e384ca4 9535",
-    "reef:testnet": "cross-env-shell node dist/bin/reef wss://rpc-testnet.reefscan.com/ws https://testnet.reefscan.com/graphql 8532",
+    "reef:testnet": "cross-env-shell node dist/bin/reef wss://rpc-testnet.reefscan.com/ws https://squid.subsquid.io/reef-explorer-testnet/graphql 8532",
     "reef:mainnet": "cross-env-shell node dist/bin/reef wss://rpc.reefscan.info/ws https://squid.subsquid.io/reef-explorer/graphql 9532",
     "scroll:goerli": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=0 ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=false ETHERS_GAS_LIMIT=8000000 ETHERS_GAS_PRICE_FACTOR=2.0 node dist/bin/ethers https://alpha-rpc.scroll.io/l2 8514",
     "smartbch:amber": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=5 node dist/bin/ethers http://35.220.203.194:8545 8525",
@@ -105,7 +105,7 @@
   "dependencies": {
     "@celo-tools/celo-ethers-wrapper": "~0.1.1",
     "@celo/contractkit": "~2.0.0",
-    "@reef-defi/evm-provider": "^1.0.9",
+    "@reef-defi/evm-provider": "~1.0.10",
     "body-parser": "1.19.0",
     "cors": "2.8.5",
     "cross-env": "7.0.3",

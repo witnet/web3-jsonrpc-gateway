@@ -2994,10 +2994,10 @@
     "@reef-defi/api-derive" "^1.1.0"
     "@reef-defi/types" "^1.1.0"
 
-"@reef-defi/evm-provider@^1.0.9":
-  version "1.0.9"
-  resolved "https://registry.yarnpkg.com/@reef-defi/evm-provider/-/evm-provider-1.0.9.tgz#3f089f8f94dc4945ff51c11fd6b4e52a681cf716"
-  integrity sha512-TYUA0FdM0QaHuTadYvVVUK86jWZZRQd2+ulG4XU9JEqgDz44YnmMuoPUS3QDQix/Kaf01mJFcpRZy+6TmCf7bA==
+"@reef-defi/evm-provider@~1.0.10":
+  version "1.0.10"
+  resolved "https://registry.yarnpkg.com/@reef-defi/evm-provider/-/evm-provider-1.0.10.tgz#f2d755f37950f8ca2c6942e13ceb29974b6e1f54"
+  integrity sha512-IQl1imac+YXt4hOi2Q8qrwRt+4TjZPTC8SxfNK3vILaBW7N+SRA07lh5cvZ0htHvY6PErRoKNNKV+c6sKHTB1g==
   dependencies:
     "@open-web3/dev-config" "0.1.13"
     "@open-web3/scanner" "1.0.1"
