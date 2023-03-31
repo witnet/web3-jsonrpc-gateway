@@ -1,6 +1,6 @@
 {
   "name": "web3-jsonrpc-gateway",
-  "version": "1.6.11",
+  "version": "1.6.12",
   "description": "A Web3 provider that handles accounts on its own but delegates chain queries to a 3rd party service",
   "main": "dist/bin/ethers/",
   "files": [
