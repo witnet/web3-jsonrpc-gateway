@@ -272,7 +272,7 @@ export class WalletWrapper {
       }
     `
     let res = null
-    let data = await request(this.graphUrl, queryBlock)
+    let data: any = await request(this.graphUrl, queryBlock)
     const block = data?.blocks[0]
     if (block?.height) {
       const queryBlockExtrinsics = gql`
@@ -369,7 +369,7 @@ export class WalletWrapper {
       socket,
       message: `=> querying data to ${this.graphUrl} ...`
     })
-    const data = await request(this.graphUrl, query)
+    const data: any = await request(this.graphUrl, query)
     const extrinsic = data?.extrinsics[0]
     let res = null
     if (extrinsic && extrinsic.block.finalized) {
@@ -446,8 +446,8 @@ export class WalletWrapper {
         }
       }
     `
-    const data = await request(this.graphUrl, query)
-    const extrinsic = data?.extrinsics[0]
+    const data: any = await request(this.graphUrl, query)
+    const extrinsic: any = data?.extrinsics[0]
     let res = null
     if (extrinsic && extrinsic.block.finalized) {
       const logsQuery = gql`
@@ -467,7 +467,7 @@ export class WalletWrapper {
           }
         }
       `
-      const logsData = await request(this.graphUrl, logsQuery)
+      const logsData: any = await request(this.graphUrl, logsQuery)
       const events: any[] = logsData?.evmEvents
       try {
         const gas = BigNumber.from(extrinsic.signedData.fee.weight)

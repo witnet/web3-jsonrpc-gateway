@@ -3,7 +3,8 @@
     "rootDir": ".",
     "outDir": ".",
     "resolveJsonModule": true,
-    "composite": true
+    "composite": true,
+    "useUnknownInCatchVariables": true
   },
   "files": ["package.json"]
 }
