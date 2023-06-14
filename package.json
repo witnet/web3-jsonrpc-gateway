@@ -1,23 +1,28 @@
 {
   "name": "web3-jsonrpc-gateway",
-  "version": "1.7.0",
+  "version": "1.7.6",
   "description": "A Web3 provider that handles accounts on its own but delegates chain queries to a 3rd party service",
   "main": "dist/bin/w3gw.js",
   "files": [
-    "dist",
+    "dist/**",
     "package.json",
     "LICENSE",
     "README.md"
   ],
   "bin": {
-    "w3gw": "dist/bin/w3gw.js"
+    "w3gw": "dist/bin/w3gw.js",
+    "w3gw-ethers": "dist/bin/ethers",
+    "w3gw-infura": "dist/bin/ethers/infura",
+    "w3gw-celo": "dist/bin/celo",
+    "w3gw-conflux": "dist/bin/conflux",
+    "w3gw-reef": "dist/bin/reef"
   },
   "scripts": {
     "ci": "yarn build && yarn lint && yarn test",
     "test": "jest --passWithNoTests",
     "lint": "prettier-standard --format",
     "build": "tsc --build src",
-    "prepare": "npm run build",
+    "prepare": "yarn build",
     "arbitrum:goerli": "cross-env-shell ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_GAS_LIMIT_FACTOR=1.0 ETHERS_GAS_PRICE_FACTOR=1.1 ETHERS_MOCK_FILTERS=true node dist/bin/ethers https://goerli-rollup.arbitrum.io/rpc 8517",
     "arbitrum:one": "cross-env-shell ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_GAS_LIMIT=2000000000000 ETHERS_GAS_LIMIT_FACTOR=1.0 ETHERS_GAS_PRICE_FACTOR=1.0 ETHERS_MOCK_FILTERS=true node dist/bin/ethers https://arb1.arbitrum.io/rpc 9517",
     "avalanche:mainnet": "cross-env-shell ETHERS_ALWAYS_SYNCED=true ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_GAS_PRICE=150000000000 ETHERS_GAS_PRICE_FACTOR=1.25 ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_MOCK_FILTERS=true node dist/bin/ethers https://api.avax.network/ext/bc/C/rpc 9533",
@@ -65,7 +70,7 @@
     "okxchain:mainnet": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=0 ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_GAS_LIMIT=8000000 node dist/bin/ethers https://exchainrpc.okex.org 9528",
     "optimism:goerli": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=0 ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_GAS_LIMIT_FACTOR=1.5 ETHERS_MOCK_FILTERS=true node dist/bin/ethers https://optimism-goerli.infura.io/v3/$W3GW_PROVIDER_KEY 8520",
     "optimism:mainnet": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=0 ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_GAS_LIMIT_FACTOR=1.1 ETHERS_MOCK_FILTERS=true node dist/bin/ethers https://optimism-mainnet.infura.io/v3/$W3GW_PROVIDER_KEY 9520",
-    "polygon:goerli": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=0 ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_GAS_PRICE=100000000000 ETHERS_GAS_PRICE_FACTOR=1.1 ETHERS_GAS_LIMIT=25000000 node dist/bin/ethers https://polygon-mumbai-bor.publicnode.com 8535",
+    "polygon:goerli": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=0 ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_GAS_PRICE=100000000000 ETHERS_GAS_PRICE_FACTOR=1.1 ETHERS_GAS_LIMIT=25000000 node dist/bin/ethers https://polygon-mumbai.g.alchemy.com/v2/VuJxSPvfjvqzhRHZw1e5HvKFUpKyDMyO 8535",
     "polygon:mainnet": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=0 ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_GAS_PRICE=300000000000 ETHERS_GAS_PRICE_FACTOR=1.1 ETHERS_GAS_LIMIT=25000000 node dist/bin/ethers https://polygon-mainnet.infura.io/v3/$W3GW_PROVIDER_KEY 9535",
     "polygon:zkevm:goerli": "cross-env-shell ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_GAS_LIMIT=15000000 ETHERS_GAS_LIMIT_FACTOR=1.1 ETHERS_GAS_PRICE=100000000000 ETHERS_GAS_PRICE_FACTOR=1.1 node dist/bin/ethers https://rpc.public.zkevm-test.net 8512",
     "reef:testnet": "cross-env-shell node dist/bin/reef wss://rpc-testnet.reefscan.com/ws https://squid.subsquid.io/reef-explorer-testnet/graphql 8532",
@@ -97,22 +102,14 @@
   },
   "homepage": "https://github.com/witnet/web3-jsonrpc-gateway#readme",
   "devDependencies": {
-    "@types/cors": "^2.8.10",
-    "@types/express": "^4.17.11",
-    "@types/node": "^15.6.1",
-    "dotenv": "^10.0.0",
-    "jest": "^27.0.1",
-    "prettier-standard": "^16.4.1",
-    "tslint": "^6.1.3",
-    "typescript": "^4.3.2"
-  },
-  "dependencies": {
     "@celo-tools/celo-ethers-wrapper": "~0.1.1",
     "@celo/contractkit": "~2.0.0",
     "@reef-defi/evm-provider": "~1.0.10",
+    "@types/cors": "^2.8.10",
+    "@types/express": "^4.17.11",
+    "@types/node": "^20.3.1",
     "body-parser": "1.19.0",
     "cors": "2.8.5",
-    "cross-env": "7.0.3",
     "ethers": "~5.2.0",
     "express": "~4.17.1",
     "graphql": "^14.6.0",
@@ -120,6 +117,14 @@
     "js-conflux-sdk": "2.0.0",
     "json-rpc-2.0": "~0.2.16",
     "winston": "~3.7.2",
+    "dotenv": "^10.0.0",
+    "jest": "^27.0.1",
+    "prettier-standard": "^16.4.1",
+    "tslint": "^6.1.3",
+    "typescript": "^5.1.3"
+  },
+  "dependencies": {
+    "cross-env": "7.0.3",
     "yarn": "^1.22.19"
   }
 }
