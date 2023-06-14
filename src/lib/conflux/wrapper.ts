@@ -254,8 +254,10 @@ export class WalletWrapper {
   ): Promise<any> {
     let gasPrice: number | string
     if (this.estimateGasPrice) {
-      let gasPriceBI = await this.conflux.getGasPrice()
-      if (gasPriceBI > BigInt(this.conflux.defaultGasPrice)) {
+      let gasPriceBI: bigint = BigInt(
+        await (await this.conflux.getGasPrice()).toString(10)
+      )
+      if (gasPriceBI > BigInt(this.conflux.defaultGasPrice.toString())) {
         let reason = `Estimated gas price exceeds threshold (${gasPriceBI} > ${this.conflux.defaultGasPrice})`
         throw {
           reason,
