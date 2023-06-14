@@ -131,7 +131,7 @@ export class WalletWrapper {
     _socket: SocketParams
   ): Promise<any> {
     let res: any = await this.conflux.estimateGasAndCollateral(params)
-    return "0x" + res.gasLimit.toString(16)
+    return '0x' + res.gasLimit.toString(16)
   }
 
   /**

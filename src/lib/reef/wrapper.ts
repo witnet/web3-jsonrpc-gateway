@@ -259,11 +259,7 @@ export class WalletWrapper {
     })
     const queryBlock = gql`
       {
-        blocks(
-          limit: 1,
-          orderBy: height_DESC,
-          where: { finalized_eq: true }
-        ) {
+        blocks(limit: 1, orderBy: height_DESC, where: { finalized_eq: true }) {
           height
           author
           hash
@@ -452,8 +448,6 @@ export class WalletWrapper {
     `
     const data = await request(this.graphUrl, query)
     const extrinsic = data?.extrinsics[0]
-    console.log("extrinsic =>", extrinsic)
-    console.log("extrinsic.events[0] =>", extrinsic?.events[0])
     let res = null
     if (extrinsic && extrinsic.block.finalized) {
       const logsQuery = gql`
@@ -485,7 +479,7 @@ export class WalletWrapper {
           blockNumber: BigNumber.from(extrinsic.block.height).toHexString(),
           cumulativeGasUsed: gas.toHexString(),
           gasUsed: gas.toHexString(),
-          contractAddress: 
+          contractAddress:
             extrinsic.events[0]?.method === 'Created'
               ? extrinsic.events[0]!.data[0][1]
               : null,
@@ -501,13 +495,14 @@ export class WalletWrapper {
               blockNumber: BigNumber.from(extrinsic.block.height).toHexString(),
               address: rawData?.address,
               data: rawData?.data,
-              topics: rawData?.topics || [],
+              topics: rawData?.topics || []
             }
           }),
           logsBloom:
             '0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
           from: extrinsic.events[0]!.data[0][0],
-          to: extrinsic.events[0]?.method === 'Created'
+          to:
+            extrinsic.events[0]?.method === 'Created'
               ? null
               : extrinsic.events[0]?.data[0][1],
           effectiveGasPrice: fee.div(gas).toHexString(),

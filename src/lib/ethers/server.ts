@@ -29,7 +29,7 @@ class WalletMiddlewareServer {
     gas_price_factor: number,
     gas_limit_factor: number,
     force_eip_1559: boolean,
-    eth_gas_price_factor: boolean,
+    eth_gas_price_factor: boolean
   ) {
     this.alwaysSynced = always_synced
     this.expressServer = express()
@@ -46,7 +46,7 @@ class WalletMiddlewareServer {
       gas_price_factor,
       gas_limit_factor,
       force_eip_1559,
-      eth_gas_price_factor,
+      eth_gas_price_factor
     )
 
     let lines = [

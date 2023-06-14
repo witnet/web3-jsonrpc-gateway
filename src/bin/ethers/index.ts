@@ -87,7 +87,7 @@ if (process.env.ETHERS_MOCK_FILTERS) {
   mock_filters = JSON.parse(process.env.ETHERS_MOCK_FILTERS)
 }
 
-// Optional: gas price factor to be applied to transactions 
+// Optional: gas price factor to be applied to transactions
 // with no gas price specified when ETHERS_ESTIMATE_GAS_PRICE is true
 let gas_price_factor = 1.0
 if (process.env.ETHERS_GAS_PRICE_FACTOR) {
@@ -122,7 +122,7 @@ console.log()
 const destinationProvider = new ethers.providers.JsonRpcProvider(
   providerUrl,
   network
-) 
+)
 
 new WalletMiddlewareServer(
   destinationProvider,
@@ -138,7 +138,7 @@ new WalletMiddlewareServer(
   gas_price_factor,
   gas_limit_factor,
   force_eip_1559,
-  eth_gas_price_factor,
+  eth_gas_price_factor
 )
   .initialize()
   .listen(port)

@@ -380,7 +380,7 @@ class WalletWrapper {
     if (this.ethGasPriceFactor) {
       return (await this.getGasPrice()).toHexString()
     } else {
-      (await this.provider.getGasPrice()).toHexString()
+      ;(await this.provider.getGasPrice()).toHexString()
     }
   }
 

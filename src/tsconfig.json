@@ -29,11 +29,9 @@
     "skipLibCheck": true,
     "resolveJsonModule": true,
     "rootDir": ".",
-    "allowJs": true,
+    "allowJs": true
   },
   "include": ["./**/*"],
   "exclude": ["./**/*.d.ts", "tsconfig.json"],
-  "references": [
-    { "path": "../" }
-  ]
+  "references": [{ "path": "../" }]
 }
