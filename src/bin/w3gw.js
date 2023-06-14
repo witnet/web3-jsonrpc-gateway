@@ -3,7 +3,12 @@ require('dotenv').config()
 const execSync = require('child_process').execSync
 const scripts = require('../../package.json').scripts
 
-if (process.argv.length >= 3 && (process.env.W3GW_SEED_PHRASE || process.env.W3GW_PRIVATE_KEYS)) {
+if (
+  process.argv.length >= 3 &&
+  (process.env.W3GW_SEED_PHRASE || process.env.W3GW_PRIVATE_KEYS)
+) {
+  // search for network and launch gateway, if found
+  let ecosystem 
   for (var key in scripts) {
     if (key === process.argv[2]) {
       if (process.argv.length >= 4) {
@@ -57,7 +62,22 @@ if (process.argv.length >= 3 && (process.env.W3GW_SEED_PHRASE || process.env.W3G
         )
       }
       process.exit(0)
+    } else if (key.split(":")[0].toLowerCase() === process.argv[2].toLowerCase()) {
+      ecosystem = process.argv[2].toLowerCase()
     }
+  }
+  // if parameter matched a known ecosystem, list available network within it
+  if (ecosystem) {
+    const header = `AVAILABLE NETWORKS ON ${ecosystem.toUpperCase()}`
+    console.info()
+    console.info(header)
+    console.info("=".repeat(header.length))
+    for (var key in scripts) {
+      if (key.split(":")[0].toLowerCase() === ecosystem) {
+        console.info('  ', key)
+      }
+    }
+    process.exit(0)
   }
 }
 console.info('Usage:')
@@ -66,14 +86,16 @@ console.info(
   '  ',
   '$ '
     .concat(process.argv[0], ' ')
-    .concat(process.argv[1], ' <ecosystem>:<network>')
+    .concat(process.argv[1], ' [<ecosystem>[:<network>]]')
 )
 console.info()
-console.info('Supported values:')
-console.info()
+
+const header = "AVAILABLE NETWORKS"
+console.info(header)
+console.info("=".repeat(header.length))
 for (var key in scripts) {
   if (key.indexOf(':') > -1) {
-    console.info('  ', '  ', key)
+    console.info('  ', key)
   }
 }
 console.info()
@@ -89,7 +111,7 @@ console.info(
 )
 console.info()
 console.info(
-  'Optionally, you can specify an ETH/JSONRPC endpoint different from the default one by setting:'
+  'Optionally, you can specify a custom ETH/JSONRPC endpoint by setting:'
 )
 console.info()
 console.info(
