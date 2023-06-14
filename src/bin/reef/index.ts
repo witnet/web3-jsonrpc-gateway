@@ -14,10 +14,10 @@ if (!rpcUrl) {
 }
 
 // Mandatory: the graphql endpoint serving Reef's evm data. Can also be passed as second parameter.
-const graphUrl = process.argv[3] || process.env.GRAPHQL_URL || ''
+const graphUrl = process.argv[3] || process.env.REEF_GRAPHQL_URL || ''
 if (!graphUrl) {
   throw Error(
-    'No GraphQL endpoint provided. Please set the `GRAPHQL_URL` environment variable.'
+    'No GraphQL endpoint provided. Please set the `REEF_GRAPHQL_URL` environment variable.'
   )
 }
 
