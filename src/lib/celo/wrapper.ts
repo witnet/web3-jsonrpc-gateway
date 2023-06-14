@@ -203,7 +203,7 @@ class WalletWrapper {
     const tx = await this.composeTransaction(socket, params)
 
     // Make call:
-    return await this.provider.call(tx, blockTag)
+    return this.provider.call(tx, blockTag)
   }
 
   /**

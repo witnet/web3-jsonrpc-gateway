@@ -1,16 +1,16 @@
 #!/usr/bin/env node
 
 import { ethers } from 'ethers'
-import { WalletMiddlewareServer } from '../../ethers/server'
+import { WalletMiddlewareServer } from '../../lib/ethers/server'
 
 require('dotenv').config()
 const packageData = require('../../../package.json')
 
 // Mandatory: the actual URL of the Web3 JSON-RPC provider. Can also be passed as first parameter.
-const providerUrl = process.argv[2] || process.env.PROVIDER_URL || ''
+const providerUrl = process.argv[2] || process.env.W3GW_PROVIDER_URL || ''
 if (providerUrl.length < 1) {
   throw Error(
-    'No provider URL provided. Please set the `PROVIDER_URL` environment variable.'
+    'No provider URL provided. Please set the `W3GW_PROVIDER_URL` environment variable.'
   )
 }
 
@@ -18,24 +18,24 @@ if (providerUrl.length < 1) {
 let port
 if (process.argv.length >= 4) {
   port = parseInt(process.argv[3])
-} else if (process.env.PORT) {
-  port = parseInt(process.env.PORT)
+} else if (process.env.W3GW_PORT) {
+  port = parseInt(process.env.W3GW_PORT)
 } else {
   throw Error(
-    'No listening port provided. Please set the `PORT` environment variable.'
+    'No listening port provided. Please set the `W3GW_PORT` environment variable.'
   )
 }
 
 // Mandatory: The seed phrase to use for the server's own wrapped wallet, in BIP-39 mnemonics format.
-const seed_phrase = process.env.SEED_PHRASE
+const seed_phrase = process.env.W3GW_SEED_PHRASE
 if (!seed_phrase) {
   throw Error(
-    'No mnemonic phrase provided. Please set the `SEED_PHRASE` environment variable.'
+    'No mnemonic phrase provided. Please set the `W3GW_SEED_PHRASE` environment variable.'
   )
 }
 
 // Optional: The network name to connect with. Can also be passed as third parameter.
-const network = process.argv[4] || process.env.NETWORK
+const network = process.argv[4] || process.env.W3GW_NETWORK
 
 // Optional: Number of blocks before EVM's latest state on which EVM calls will be perfomed
 let interleave_blocks = 0
@@ -57,8 +57,8 @@ if (process.env.ETHERS_GAS_LIMIT) {
 
 // Optional: number of wallet addresses to be handled by the server, derived from path '`m/44'/60'/0'/0/*`'.
 let num_addresses
-if (process.env.NUM_WALLETS) {
-  num_addresses = parseInt(process.env.NUM_WALLETS)
+if (process.env.W3GW_NUM_WALLETS) {
+  num_addresses = parseInt(process.env.W3GW_NUM_WALLETS)
 } else {
   num_addresses = 5
 }

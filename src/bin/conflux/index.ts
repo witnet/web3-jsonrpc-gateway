@@ -1,15 +1,15 @@
 #!/usr/bin/env node
 
-import { WalletMiddlewareServer } from '../../conflux/server'
+import { WalletMiddlewareServer } from '../../lib/conflux/server'
 
 require('dotenv').config()
 const packageData = require('../../../package.json')
 
 // Mandatory: the actual URL of the Web3 JSON-RPC provider. Can also be passed as first parameter.
-const providerUrl = process.argv[2] || process.env.PROVIDER_URL || ''
+const providerUrl = process.argv[2] || process.env.W3GW_PROVIDER_URL || ''
 if (providerUrl.length < 1) {
   throw Error(
-    'No provider URL provided. Please set the `PROVIDER_URL` environment variable.'
+    'No provider URL provided. Please set the `W3GW_PROVIDER_URL` environment variable.'
   )
 }
 
@@ -17,11 +17,11 @@ if (providerUrl.length < 1) {
 let networkId
 if (process.argv.length >= 4) {
   networkId = parseInt(process.argv[3])
-} else if (process.env.NETWORK) {
-  networkId = parseInt(process.env.NETWORK)
+} else if (process.env.W3GW_NETWORK) {
+  networkId = parseInt(process.env.W3GW_NETWORK)
 } else {
   throw Error(
-    'No network id provided. Please set the `NETWORK` environment variable.'
+    'No network id provided. Please set the `W3GW_NETWORK` environment variable.'
   )
 }
 
@@ -29,19 +29,19 @@ if (process.argv.length >= 4) {
 let port
 if (process.argv.length >= 5) {
   port = parseInt(process.argv[4])
-} else if (process.env.PORT) {
-  port = parseInt(process.env.PORT)
+} else if (process.env.W3GW_PORT) {
+  port = parseInt(process.env.W3GW_PORT)
 } else {
   throw Error(
-    'No listening port provided. Please set the `PORT` environment variable.'
+    'No listening port provided. Please set the `W3GW_PORT` environment variable.'
   )
 }
 
 // Mandatory: the private key to use for generation the server's own wrapped wallet.
-const privateKeys = JSON.parse(process.env.PRIVATE_KEYS || '')
+const privateKeys = JSON.parse(process.env.W3GW_PRIVATE_KEYS || '')
 if (!privateKeys || privateKeys.length === 0) {
   throw Error(
-    'No private keys were provided. Please set the `PRIVATE_KEYS` environment variable.'
+    'No private keys were provided. Please set the `W3GW_PRIVATE_KEYS` environment variable.'
   )
 }
 

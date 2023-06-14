@@ -18,10 +18,10 @@ node dist/bin/ethers/infura
 
 Required environment variables:
 
-- `PORT`: listening port for the server. Can also be passed from command-line as first parameter.
-- `NETWORK`: network name. Infura supports: `mainnet`, `ropsten`, `rinkeby`, `kovan` and `goerli`.
-- `SEED_PHRASE`: the seed phrase to use for the server's own wrapped wallet, in BIP-39 mnemonics format.
-- `INFURA_PROJECT_ID`: your Infura project ID.
+- `W3GW_PORT`: listening port for the server. Can also be passed from command-line as first parameter.
+- `W3GW_NETWORK`: network name. Infura supports: `mainnet`, `ropsten`, `rinkeby`, `kovan` and `goerli`.
+- `W3GW_SEED_PHRASE`: the seed phrase to use for the server's own wrapped wallet, in BIP-39 mnemonics format.
+- `W3GW_PROVIDER_KEY`: your Infura project ID.
 
 Optional environment variables:
 
@@ -29,8 +29,8 @@ Optional environment variables:
 - `INFURA_GAS_LIMIT`: default gas limit, if not specified by the client; or maximum gas limit threshold if either estimated by the provider, or provided by the client.
 - `INFURA_GAS_PRICE`: default gas price, if not specified by the client; or maximum gas price threshold if either estimated by the provider, or provided by the client.
 - `INFURA_GAS_PRICE_FACTOR`: multiplier applied to gas prices estimated by provider.
-- `LOG_LEVEL`: max log level to be traced, can be any of the following: `error`, `warn`, `info`, `http`, `verbose`, `debug`, `silly`. If not specified, `verbose` will apply.
-- `NUM_WALLETS`: number of wallet addresses to be handled by the gateway, derived from path '`m/44'/60'/0'/0/*`'.
+- `W3GW_LOG_LEVEL`: max log level to be traced, can be any of the following: `error`, `warn`, `info`, `http`, `verbose`, `debug`, `silly`. If not specified, `verbose` will apply.
+- `W3GW_NUM_WALLETS`: number of wallet addresses to be handled by the gateway, derived from path '`m/44'/60'/0'/0/*`'.
 
 ### Celo-compatible destination providers:
 
@@ -40,10 +40,10 @@ node dist/bin/celo
 
 Required environment variables:
 
-- `PORT`: listening port for the server. Can also be passed from command-line as first parameter.
-- `NETWORK`: Celo providers currently supports: `44787` for testnet, and `42220` for mainnet.
-- `PROVIDER_URL`: actual URL of the Web3 JSON-RPC provider.
-- `PRIVATE_KEYS`: array of private keys to be used for signing transactions.
+- `W3GW_PORT`: listening port for the server. Can also be passed from command-line as first parameter.
+- `W3GW_NETWORK`: Celo providers currently supports: `44787` for testnet, and `42220` for mainnet.
+- `W3GW_PROVIDER_URL`: actual URL of the Web3 JSON-RPC provider.
+- `W3GW_PRIVATE_KEYS`: array of private keys to be used for signing transactions.
 
 Optional environment variables:
 
@@ -61,10 +61,10 @@ node ./dist/bin/conflux
 
 Required environment variables:
 
-- `PROVIDER_URL`: actual URL of the Web3 JSON-RPC provider. Can also be passed from command-line as a first parameter.
-- `PORT`: listening port for the server. Can also be passed from command-line as a second parameter.
-- `NETWORK`: network id. Conflux providers currently supports: `1` for testnet, and `1029` for mainnet.
-- `PRIVATE_KEYS`: array of private keys to be used for signing transactions.
+- `W3GW_PROVIDER_URL`: actual URL of the Web3 JSON-RPC provider. Can also be passed from command-line as a first parameter.
+- `W3GW_PORT`: listening port for the server. Can also be passed from command-line as a second parameter.
+- `W3GW_NETWORK`: network id. Conflux providers currently supports: `1` for testnet, and `1029` for mainnet.
+- `W3GW_PRIVATE_KEYS`: array of private keys to be used for signing transactions.
 
 Optional environment variables:
 
@@ -73,7 +73,7 @@ Optional environment variables:
 - `CONFLUX_GAS_LIMIT`: default gas limit to be used before signing a transaction, if not specified by the caller.
 - `CONFLUX_GAS_PRICE`: default gas price to be used before signing a transaction, if not specified by the caller.
 - `EVM_CALL_INTERLEAVE_BLOCKS`: number of epochs before current epoch number upon which EVM read-only calls will be bound to; this variable defaults to zero.
-- `LOG_LEVEL`: max log level to be traced, can be any of the following: `error`, `warn`, `info`, `http`, `verbose`, `debug`, `silly`. If not specified, `verbose` will apply.
+- `W3GW_LOG_LEVEL`: max log level to be traced, can be any of the following: `error`, `warn`, `info`, `http`, `verbose`, `debug`, `silly`. If not specified, `verbose` will apply.
 
 ### Reef-compatible destination providers:
 
@@ -83,15 +83,15 @@ node ./dist/bin/reef
 
 Required environment variables:
 
-- `PROVIDER_URL`: actual URL of the Web3 JSON-RPC provider. Can also be passed from command-line as a first parameter.
+- `W3GW_PROVIDER_URL`: actual URL of the Web3 JSON-RPC provider. Can also be passed from command-line as a first parameter.
 - `GRAPHQL_URL`: the GraphQL endpoint serving EVM's data. Can also be passed from command-line as a second parameter.
-- `PORT`: listening port for the server. Can also be passed from command-line as a third parameter.
-- `SEED_PHRASE`: seed phrase to be used with either `Infura` or `Ethers.js` providers.
+- `W3GW_PORT`: listening port for the server. Can also be passed from command-line as a third parameter.
+- `W3GW_SEED_PHRASE`: seed phrase to be used with either `Infura` or `Ethers.js` providers.
 
 Optional environment variables:
 
-- `LOG_LEVEL`: max log level to be traced, can be any of the following: `error`, `warn`, `info`, `http`, `verbose`, `debug`, `silly`. If not specified, `verbose` will apply.
-- `NUM_WALLETS`: number of EVM wallet addresses to be handled by the gateway. EVM addresses will be default ones attached to respective Reef addresses. First Reef address will be derived from '`${SEED_PHRASE}`', while the following one from '`${SEED_PHRASE}//${j}`' (with `j > 0`).
+- `W3GW_LOG_LEVEL`: max log level to be traced, can be any of the following: `error`, `warn`, `info`, `http`, `verbose`, `debug`, `silly`. If not specified, `verbose` will apply.
+- `W3GW_NUM_WALLETS`: number of EVM wallet addresses to be handled by the gateway. EVM addresses will be default ones attached to respective Reef addresses. First Reef address will be derived from '`${W3GW_SEED_PHRASE}`', while the following one from '`${W3GW_SEED_PHRASE}//${j}`' (with `j > 0`).
 
 ### Generic destination providers:
 
@@ -106,15 +106,15 @@ Generic destination providers need to comply with the `JsonRpcProvider` type fro
 
 Required environment variables:
 
-- `PORT`: listening port for the server. Can also be passed from command-line as a second parameter.
-- `SEED_PHRASE`: the seed phrase to use for the server's own wrapped wallet, in BIP-39 mnemonics format.
-- `PROVIDER_URL`: actual URL of the Web3 JSON-RPC provider. Can also be passed from command-line as a first parameter.
+- `W3GW_PORT`: listening port for the server. Can also be passed from command-line as a second parameter.
+- `W3GW_SEED_PHRASE`: the seed phrase to use for the server's own wrapped wallet, in BIP-39 mnemonics format.
+- `W3GW_PROVIDER_URL`: actual URL of the Web3 JSON-RPC provider. Can also be passed from command-line as a first parameter.
 
 Optional environment variables:
 
-- `NETWORK`: the network name to connect with.
-- `NUM_WALLETS`: number of wallet addresses to be handled by the gateway, derived from path '`m/44'/60'/0'/0/*`'.
-- `LOG_LEVEL`: max log level to be traced, can be any of the following: `error`, `warn`, `info`, `http`, `verbose`, `debug`, `silly`. If not specified, `verbose` will apply.
+- `W3GW_NETWORK`: the network name to connect with.
+- `W3GW_NUM_WALLETS`: number of wallet addresses to be handled by the gateway, derived from path '`m/44'/60'/0'/0/*`'.
+- `W3GW_LOG_LEVEL`: max log level to be traced, can be any of the following: `error`, `warn`, `info`, `http`, `verbose`, `debug`, `silly`. If not specified, `verbose` will apply.
 - `ETHERS_ALWAYS_SYNCED`: if set to `true`, the gateway will intercept calls to `eth_syncing` as to return `false` in all cases..
 - `ETHERS_ESTIMATE_GAS_LIMIT`: if set to `true`, the provider will be asked to estimate the gas limit, before signing the transaction; if the provider-estimated gas limit is greater than `ETHERS_GAS_LIMIT`, the transaction will be rejected by the gateway.
 - `ETHERS_ESTIMATE_GAS_PRICE`: if set to `true`, the provider will be asked to estimate the gas price, before signing the transaction; if the provider-estimated gas price is greater than `ETHERS_GAS_PRICE`, the transaction will be rejected by the gateway.
@@ -131,10 +131,10 @@ There are several package scripts at your disposal for you to launch specific ga
 **Important**: In order to these batch scripts to work properly, please rename `.env_batch_example` to `.env`, and fulfill the following parameters:
 
 - `EVM_CALL_INTERLEAVE_BLOCKS`: number of blocks before latest knwon upon which EVM read-only calls will be bound to; this variable defaults to zero.
-- `INFURA_PROJECT_ID`: your Infura's project id to be used with `Infura`-connected servers.
-- `LOG_LEVEL`: max log level to be traced, can be any of the following: `error`, `warn`, `info`, `http`, `verbose`, `debug`, `silly`. If not specified, `verbose` will apply.
-- `PRIVATE_KEYS`: array of private keys to be used by `Conflux` and `Celo` -alike providers.
-- `SEED_PHRASE`: seed phrase to be used with either `Infura` or `Ethers.js` providers.
+- `W3GW_PROVIDER_KEY`: your Infura's project id to be used with `Infura`-connected servers.
+- `W3GW_LOG_LEVEL`: max log level to be traced, can be any of the following: `error`, `warn`, `info`, `http`, `verbose`, `debug`, `silly`. If not specified, `verbose` will apply.
+- `W3GW_PRIVATE_KEYS`: array of private keys to be used by `Conflux` and `Celo` -alike providers.
+- `W3GW_SEED_PHRASE`: seed phrase to be used with either `Infura` or `Ethers.js` providers.
 
 ### Running gateways to Ethereum networks:
 

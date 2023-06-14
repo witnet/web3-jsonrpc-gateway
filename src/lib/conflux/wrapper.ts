@@ -369,7 +369,7 @@ export class WalletWrapper {
     })
 
     // Serialize and send signed transaction:
-    return await this.conflux.sendRawTransaction(serialized)
+    return this.conflux.sendRawTransaction(serialized)
   }
 
   /**
