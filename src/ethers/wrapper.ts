@@ -409,7 +409,7 @@ class WalletWrapper {
     )
 
     // Make call:
-    return await this.provider.call(tx, blockTag)
+    return this.provider.call(tx, blockTag)
   }
 
   /**
