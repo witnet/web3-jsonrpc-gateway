@@ -1,6 +1,6 @@
 {
   "name": "web3-jsonrpc-gateway",
-  "version": "1.7.0",
+  "version": "1.7.1",
   "description": "A Web3 provider that handles accounts on its own but delegates chain queries to a 3rd party service",
   "main": "dist/bin/w3gw.js",
   "files": [
@@ -17,7 +17,7 @@
     "test": "jest --passWithNoTests",
     "lint": "prettier-standard --format",
     "build": "tsc --build src",
-    "prepare": "npm run build",
+    "prepare": "yarn build",
     "arbitrum:goerli": "cross-env-shell ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_GAS_LIMIT_FACTOR=1.0 ETHERS_GAS_PRICE_FACTOR=1.1 ETHERS_MOCK_FILTERS=true node dist/bin/ethers https://goerli-rollup.arbitrum.io/rpc 8517",
     "arbitrum:one": "cross-env-shell ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_GAS_LIMIT=2000000000000 ETHERS_GAS_LIMIT_FACTOR=1.0 ETHERS_GAS_PRICE_FACTOR=1.0 ETHERS_MOCK_FILTERS=true node dist/bin/ethers https://arb1.arbitrum.io/rpc 9517",
     "avalanche:mainnet": "cross-env-shell ETHERS_ALWAYS_SYNCED=true ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_GAS_PRICE=150000000000 ETHERS_GAS_PRICE_FACTOR=1.25 ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_MOCK_FILTERS=true node dist/bin/ethers https://api.avax.network/ext/bc/C/rpc 9533",

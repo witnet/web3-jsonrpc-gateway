@@ -89,7 +89,7 @@ console.info(
 )
 console.info()
 console.info(
-  'Optionally, you can specify an ETH/JSONRPC endpoint different from the default one by setting:'
+  'Optionally, you can specify a custom ETH/JSONRPC endpoint by setting:'
 )
 console.info()
 console.info(
