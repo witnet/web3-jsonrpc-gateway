@@ -3,7 +3,10 @@ require('dotenv').config()
 const execSync = require('child_process').execSync
 const scripts = require('../../package.json').scripts
 
-if (process.argv.length >= 3 && (process.env.W3GW_SEED_PHRASE || process.env.W3GW_PRIVATE_KEYS)) {
+if (
+  process.argv.length >= 3 &&
+  (process.env.W3GW_SEED_PHRASE || process.env.W3GW_PRIVATE_KEYS)
+) {
   for (var key in scripts) {
     if (key === process.argv[2]) {
       if (process.argv.length >= 4) {
@@ -89,7 +92,7 @@ console.info(
 )
 console.info()
 console.info(
-  'Optionally, you can specify an ETH/JSONRPC endpoint different from the default one by setting:'
+  'Optionally, you can specify a custom ETH/JSONRPC endpoint by setting:'
 )
 console.info()
 console.info(
