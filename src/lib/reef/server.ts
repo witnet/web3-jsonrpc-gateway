@@ -118,7 +118,7 @@ export class WalletMiddlewareServer {
               body: {
                 error: {
                   code: -32015,
-                  message: exception.toString(),
+                  message: exception.toString()
                 }
               }
             }
@@ -135,12 +135,12 @@ export class WalletMiddlewareServer {
               : {
                   error: {
                     code: exception.code || -32099,
-                    message: `"${message}"`,
+                    message: `"${message}"`
                   }
                 })
           body = typeof body !== 'string' ? JSON.stringify(body) : body
           try {
-            response = { ...header, error: JSON.parse(body).error  }
+            response = { ...header, error: JSON.parse(body).error }
           } catch (e) {
             logger.log({
               level: 'error',
