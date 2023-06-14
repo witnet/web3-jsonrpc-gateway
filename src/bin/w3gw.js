@@ -3,7 +3,7 @@ require('dotenv').config()
 const execSync = require('child_process').execSync
 const scripts = require('../../package.json').scripts
 
-if (process.argv.length >= 3) {
+if (process.argv.length >= 3 && (process.env.W3GW_SEED_PHRASE || process.env.W3GW_PRIVATE_KEYS)) {
   for (var key in scripts) {
     if (key === process.argv[2]) {
       if (process.argv.length >= 4) {
@@ -87,27 +87,15 @@ console.info(
   '\t=>',
   'Secret phrase from which wallet addresses will be derived.'
 )
-console.info(
-  '  ',
-  'W3GW_NUM_WALLETS',
-  '\t=>',
-  'Number of wallet addresses to derive from given seed phrase (default: 3).'
-)
 console.info()
 console.info(
-  'To connect to some specific ETH/JSONRPC endpoint different from the default one, you can also set:'
+  'Optionally, you can specify an ETH/JSONRPC endpoint different from the default one by setting:'
 )
 console.info()
 console.info(
   '  ',
   'W3GW_PROVIDER_URL',
   '\t=>',
-  'ETH/RPC endpoint where to connect to.'
+  'ETH/JSONRPC endpoint where to connect to.'
 )
-console.info()
-console.info(
-  'To run the local gateway on a port different from the default one, please set:'
-)
-console.info()
-console.info('  ', 'W3GW_PORT', '\t=>', 'ETH/RPC endpoint where to connect to.')
 console.info()
