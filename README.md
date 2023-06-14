@@ -8,6 +8,14 @@ A Web3 JSON-RPC provider gateway that handles accounts on its own using Ethers.j
 yarn build
 ```
 
+## Release
+
+This repository is released automatically in [DockerHub](https://github.com/witnet/web3-jsonrpc-gateway/blob/main/.github/workflows/docker-publish.yml) and [npm](https://github.com/witnet/web3-jsonrpc-gateway/blob/main/.github/workflows/npm-publish.yml) using GitHub actions when a new release is detected in the repository. To release:
+
+- Push a new tag.
+- [Publish](https://github.com/witnet/web3-jsonrpc-gateway/releases/new) a new release.
+
+
 ## Running a single server instance, depending on destination provider type:
 
 ### Infura as destination provider:
