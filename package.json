@@ -1,6 +1,6 @@
 {
   "name": "web3-jsonrpc-gateway",
-  "version": "1.7.9",
+  "version": "1.7.11",
   "description": "A Web3 provider that handles accounts on its own but delegates chain queries to a 3rd party service",
   "main": "dist/bin/w3gw.js",
   "files": [
@@ -28,6 +28,7 @@
     "avalanche:mainnet": "cross-env-shell ETHERS_ALWAYS_SYNCED=true ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_GAS_PRICE=150000000000 ETHERS_GAS_PRICE_FACTOR=1.25 ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_MOCK_FILTERS=true node dist/bin/ethers https://api.avax.network/ext/bc/C/rpc 9533",
     "avalanche:testnet": "cross-env-shell ETHERS_ALWAYS_SYNCED=true ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_GAS_PRICE=50000000000 ETHERS_GAS_PRICE_FACTOR=1.0 ETHERS_GAS_LIMIT=8000000  ETHERS_MOCK_FILTERS=true node dist/bin/ethers https://api.avax-test.network/ext/bc/C/rpc 8533",
     "boba:bnb:testnet": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=0 ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_GAS_LIMIT=30000000 ETHERS_GAS_LIMIT_FACTOR=2.0 node dist/bin/ethers https://testnet.bnb.boba.network 8510",
+    "boba:bnb:mainnet": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=0 ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_GAS_LIMIT=30000000 ETHERS_GAS_LIMIT_FACTOR=2.0 node dist/bin/ethers https://bnb.boba.network 9510",
     "boba:ethereum:mainnet": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=0 ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_GAS_LIMIT_FACTOR=1.2 node dist/bin/ethers https://mainnet.boba.network 9539",
     "boba:ethereum:goerli": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=0 ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_GAS_LIMIT_FACTOR=1.1 node dist/bin/ethers https://goerli.boba.network 8515",
     "boba:ethereum:rinkeby": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=0 ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_GAS_LIMIT_FACTOR=1.1 node dist/bin/ethers https://rinkeby.boba.network 8539",
@@ -116,7 +117,6 @@
     "graphql-request": "^5.0.0",
     "js-conflux-sdk": "2.0.0",
     "json-rpc-2.0": "~0.2.16",
-    "winston": "~3.7.2",
     "dotenv": "^10.0.0",
     "jest": "^27.0.1",
     "prettier-standard": "^16.4.1",
@@ -125,6 +125,7 @@
   },
   "dependencies": {
     "cross-env": "7.0.3",
-    "yarn": "^1.22.19"
+    "yarn": "^1.22.19",
+    "winston": "~3.7.2"
   }
 }
