@@ -1,6 +1,6 @@
 {
   "name": "web3-jsonrpc-gateway",
-  "version": "1.7.11",
+  "version": "1.7.12",
   "description": "A Web3 provider that handles accounts on its own but delegates chain queries to a 3rd party service",
   "main": "dist/bin/w3gw.js",
   "files": [
@@ -52,6 +52,7 @@
     "ethereum:mainnet": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=0 ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=true node dist/bin/ethers/infura 9545",
     "ethereum:rinkeby": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=0 node dist/bin/ethers/infura 8544 rinkeby",
     "fuse:testnet": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=0 ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=true node dist/bin/ethers https://rpc.fusespark.io 8511",
+    "gnosis:testnet": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=0 ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_ESTIMATE_GAS_PRICE=false ETHERS_GAS_PRICE=100000000 node dist/bin/ethers https://rpc.chiadochain.net 8509",
     "harmony:testnet#0": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=16 ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_GAS_PRICE=33000000000 node dist/bin/ethers https://api.s0.b.hmny.io 8534",
     "hsc:testnet": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=1 ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMT=true ETHERS_GAS_PRICE=10000000000 node dist/bin/ethers https://http-testnet.hoosmartchain.com 8524",
     "kava:testnet": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=0 ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_GAS_PRICE=10000000000 ETHERS_GAS_PRICE_FACTOR=1.25 node dist/bin/ethers https://evm.testnet.kava.io/ 8526",
