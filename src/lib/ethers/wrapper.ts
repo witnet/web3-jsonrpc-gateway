@@ -337,6 +337,10 @@ class WalletWrapper {
     return gasLimit
   }
 
+  async getNetwork(): Promise<any> {
+    return `0x${(await this.provider.getNetwork()).chainId.toString(16)}`
+  }
+
   /**
    * Get wallet of the given's address, if managed
    */
