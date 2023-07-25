@@ -338,7 +338,7 @@ class WalletWrapper {
   }
 
   async getNetwork(): Promise<any> {
-    return `0x${(await this.provider.getNetwork()).chainId.toString(16)}`
+    return `0x${(await this.provider.network).chainId.toString(16)}`
   }
 
   /**
