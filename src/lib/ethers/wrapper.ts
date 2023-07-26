@@ -397,25 +397,23 @@ class WalletWrapper {
     socket: SocketParams,
     params: TransactionParams
   ): Promise<any> {
-    // Check for rollbacks, and get block tag:
-    const blockTag = (await this.checkRollbacks(socket)) - this.interleaveBlocks
-    if (this.interleaveBlocks > 0) {
-      logger.verbose({
-        socket,
-        message: `> Block tag: ${this.lastKnownBlock} --> ${blockTag}`
-      })
-    } else {
-      logger.verbose({ socket, message: `> Block tag: ${this.lastKnownBlock}` })
-    }
-
     // Compose base transaction:
     let tx: ethers.providers.TransactionRequest = await this.composeTransaction(
       socket,
       params
     )
-
-    // Make call:
-    return this.provider.call(tx, blockTag)
+    if (this.interleaveBlocks > 0) {
+      // Check for rollbacks, and get block tag:
+      const blockTag = (await this.checkRollbacks(socket)) - this.interleaveBlocks
+      logger.verbose({
+        socket,
+        message: `> Block tag: ${this.lastKnownBlock} --> ${blockTag}`
+      })
+      // Make the call:
+      return this.provider.call(tx, blockTag)
+    } else {
+      return this.provider.call(tx)
+    }
   }
 
   /**
