@@ -101,6 +101,12 @@ if (process.env.ETHERS_GAS_LIMIT_FACTOR) {
   gas_limit_factor = parseFloat(process.env.ETHERS_GAS_LIMIT_FACTOR)
 }
 
+// Optional: force EIP-155 replay-protected transactions
+let force_eip_155: boolean = false
+if (process.env.ETHERS_FORCE_EIP_155) {
+  force_eip_155 = JSON.parse(process.env.ETHERS_FORCE_EIP_155)
+}
+
 // Optional: force EIP-1559's type 2 transactions
 let force_eip_1559: boolean = false
 if (process.env.ETHERS_FORCE_EIP_1559) {
@@ -137,6 +143,7 @@ new WalletMiddlewareServer(
   mock_filters,
   gas_price_factor,
   gas_limit_factor,
+  force_eip_155,
   force_eip_1559,
   eth_gas_price_factor
 )
