@@ -25,12 +25,13 @@ class WalletWrapper {
   estimateGasLimit: boolean
   estimateGasPrice: boolean
   ethGasPriceFactor: boolean
+  forceEIP155: boolean
   forceType2Txs: boolean
   gasPriceFactor!: number
   gasLimitFactor!: number
   interleaveBlocks: number
   lastKnownBlock: number
-  provider: ethers.providers.JsonRpcProvider
+  provider: ethers.providers.StaticJsonRpcProvider
   wallets: Wallet[]
 
   constructor (
@@ -44,15 +45,16 @@ class WalletWrapper {
     estimate_gas_price: boolean,
     gas_price_factor: number,
     gas_limit_factor: number,
+    force_eip_155: boolean,
     force_eip_1559: boolean,
     eth_gas_price_factor: boolean
   ) {
-    this.chainId = provider.network.chainId
     this.defaultGasPrice = gas_price
     this.defaultGasLimit = gas_limit
     this.estimateGasLimit = estimate_gas_limit
     this.estimateGasPrice = estimate_gas_price
     this.ethGasPriceFactor = eth_gas_price_factor
+    this.forceEIP155 = force_eip_155
     this.forceType2Txs = force_eip_1559
     this.gasPriceFactor = gas_price_factor
     this.gasLimitFactor = gas_limit_factor
@@ -85,8 +87,13 @@ class WalletWrapper {
       to: params.to,
       value: params.value,
       data: params.data,
-      nonce: params.nonce,
-      chainId: this.chainId
+      nonce: params.nonce
+    }
+    if (this.forceEIP155) {
+      tx = {
+        ...tx,
+        chainId: this.provider.network.chainId
+      }
     }
     if (tx.from) {
       logger.verbose({ socket, message: `> From:      ${tx.from}` })
@@ -99,7 +106,9 @@ class WalletWrapper {
       }`
     })
     logger.verbose({ socket, message: `> Value:     ${tx.value || 0} wei` })
-    logger.verbose({ socket, message: `> ChainId:   ${tx.chainId}` })
+    if (this.forceEIP155) {
+      logger.verbose({ socket, message: `> ChainId:   ${tx.chainId}` })
+    }
 
     // Complete tx type, if necessary:
     if (this.forceType2Txs) {
@@ -339,8 +348,8 @@ class WalletWrapper {
     return gasLimit
   }
 
-  async getNetwork(): Promise<any> {
-    return `0x${this.chainId.toString(16)}`
+  async getNetwork (): Promise<any> {
+    return `0x${this.provider.network.chainId.toString(16)}`
   }
 
   /**
@@ -404,7 +413,8 @@ class WalletWrapper {
     )
     if (this.interleaveBlocks > 0) {
       // Check for rollbacks, and get block tag:
-      const blockTag = (await this.checkRollbacks(socket)) - this.interleaveBlocks
+      const blockTag =
+        (await this.checkRollbacks(socket)) - this.interleaveBlocks
       logger.verbose({
         socket,
         message: `> Block tag: ${this.lastKnownBlock} --> ${blockTag}`

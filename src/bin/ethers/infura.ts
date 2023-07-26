@@ -105,6 +105,7 @@ new WalletMiddlewareServer(
   false, // mock filters
   gas_price_factor,
   gas_limit_factor,
+  false, // force EIP-155 txs
   false, // force EIP-1559 txs
   false // eth gas price factor
 )

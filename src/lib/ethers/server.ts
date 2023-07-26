@@ -16,7 +16,7 @@ class WalletMiddlewareServer {
   wrapper: WalletWrapper
 
   constructor (
-    provider: ethers.providers.JsonRpcProvider,
+    provider: ethers.providers.StaticJsonRpcProvider,
     seed_phrase: string,
     interleave_blocks: number,
     gas_price: number,
@@ -28,6 +28,7 @@ class WalletMiddlewareServer {
     mock_filters: boolean,
     gas_price_factor: number,
     gas_limit_factor: number,
+    force_eip_155: boolean,
     force_eip_1559: boolean,
     eth_gas_price_factor: boolean
   ) {
@@ -45,6 +46,7 @@ class WalletMiddlewareServer {
       estimate_gas_price,
       gas_price_factor,
       gas_limit_factor,
+      force_eip_155,
       force_eip_1559,
       eth_gas_price_factor
     )
