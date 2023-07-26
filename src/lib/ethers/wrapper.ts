@@ -19,6 +19,7 @@ interface TransactionParams {
  * `eth-json-rpc-middleware`.
  */
 class WalletWrapper {
+  chainId: number
   defaultGasPrice!: number
   defaultGasLimit!: number
   estimateGasLimit: boolean
@@ -46,6 +47,7 @@ class WalletWrapper {
     force_eip_1559: boolean,
     eth_gas_price_factor: boolean
   ) {
+    this.chainId = provider.network.chainId
     this.defaultGasPrice = gas_price
     this.defaultGasLimit = gas_limit
     this.estimateGasLimit = estimate_gas_limit
@@ -84,7 +86,7 @@ class WalletWrapper {
       value: params.value,
       data: params.data,
       nonce: params.nonce,
-      chainId: this.provider.network.chainId
+      chainId: this.chainId
     }
     if (tx.from) {
       logger.verbose({ socket, message: `> From:      ${tx.from}` })
@@ -338,7 +340,7 @@ class WalletWrapper {
   }
 
   async getNetwork(): Promise<any> {
-    return `0x${(await this.provider.network).chainId.toString(16)}`
+    return `0x${this.chainId.toString(16)}`
   }
 
   /**
