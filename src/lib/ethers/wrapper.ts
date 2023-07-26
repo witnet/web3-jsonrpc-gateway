@@ -47,7 +47,6 @@ class WalletWrapper {
     force_eip_1559: boolean,
     eth_gas_price_factor: boolean
   ) {
-    this.chainId = provider.network.chainId
     this.defaultGasPrice = gas_price
     this.defaultGasLimit = gas_limit
     this.estimateGasLimit = estimate_gas_limit
@@ -86,7 +85,6 @@ class WalletWrapper {
       value: params.value,
       data: params.data,
       nonce: params.nonce,
-      chainId: this.chainId
     }
     if (tx.from) {
       logger.verbose({ socket, message: `> From:      ${tx.from}` })
@@ -340,6 +338,9 @@ class WalletWrapper {
   }
 
   async getNetwork(): Promise<any> {
+    if (!this.chainId) {
+      this.chainId = (await this.provider.getNetwork()).chainId;
+    }
     return `0x${this.chainId.toString(16)}`
   }
 
