@@ -1,6 +1,6 @@
 {
   "name": "web3-jsonrpc-gateway",
-  "version": "1.7.14",
+  "version": "1.7.19",
   "description": "A Web3 provider that handles accounts on its own but delegates chain queries to a 3rd party service",
   "main": "dist/bin/w3gw.js",
   "files": [
@@ -65,7 +65,7 @@
     "meter:mainnet": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=0 ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_GAS_PRICE=5000000000000 ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_GAS_LIMIT=8000000 node dist/bin/ethers https://rpc.meter.io 9523",
     "metis:goerli": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=0 ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_GAS_LIMIT=50000000 node dist/bin/ethers https://goerli.gateway.metisdevops.link 8536",
     "metis:mainnet": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=0 ETHERS_ESTIMATE_GAS_PRICE=false ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_GAS_LIMIT=50000000 node dist/bin/ethers https://andromeda.metis.io/?owner=1088 9536",
-    "moonbeam:moonbase": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=0 ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_GAS_PRICE=50000000000 ETHERS_GAS_LIMIT=8000000 ETHERS_MOCK_FILTERS=true node dist/bin/ethers https://rpc.testnet.moonbeam.network 8531",
+    "moonbeam:moonbase": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=0 ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_GAS_PRICE=50000000000 ETHERS_GAS_LIMIT=8000000 ETHERS_MOCK_FILTERS=true node dist/bin/ethers https://moonbase-alpha.public.blastapi.io 8531",
     "moonbeam:moonriver": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=0 ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_GAS_PRICE=50000000000 ETHERS_GAS_LIMIT=14999999 ETHERS_MOCK_FILTERS=true node dist/bin/ethers https://rpc.api.moonriver.moonbeam.network 7531",
     "moonbeam:mainnet": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=0 ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_GAS_PRICE=100000000000 ETHERS_GAS_LIMIT=14999999 ETHERS_MOCK_FILTERS=true node dist/bin/ethers https://rpc.api.moonbeam.network 9531",
     "okxchain:testnet": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=0 ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_GAS_LIMIT=8000000 ETHERS_GAS_PRICE_FACTOR=1.1 node dist/bin/ethers https://exchaintestrpc.okex.org 8528",

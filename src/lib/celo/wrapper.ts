@@ -87,7 +87,7 @@ class WalletWrapper {
 
     // Compose base transaction:
     let tx: any = {
-      from: params.from || this.getAccounts()[0],
+      from: params.from, // || this.getAccounts()[0],
       to: params.to,
       data: params.data,
       gasPrice,
@@ -97,7 +97,12 @@ class WalletWrapper {
     }
 
     // Estimate gas limit, if not specified, but `params.from` is:
-    const gasLimit = await this.processEthEstimateGas(socket, tx)
+    let gasLimit = params.gas
+    if (!gasLimit && params.from) {
+      gasLimit = await this.processEthEstimateGas(socket, tx)
+    } else {
+      gasLimit = params.gas
+    }
     tx = {
       ...tx,
       gasLimit: gasLimit
@@ -123,7 +128,7 @@ class WalletWrapper {
     })
     logger.verbose({
       socket,
-      message: `> Gas limit: ${tx.gasLimit.toString()} gas`
+      message: `> Gas limit: ${tx.gasLimit.toString()} gas units`
     })
     logger.verbose({
       socket,

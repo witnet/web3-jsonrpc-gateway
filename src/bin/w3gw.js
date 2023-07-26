@@ -5,31 +5,39 @@ const scripts = require('../../package.json').scripts
 
 if (process.argv.length >= 3) {
   // search for network and launch gateway, if found
-  let ecosystem 
+  let ecosystem
   for (var key in scripts) {
-    if (key.indexOf(":") > -1 && key === process.argv[2]) {
+    if (key.indexOf(':') > -1 && key === process.argv[2]) {
       if (process.env.W3GW_SEED_PHRASE || process.env.W3GW_PRIVATE_KEYS) {
         var cmdline = scripts[key].split(' ')
         // substitute "node path/to/bin" to "npx w3gw-bin"
-        var index = cmdline.findIndex(item => item === "node")
-        if (index > -1) cmdline[index] = "npx"
-        index = cmdline.findIndex(item => item.startsWith("dist/bin"))
-        if (index > -1) cmdline[index] = `w3gw-${cmdline[index].split("/").slice(-1)}`
+        var index = cmdline.findIndex(item => item === 'node')
+        if (index > -1) cmdline[index] = 'npx'
+        index = cmdline.findIndex(item => item.startsWith('dist/bin'))
+        if (index > -1)
+          cmdline[index] = `w3gw-${cmdline[index].split('/').slice(-1)}`
         // replace all references to $W3GW_PROVIDER_URL
         cmdline = cmdline.map(item => {
-          if (item.indexOf("$W3GW_PROVIDER_KEY") > -1) {
+          if (item.indexOf('$W3GW_PROVIDER_KEY') > -1) {
             if (!process.env.W3GW_PROVIDER_KEY) {
               console.info()
-              console.info("Cannot launch", key, "gateway: the W3GW_PROVIDER_KEY envar must be set!")
+              console.info(
+                'Cannot launch',
+                key,
+                'gateway: the W3GW_PROVIDER_KEY envar must be set!'
+              )
               process.exit(0)
             }
-            return item.replaceAll("$W3GW_PROVIDER_KEY", process.env.W3GW_PROVIDER_KEY)
+            return item.replaceAll(
+              '$W3GW_PROVIDER_KEY',
+              process.env.W3GW_PROVIDER_KEY
+            )
           } else {
             return item
           }
         })
         if (process.argv.length >= 4) {
-          // a specific JSONRPC provider has been specified in the command line:  
+          // a specific JSONRPC provider has been specified in the command line:
           cmdline[cmdline.length - 2] = process.argv[3]
           if (process.env.W3GW_PORT) {
             cmdline[cmdline.length - 1] = process.env.W3GW_PORT
@@ -73,11 +81,16 @@ if (process.argv.length >= 3) {
         process.exit(0)
       } else {
         console.info()
-        console.info("Cannot launch", key, "gateway !!")
-        console.info("Please, setup the W3GW_SEED_PHRASE environment variable, or add it to the .env file!")
+        console.info('Cannot launch', key, 'gateway !!')
+        console.info(
+          'Please, setup the W3GW_SEED_PHRASE environment variable, or add it to the .env file!'
+        )
         process.exit(1)
       }
-    } else if (key.indexOf(":") && key.split(":")[0].toLowerCase() === process.argv[2].toLowerCase()) {
+    } else if (
+      key.indexOf(':') &&
+      key.split(':')[0].toLowerCase() === process.argv[2].toLowerCase()
+    ) {
       ecosystem = process.argv[2].toLowerCase()
       break
     }
@@ -87,9 +100,9 @@ if (process.argv.length >= 3) {
     const header = `AVAILABLE NETWORKS ON ${ecosystem.toUpperCase()}`
     console.info()
     console.info(header)
-    console.info("=".repeat(header.length))
+    console.info('='.repeat(header.length))
     for (var key in scripts) {
-      if (key.split(":")[0].toLowerCase() === ecosystem) {
+      if (key.split(':')[0].toLowerCase() === ecosystem) {
         console.info('  ', key)
       }
     }
@@ -102,13 +115,16 @@ console.info(
   '  ',
   '$ '
     .concat(process.argv[0], ' ')
-    .concat(process.argv[1], ' [<ecosystem>[:<network>] [custom-rpc-provider-url]]')
+    .concat(
+      process.argv[1],
+      ' [<ecosystem>[:<network>] [custom-rpc-provider-url]]'
+    )
 )
 console.info()
 
-const header = "AVAILABLE NETWORKS"
-console.info("  ", header)
-console.info("  ", "=".repeat(header.length))
+const header = 'AVAILABLE NETWORKS'
+console.info('  ', header)
+console.info('  ', '='.repeat(header.length))
 console.info()
 for (var key in scripts) {
   if (key.indexOf(':') > -1) {
