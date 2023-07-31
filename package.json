@@ -1,6 +1,6 @@
 {
   "name": "web3-jsonrpc-gateway",
-  "version": "1.7.20",
+  "version": "1.7.21",
   "description": "A Web3 provider that handles accounts on its own but delegates chain queries to a 3rd party service",
   "main": "dist/bin/w3gw.js",
   "files": [
