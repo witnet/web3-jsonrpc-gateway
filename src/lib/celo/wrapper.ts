@@ -98,10 +98,8 @@ class WalletWrapper {
 
     // Estimate gas limit, if not specified, but `params.from` is:
     let gasLimit = params.gas
-    if (!gasLimit && params.from) {
+    if (!gasLimit) {
       gasLimit = await this.processEthEstimateGas(socket, tx)
-    } else {
-      gasLimit = params.gas
     }
     tx = {
       ...tx,
