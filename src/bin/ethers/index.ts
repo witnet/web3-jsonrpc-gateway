@@ -125,7 +125,7 @@ console.log(
 )
 console.log()
 
-const destinationProvider = new ethers.providers.JsonRpcProvider(
+const destinationProvider = new ethers.providers.StaticJsonRpcProvider(
   providerUrl,
   network
 )

@@ -16,7 +16,7 @@ class WalletMiddlewareServer {
   wrapper: WalletWrapper
 
   constructor (
-    provider: ethers.providers.StaticJsonRpcProvider,
+    provider: ethers.providers.JsonRpcProvider,
     seed_phrase: string,
     interleave_blocks: number,
     gas_price: number,

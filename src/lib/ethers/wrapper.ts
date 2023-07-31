@@ -31,7 +31,7 @@ class WalletWrapper {
   gasLimitFactor!: number
   interleaveBlocks: number
   lastKnownBlock: number
-  provider: ethers.providers.StaticJsonRpcProvider
+  provider: ethers.providers.JsonRpcProvider
   wallets: Wallet[]
 
   constructor (
