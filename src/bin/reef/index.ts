@@ -50,7 +50,7 @@ if (process.env.W3GW_NUM_WALLETS) {
 }
 console.log('='.repeat(120))
 console.log(
-  `${packageData.name} v${packageData.version} (@reef-defi/evm-provider: ${packageData.dependencies['@reef-defi/evm-provider']})`
+  `${packageData.name} v${packageData.version} (@reef-defi/evm-provider: ${packageData.devDependencies['@reef-defi/evm-provider']})`
 )
 console.log()
 

@@ -77,7 +77,7 @@ const epochLabel = process.env.CONFLUX_DEFAULT_EPOCH_LABEL || 'latest_finalized'
 
 console.log('='.repeat(120))
 console.log(
-  `${packageData.name} v${packageData.version} (js-conflux-sdk: ${packageData.dependencies['js-conflux-sdk']})`
+  `${packageData.name} v${packageData.version} (js-conflux-sdk: ${packageData.devDependencies['js-conflux-sdk']})`
 )
 console.log()
 

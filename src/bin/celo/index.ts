@@ -75,8 +75,8 @@ if (process.env.CELO_GAS_PRICE_MAX) {
 console.log('='.repeat(120))
 console.log(
   `${packageData.name} v${packageData.version}`,
-  `(@celo-tools/celo-ethers-wrapper: ${packageData.dependencies['@celo-tools/celo-ethers-wrapper']},`,
-  `@celo/contractkit: ${packageData.dependencies['@celo/contractkit']})`
+  `(@celo-tools/celo-ethers-wrapper: ${packageData.devDependencies['@celo-tools/celo-ethers-wrapper']},`,
+  `@celo/contractkit: ${packageData.devDependencies['@celo/contractkit']})`
 )
 console.log()
 

@@ -121,7 +121,7 @@ if (process.env.ETHERS_ETH_GAS_PRICE_FACTOR) {
 
 console.log('='.repeat(120))
 console.log(
-  `${packageData.name} v${packageData.version} (ethers: ${packageData.dependencies.ethers})`
+  `${packageData.name} v${packageData.version} (ethers: ${packageData.devDependencies.ethers})`
 )
 console.log()
 

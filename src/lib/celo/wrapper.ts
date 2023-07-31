@@ -87,7 +87,7 @@ class WalletWrapper {
 
     // Compose base transaction:
     let tx: any = {
-      from: params.from, // || this.getAccounts()[0],
+      from: params.from || this.getAccounts()[0],
       to: params.to,
       data: params.data,
       gasPrice,
