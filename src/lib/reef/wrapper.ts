@@ -13,7 +13,7 @@ import { BigNumber } from '@ethersproject/bignumber'
 
 import { request, gql } from 'graphql-request'
 
-const pckg = require('../../package')
+const pckg = require('../../../package')
 
 interface TransactionParams {
   from: string
