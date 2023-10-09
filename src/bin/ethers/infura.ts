@@ -13,18 +13,20 @@ if (process.argv.length >= 3) {
 } else if (process.env.W3GW_PORT) {
   port = parseInt(process.env.W3GW_PORT)
 } else {
-  throw Error(
-    'No listening port provided. Please set the `W3GW_PORT` environment variable.'
+  console.info(
+    '\n\x1b[1;37mError: No listening port provided. Please set the \x1b[33mW3GW_PORT\x1b[37m environment variable.\x1b[0m'
   )
+  process.exit(0)
 }
 
 // Mandatory: The network name to connect with. Can also be passed as second parameter.
 // E.g.: `mainnet`, `ropsten`, `rinkeby`, `kovan` and `goerli`.
 const network = process.argv[3] || process.env.W3GW_NETWORK
 if (!network) {
-  throw Error(
-    'No network specified. Please set the `W3GW_NETWORK` environment variable.'
+  console.info(
+    '\n\x1b[1;37mError: No network specified. Please set the \x1b[33mW3GW_NETWORK\x1b[37m environment variable.\x1b[0m'
   )
+  process.exit(0)
 }
 
 // Mandatory: The seed phrase to use for the server's own wrapped wallet, in BIP-39 mnemonics format.
