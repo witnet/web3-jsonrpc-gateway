@@ -7,7 +7,7 @@ if (process.argv.length >= 3) {
   // search for network and launch gateway, if found
   let ecosystem
   for (var key in scripts) {
-    if (key.indexOf(':') > -1 && key === process.argv[2]) {
+    if (key.indexOf(':') > -1 && key.toLowerCase() === process.argv[2].toLowerCase()) {
       if (process.env.W3GW_SEED_PHRASE || process.env.W3GW_PRIVATE_KEYS) {
         var cmdline = scripts[key].split(' ')
         // substitute "node path/to/bin" to "npx w3gw-bin"
@@ -81,9 +81,9 @@ if (process.argv.length >= 3) {
         process.exit(0)
       } else {
         console.info()
-        console.info('Cannot launch', key, 'gateway !!')
+        console.info('\x1b[1;37mCannot launch gateway on\x1b[1;32m', key, '\x1b[1;37m!!\x1b[0m')
         console.info(
-          'Please, setup the W3GW_SEED_PHRASE environment variable, or add it to the .env file!'
+          '\nPlease, setup the \x1b[33mW3GW_SEED_PHRASE\x1b[0m environment variable, or add it to the .env file!'
         )
         process.exit(1)
       }
@@ -97,60 +97,74 @@ if (process.argv.length >= 3) {
   }
   // if parameter matched a known ecosystem, list available network within it
   if (ecosystem) {
-    const header = `AVAILABLE NETWORKS ON ${ecosystem.toUpperCase()}`
-    console.info()
+    const header = `SUPPORTED NETWORKS IN '${ecosystem.toUpperCase()}'`
+    console.info("\x1b[1;37m")
     console.info(header)
-    console.info('='.repeat(header.length))
+    console.info('='.repeat(header.length), "\x1b[0m")
     for (var key in scripts) {
       if (key.split(':')[0].toLowerCase() === ecosystem) {
-        console.info('  ', key)
+        console.info('  ', `\x1b[1;32m${key}\x1b[0m`)
       }
     }
     process.exit(0)
+  } else {
+    if (process.argv[2].indexOf(":") > -1) {
+      console.info(`\n\x1b[1;37mUnknown network: \x1b[1;31m${process.argv[2].toUpperCase()}\x1b[0m`)
+    } else {
+      console.info(`\n\x1b[1;37mUnknown ecosystem: \x1b[1;31m${process.argv[2].toUpperCase()}\x1b[0m`)
+    }
   }
 }
-console.info('Usage:')
+console.info('\n\x1b[1;37mUsage:\x1b[0m')
 console.info()
 console.info(
-  '  ',
-  '$ '
-    .concat(process.argv[0], ' ')
-    .concat(
-      process.argv[1],
-      ' [<ecosystem>[:<network>] [custom-rpc-provider-url]]'
-    )
+  '  \x1b[1;37m',
+  '$ npx w3gw',
+  '\x1b[1;33m[<ecosystem>[:<network>] [custom-rpc-provider-url]]',
+  "\x1b[0m"
 )
-console.info()
+if (!process.env.W3GW_SEED_PHRASE) {
+  console.info()
+  console.info(
+    'The following environment variables must be previously set (or included within an .env file):'
+  )
+  console.info()
+  console.info(
+    '  ',
+    '\x1b[33mW3GW_SEED_PHRASE\x1b[0m',
+    '\t=>',
+    'Secret phrase from which wallet addresses will be derived.'
+  )
+}
+if (!process.env.W3GW_PROVIDER_URL) {
+  console.info()
+  console.info(
+    'Optionally, you can specify a custom JSON ETH/RPC endpoint by setting:'
+  )
+  console.info()
+  console.info(
+    '  ',
+    '\x1b[33mW3GW_PROVIDER_URL\x1b[0m',
+    '\t=>',
+    'JSON ETH/RPC endpoint where to connect to.'
+  )
+}
 
-const header = 'AVAILABLE NETWORKS'
-console.info('  ', header)
-console.info('  ', '='.repeat(header.length))
-console.info()
+const ecosystems = []
 for (var key in scripts) {
   if (key.indexOf(':') > -1) {
-    console.info('  ', '  ', key)
+    const ecosystem = key.split(':')[0]
+    if (!ecosystems.includes(ecosystem)) {
+      ecosystems.push(ecosystem)
+    }
   }
 }
-console.info()
-console.info(
-  'The following environment variables must be previously set (or included within an .env file):'
-)
-console.info()
-console.info(
-  '  ',
-  'W3GW_SEED_PHRASE',
-  '\t=>',
-  'Secret phrase from which wallet addresses will be derived.'
-)
-console.info()
-console.info(
-  'Optionally, you can specify a custom ETH/JSONRPC endpoint by setting:'
-)
-console.info()
-console.info(
-  '  ',
-  'W3GW_PROVIDER_URL',
-  '\t=>',
-  'ETH/JSONRPC endpoint where to connect to.'
-)
-console.info()
+if (ecosystems.length > 0) {
+  console.info("\x1b[1;37m")
+  const header = 'SUPPORTED ECOSYSTEMS'
+  console.info(header)
+  console.info('='.repeat(header.length), "\x1b[0m")
+  for (var index in ecosystems) {
+    console.info('  ', `\x1b[1;32m${ecosystems[index]}\x1b[0m`)
+  }
+}
