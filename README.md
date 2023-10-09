@@ -30,7 +30,7 @@ Optional environment variables:
 - `INFURA_GAS_PRICE`: default gas price, if not specified by the client; or maximum gas price threshold if either estimated by the provider, or provided by the client.
 - `INFURA_GAS_PRICE_FACTOR`: multiplier applied to gas prices estimated by provider.
 - `W3GW_LOG_LEVEL`: max log level to be traced, can be any of the following: `error`, `warn`, `info`, `http`, `verbose`, `debug`, `silly`. If not specified, `verbose` will apply.
-- `W3GW_NUM_WALLETS`: number of wallet addresses to be handled by the gateway, derived from path '`m/44'/60'/0'/0/*`'.
+- `W3GW_SEED_PHRASE_WALLETS`: number of wallet addresses to be handled by the gateway, derived from path '`m/44'/60'/0'/0/*`'.
 
 ### Celo-compatible destination providers:
 
@@ -91,7 +91,7 @@ Required environment variables:
 Optional environment variables:
 
 - `W3GW_LOG_LEVEL`: max log level to be traced, can be any of the following: `error`, `warn`, `info`, `http`, `verbose`, `debug`, `silly`. If not specified, `verbose` will apply.
-- `W3GW_NUM_WALLETS`: number of EVM wallet addresses to be handled by the gateway. EVM addresses will be default ones attached to respective Reef addresses. First Reef address will be derived from '`${W3GW_SEED_PHRASE}`', while the following one from '`${W3GW_SEED_PHRASE}//${j}`' (with `j > 0`).
+- `W3GW_SEED_PHRASE_WALLETS`: number of EVM wallet addresses to be handled by the gateway. EVM addresses will be default ones attached to respective Reef addresses. First Reef address will be derived from '`${W3GW_SEED_PHRASE}`', while the following one from '`${W3GW_SEED_PHRASE}//${j}`' (with `j > 0`).
 
 ### Generic destination providers:
 
@@ -113,7 +113,7 @@ Required environment variables:
 Optional environment variables:
 
 - `W3GW_NETWORK`: the network name to connect with.
-- `W3GW_NUM_WALLETS`: number of wallet addresses to be handled by the gateway, derived from path '`m/44'/60'/0'/0/*`'.
+- `W3GW_SEED_PHRASE_WALLETS`: number of wallet addresses to be handled by the gateway, derived from path '`m/44'/60'/0'/0/*`'.
 - `W3GW_LOG_LEVEL`: max log level to be traced, can be any of the following: `error`, `warn`, `info`, `http`, `verbose`, `debug`, `silly`. If not specified, `verbose` will apply.
 - `ETHERS_ALWAYS_SYNCED`: if set to `true`, the gateway will intercept calls to `eth_syncing` as to return `false` in all cases..
 - `ETHERS_ESTIMATE_GAS_LIMIT`: if set to `true`, the provider will be asked to estimate the gas limit, before signing the transaction; if the provider-estimated gas limit is greater than `ETHERS_GAS_LIMIT`, the transaction will be rejected by the gateway.

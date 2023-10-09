@@ -43,8 +43,8 @@ if (!seedPhrase) {
 
 // Optional: number of wallet addresses to be handled by the server, derived from path '`m/44'/60'/0'/0/*`'.
 let numAddresses
-if (process.env.W3GW_NUM_WALLETS) {
-  numAddresses = parseInt(process.env.W3GW_NUM_WALLETS)
+if (process.env.W3GW_SEED_PHRASE_WALLETS) {
+  numAddresses = parseInt(process.env.W3GW_SEED_PHRASE_WALLETS)
 } else {
   numAddresses = 1
 }
