@@ -37,10 +37,11 @@ class WalletWrapper {
   constructor (
     provider: ethers.providers.JsonRpcProvider,
     seed_phrase: string,
+    seed_phrase_wallets: number,
+    private_keys: string[],
     interleave_blocks: number,
     gas_price: number,
     gas_limit: number,
-    num_addresses: number,
     estimate_gas_limit: boolean,
     estimate_gas_price: boolean,
     gas_price_factor: number,
@@ -62,12 +63,19 @@ class WalletWrapper {
     this.lastKnownBlock = 0
     this.provider = provider
     this.wallets = []
-    for (let ix = 0; ix < num_addresses; ix++) {
-      this.wallets.push(
-        Wallet.fromMnemonic(seed_phrase, `m/44'/60'/0'/0/${ix}`).connect(
-          provider
+    if (seed_phrase !== "" && seed_phrase_wallets > 0) {
+      for (let ix = 0; ix < seed_phrase_wallets; ix ++) {
+        this.wallets.push(
+          Wallet
+            .fromMnemonic(seed_phrase, `m/44'/60'/0'/0/${ix}`)
+            .connect(provider)
         )
-      )
+      }
+    }
+    if (private_keys && Array.isArray(private_keys) && private_keys.length > 0) {
+      private_keys.forEach(pk => {
+        this.wallets.push(new Wallet(pk, provider))
+      })
     }
   }
 

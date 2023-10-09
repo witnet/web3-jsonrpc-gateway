@@ -29,11 +29,24 @@ if (process.argv.length >= 4) {
 }
 
 // Mandatory: The seed phrase to use for the server's own wrapped wallet, in BIP-39 mnemonics format.
-const seed_phrase = process.env.W3GW_SEED_PHRASE
-if (!seed_phrase) {
-  throw Error(
-    'No mnemonic phrase provided. Please set the `W3GW_SEED_PHRASE` environment variable.'
+const seed_phrase = process.env.W3GW_SEED_PHRASE || ""
+const private_keys = JSON.parse(process.env.W3GW_PRIVATE_KEYS || "[]")
+if (
+  seed_phrase === ""
+    && (!Array.isArray(private_keys) || private_keys.length == 0)
+) {
+  console.info(
+    '\n\x1b[1;37mError: No mnemonic phrase nor private keys were provided. Please, set either the \x1b[1;33mW3GW_SEED_PHRASE\x1b[37m or the \x1b[33mW3GW_PRIVATE_KEYS\x1b[37m variables, or both.\x1b[0m'
   )
+  process.exit(0)
+}
+
+// Optional: number of wallet addresses to be handled by the server, derived from path '`m/44'/60'/0'/0/*`'.
+let seed_phrase_wallets
+if (process.env.W3GW_SEED_PHRASE_WALLETS) {
+  seed_phrase_wallets = parseInt(process.env.W3GW_SEED_PHRASE_WALLETS)
+} else {
+  seed_phrase_wallets = 5
 }
 
 // Optional: The network name to connect with. Can also be passed as third parameter.
@@ -55,14 +68,6 @@ if (process.env.ETHERS_GAS_PRICE) {
 let gas_limit = 6721975
 if (process.env.ETHERS_GAS_LIMIT) {
   gas_limit = parseInt(process.env.ETHERS_GAS_LIMIT)
-}
-
-// Optional: number of wallet addresses to be handled by the server, derived from path '`m/44'/60'/0'/0/*`'.
-let num_addresses
-if (process.env.W3GW_NUM_WALLETS) {
-  num_addresses = parseInt(process.env.W3GW_NUM_WALLETS)
-} else {
-  num_addresses = 5
 }
 
 // Optional: if `true`, let provider estimate gas limit before signing the transaction
@@ -123,7 +128,7 @@ if (process.env.ETHERS_ETH_GAS_PRICE_FACTOR) {
 
 console.log('='.repeat(120))
 console.log(
-  `${packageData.name} v${packageData.version} (ethers: ${packageData.devDependencies.ethers})`
+  `${packageData.name} v${packageData.version} (ethers: ${packageData.dependencies.ethers})`
 )
 console.log()
 
@@ -135,10 +140,11 @@ const destinationProvider = new ethers.providers.StaticJsonRpcProvider(
 new WalletMiddlewareServer(
   destinationProvider,
   seed_phrase,
+  seed_phrase_wallets,
+  private_keys,
   interleave_blocks,
   gas_price,
-  gas_limit,
-  num_addresses,
+  gas_limit,  
   estimate_gas_limit,
   estimate_gas_price,
   always_synced,

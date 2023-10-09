@@ -30,11 +30,21 @@ if (!network) {
 }
 
 // Mandatory: The seed phrase to use for the server's own wrapped wallet, in BIP-39 mnemonics format.
-const seed_phrase = process.env.W3GW_SEED_PHRASE
-if (!seed_phrase) {
-  throw Error(
-    'No mnemonic phrase provided. Please set the `W3GW_SEED_PHRASE` environment variable.'
+const seed_phrase = process.env.W3GW_SEED_PHRASE || ""
+const private_keys = JSON.parse(process.env.W3GW_PRIVATE_KEYS || "")
+if (!seed_phrase && !private_keys) {
+  console.info(
+    '\n\x1b[1;37mError: No mnemonic phrase nor private keys were provided. Please, set either the \x1b[1;33mW3GW_SEED_PHRASE\x1b[37m or the \x1b[33mW3GW_PRIVATE_KEYS\x1b[37m variables, or both.\x1b[0m'
   )
+  process.exit(0)
+}
+
+// Optional: number of wallet addresses to be handled by the server, derived from path '`m/44'/60'/0'/0/*`'.
+let seed_phrase_wallets
+if (process.env.W3GW_SEED_PHRASE_WALLETS) {
+  seed_phrase_wallets = parseInt(process.env.W3GW_SEED_PHRASE_WALLETS)
+} else {
+  seed_phrase_wallets = 5
 }
 
 // Mandatory: the Infura project ID.
@@ -63,14 +73,6 @@ if (process.env.INFURA_GAS_LIMIT) {
   gas_limit = parseInt(process.env.INFURA_GAS_LIMIT)
 }
 
-// Optional: number of wallet addresses to be handled by the server, derived from path '`m/44'/60'/0'/0/*`'.
-let num_addresses
-if (process.env.W3GW_NUM_WALLETS) {
-  num_addresses = parseInt(process.env.W3GW_NUM_WALLETS)
-} else {
-  num_addresses = 5
-}
-
 // Optional: gas price factor to be applied to when ETHERS_ESTIMATE_GAS_PRICE is true
 let gas_price_factor = 1.0
 if (process.env.INFURA_GAS_PRICE_FACTOR) {
@@ -97,10 +99,11 @@ const destinationProvider = new ethers.providers.InfuraProvider(
 new WalletMiddlewareServer(
   destinationProvider,
   seed_phrase,
+  seed_phrase_wallets, // number of addresses
+  private_keys,
   interleave_blocks,
   gas_price,
   gas_limit,
-  num_addresses, // number of addresses
   true, // estimate gas limit
   true, // estimate gas price
   false, // always synced
