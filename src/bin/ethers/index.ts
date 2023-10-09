@@ -9,9 +9,10 @@ const packageData = require('../../../package.json')
 // Mandatory: the actual URL of the Web3 JSON-RPC provider. Can also be passed as first parameter.
 const providerUrl = process.argv[2] || process.env.W3GW_PROVIDER_URL || ''
 if (providerUrl.length < 1) {
-  throw Error(
-    'No provider URL provided. Please set the `W3GW_PROVIDER_URL` environment variable.'
+  console.info(
+    '\n\x1b[1;37mError: No provider URL was specified. Please set the \x1b[33mW3GW_PROVIDER_URL\x1b[33m environment variable.\x1b[0m'
   )
+  process.exit(0)
 }
 
 // Mandatory: Listening port for the server. Can also be passed from command-line as second parameter:
@@ -21,9 +22,10 @@ if (process.argv.length >= 4) {
 } else if (process.env.W3GW_PORT) {
   port = parseInt(process.env.W3GW_PORT)
 } else {
-  throw Error(
-    'No listening port provided. Please set the `W3GW_PORT` environment variable.'
+  console.info(
+    '\n\x1b[1;37mError: No listening port provided. Please set the \x1b[33mW3GW_PORT\x1b[37m environment variable.\x1b[0m'
   )
+  process.exit(0)
 }
 
 // Mandatory: The seed phrase to use for the server's own wrapped wallet, in BIP-39 mnemonics format.
