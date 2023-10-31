@@ -73,6 +73,7 @@
     "reef:testnet": "cross-env-shell node dist/bin/reef wss://rpc-testnet.reefscan.com/ws https://squid.subsquid.io/reef-explorer-testnet/graphql 8532",
     "reef:mainnet": "cross-env-shell node dist/bin/reef wss://rpc.reefscan.info/ws https://squid.subsquid.io/reef-explorer/graphql 9532",
     "scroll:sepolia": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=0 ETHERS_FORCE_EIP_155=true ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_GAS_LIMIT=8000000 ETHERS_GAS_PRICE=555000000000 ETHERS_GAS_PRICE_FACTOR=1.0 node dist/bin/ethers https://1rpc.io/scroll/sepolia 8514",
+    "scroll:mainnet": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=0 ETHERS_FORCE_EIP_155=true ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_GAS_LIMIT=8000000 ETHERS_GAS_PRICE=555000000000 ETHERS_GAS_PRICE_FACTOR=1.0 node dist/bin/ethers https://1rpc.io/scroll 9514",
     "syscoin:rollux:testnet": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=0 ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_GAS_LIMIT=8000000 node dist/bin/ethers https://rpc-tanenbaum.rollux.com 8507",
     "syscoin:testnet": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=0 ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_FORCE_EIP_1559=true node dist/bin/ethers https://rpc.tanenbaum.io 8521",
     "syscoin:mainnet": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=0 ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_FORCE_EIP_1559=true node dist/bin/ethers https://rpc.syscoin.org 9521",
