@@ -3,6 +3,8 @@ require('dotenv').config()
 const execSync = require('child_process').execSync
 const scripts = require('../../package.json').scripts
 
+console.info(`WEB3 JSON ETH/RPC GATEWAY v${require('../../package.json')?.version}`)
+
 if (process.argv.length >= 3) {
   // search for network and launch gateway, if found
   let ecosystem
@@ -126,9 +128,15 @@ console.info(
 if (!process.env.W3GW_SEED_PHRASE) {
   console.info()
   console.info(
-    'The following environment variables must be previously set (or included within an .env file):'
+    'At least one of the following env variables must be previously set (or included within an .env file):'
   )
   console.info()
+  console.info(
+    '  ',
+    '\x1b[33mW3GW_PRIVATE_KEYS\x1b[0m',
+    '\t=>',
+    'An array of one or more private keys from which wallet addresses will be derived.'
+  )
   console.info(
     '  ',
     '\x1b[33mW3GW_SEED_PHRASE\x1b[0m',
@@ -139,14 +147,14 @@ if (!process.env.W3GW_SEED_PHRASE) {
 if (!process.env.W3GW_PROVIDER_URL) {
   console.info()
   console.info(
-    'Optionally, you can specify a custom JSON ETH/RPC endpoint by setting:'
+    'Optionally, you can specify a custom endpoint by setting:'
   )
   console.info()
   console.info(
     '  ',
     '\x1b[33mW3GW_PROVIDER_URL\x1b[0m',
     '\t=>',
-    'JSON ETH/RPC endpoint where to connect to.'
+    'The JSON ETH/RPC provider to connect to.'
   )
 }
 
