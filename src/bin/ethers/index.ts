@@ -138,7 +138,6 @@ const destinationProvider = new ethers.providers.StaticJsonRpcProvider(
 )
 
 new WalletMiddlewareServer(
-  destinationProvider,
   seed_phrase,
   seed_phrase_wallets,
   private_keys,
@@ -153,7 +152,8 @@ new WalletMiddlewareServer(
   gas_limit_factor,
   force_eip_155,
   force_eip_1559,
-  eth_gas_price_factor
+  eth_gas_price_factor,
+  destinationProvider,
 )
   .initialize()
   .listen(port)

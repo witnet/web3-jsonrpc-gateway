@@ -35,10 +35,6 @@ class WalletWrapper {
   wallets: Wallet[]
 
   constructor (
-    provider: ethers.providers.JsonRpcProvider,
-    seed_phrase: string,
-    seed_phrase_wallets: number,
-    private_keys: string[],
     interleave_blocks: number,
     gas_price: number,
     gas_limit: number,
@@ -61,22 +57,7 @@ class WalletWrapper {
     this.gasLimitFactor = gas_limit_factor
     this.interleaveBlocks = interleave_blocks
     this.lastKnownBlock = 0
-    this.provider = provider
     this.wallets = []
-    if (seed_phrase !== "" && seed_phrase_wallets > 0) {
-      for (let ix = 0; ix < seed_phrase_wallets; ix ++) {
-        this.wallets.push(
-          Wallet
-            .fromMnemonic(seed_phrase, `m/44'/60'/0'/0/${ix}`)
-            .connect(provider)
-        )
-      }
-    }
-    if (private_keys && Array.isArray(private_keys) && private_keys.length > 0) {
-      private_keys.forEach(pk => {
-        this.wallets.push(new Wallet(pk, provider))
-      })
-    }
   }
 
   /**
@@ -247,17 +228,20 @@ class WalletWrapper {
     try {
       res = await this.provider.getBlock(params)
       if (res) {
-        if (res.gasLimit) {
-          res = { ...res, gasLimit: res.gasLimit.toHexString() }
-        }
-        if (res.gasUsed) {
-          res = { ...res, gasUsed: res.gasUsed.toHexString() }
-        }
         if (res.baseFeePerGas) {
           res = { ...res, baseFeePerGas: res.baseFeePerGas.toHexString() }
         }
         if (res._difficulty) {
           res = { ...res, _difficulty: res._difficulty.toHexString() }
+        }
+        if (this.estimateGasLimit) {
+          // use configured max gas limit as block max gas limit
+          res = { ...res, gasLimit: this.defaultGasLimit }
+        } else if (res.gasLimit) {
+          res = { ...res, gasLimit: res.gasLimit.toHexString() }
+        }
+        if (res.gasUsed) {
+          res = { ...res, gasUsed: res.gasUsed.toHexString() }
         }
       }
     } catch (e) {

@@ -97,7 +97,6 @@ const destinationProvider = new ethers.providers.InfuraProvider(
 )
 
 new WalletMiddlewareServer(
-  destinationProvider,
   seed_phrase,
   seed_phrase_wallets, // number of addresses
   private_keys,
@@ -112,7 +111,8 @@ new WalletMiddlewareServer(
   gas_limit_factor,
   false, // force EIP-155 txs
   false, // force EIP-1559 txs
-  false // eth gas price factor
+  false, // eth gas price factor
+  destinationProvider,
 )
   .initialize()
   .listen(port)

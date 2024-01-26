@@ -13,10 +13,12 @@ class WalletMiddlewareServer {
   alwaysSynced: boolean
   expressServer: Express
   mockFilters: boolean
+  privateKeys?: string[]
+  seedPhrase?: string
+  seedPhraseWallets: number
   wrapper: WalletWrapper
 
   constructor (
-    provider: ethers.providers.JsonRpcProvider,
     seed_phrase: string,
     seed_phrase_wallets: number,
     private_keys: string[],
@@ -31,16 +33,16 @@ class WalletMiddlewareServer {
     gas_limit_factor: number,
     force_eip_155: boolean,
     force_eip_1559: boolean,
-    eth_gas_price_factor: boolean
+    eth_gas_price_factor: boolean,
+    provider?: ethers.providers.JsonRpcProvider
   ) {
     this.alwaysSynced = always_synced
     this.expressServer = express()
     this.mockFilters = mock_filters
+    this.privateKeys = private_keys
+    this.seedPhrase = seed_phrase
+    this.seedPhraseWallets = seed_phrase_wallets
     this.wrapper = new WalletWrapper(
-      provider,
-      seed_phrase,
-      seed_phrase_wallets,
-      private_keys,
       interleave_blocks,
       gas_price,
       gas_limit,
@@ -52,14 +54,11 @@ class WalletMiddlewareServer {
       force_eip_1559,
       eth_gas_price_factor
     )
-
+    if (provider) {
+      this.wrapper.provider = provider
+    }
+    // trace configuration
     let lines = [
-      [
-        'Entrypoint',
-        `${provider.connection.url} ${
-          provider.connection.allowGzip ? '(gzip)' : ''
-        }`
-      ],
       [
         'Gas Price',
         `${gas_price} ${estimate_gas_price ? '(max)' : '(default)'}`
@@ -78,7 +77,7 @@ class WalletMiddlewareServer {
     if (interleave_blocks > 0) {
       lines = [...lines, ['Interleave blocks', interleave_blocks.toString()]]
     }
-    traceKeyValue('Provider', lines)
+    traceKeyValue('Config', lines)
     return this
   }
 
@@ -223,11 +222,21 @@ class WalletMiddlewareServer {
     return this
   }
 
+  async traceWallet (index: number, wallet: Wallet) {
+    traceKeyValue(`Wallet #${index}`, [
+      ['Address', await wallet.getAddress()],
+      ['Balance', await wallet.getBalance()],
+      ['Nonce  ', await wallet.getTransactionCount()]
+    ])
+  }
+
   /**
    * Tells the Express server to start listening.
    */
   async listen (port: number, hostname?: string) {
     try {
+      // initialize the RPC provider
+      await this.wrapper.provider.ready
       let network: ethers.providers.Network = await this.wrapper.provider.detectNetwork()
       if (network) {
         traceKeyValue('Network', [
@@ -237,22 +246,32 @@ class WalletMiddlewareServer {
         ])
       }
 
-      this.wrapper.wallets.forEach(async (wallet: Wallet, index) => {
-        traceKeyValue(`Wallet #${index}`, [
-          ['Address', await wallet.getAddress()],
-          ['Balance', await wallet.getBalance()],
-          ['Nonce  ', await wallet.getTransactionCount()]
-        ])
-      })
+      // Connect seed phrase wallet addresses to the rpc provider:
+      let wix = 0;
+      if (this.seedPhrase) {
+        for (let ix = 0; ix < this.seedPhraseWallets || 0; ix ++) {
+          const wallet = Wallet.fromMnemonic(this.seedPhrase, `m/44'/60'/0'/0/${ix}`).connect(this.wrapper.provider)
+          this.wrapper.wallets.push(wallet)
+          await this.traceWallet(wix ++, wallet)
+        }
+        delete this.seedPhrase
+      }
+      // Connect seed phrase wallet addresses to the rpc provider:
+      if (this.privateKeys && Array.isArray(this.privateKeys) && this.privateKeys.length > 0) {
+        for (let ix = 0; ix < this.privateKeys?.length; ix ++) {
+          const wallet = new Wallet(this.privateKeys[ix], this.wrapper.provider)
+          this.wrapper.wallets.push(wallet)
+          await this.traceWallet(wix ++, wallet)
+        }
+        delete this.privateKeys
+      }
     } catch (e) {
-      console.error(
-        'Service provider seems to be down or rejecting connections !!!'
-      )
+      console.error('Cannot get the HTTP server running !!!');
       console.error(e)
       process.exit(-1)
     }
 
-    traceKeyValue('Listener', [
+    traceKeyValue('Listening', [
       ['TCP/host', hostname || '0.0.0.0'],
       ['TCP/port', port],
       ['Log level', logger.level.toUpperCase()]
