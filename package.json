@@ -15,7 +15,8 @@
     "w3gw-infura": "dist/bin/ethers/infura.js",
     "w3gw-celo": "dist/bin/celo/index.js",
     "w3gw-conflux": "dist/bin/conflux/index.js",
-    "w3gw-reef": "dist/bin/reef/index.js"
+    "w3gw-reef": "dist/bin/reef/index.js",
+    "w3gw-ten": "dist/bin/ethers/ten.js"
   },
   "scripts": {
     "ci": "yarn build && yarn test",
@@ -78,7 +79,7 @@
     "syscoin:rollux:testnet": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=0 ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_GAS_LIMIT=8000000 node dist/bin/ethers https://rpc-tanenbaum.rollux.com 8507",
     "syscoin:testnet": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=0 ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_FORCE_EIP_1559=true node dist/bin/ethers https://rpc.tanenbaum.io 8521",
     "syscoin:mainnet": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=0 ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_FORCE_EIP_1559=true ETHERS_GAS_PRICE=32559313883 node dist/bin/ethers https://rpc.syscoin.org 9521",
-    "ten:testnet": "cross-env-shell ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_GAS_LIMIT=15000000 ETHERS_MOCK_FILTERS=true node dist/bin/ethers/ten https://testnet.ten.xyz/v1 8504",
+    "ten:testnet": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=0 ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_GAS_LIMIT=6000000 ETHERS_MOCK_FILTERS=true node dist/bin/ethers/ten https://testnet.ten.xyz/v1 8504",
     "ultron:testnet": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=0 ETHERS_FORCE_EIP_155=true ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_MOCK_FILTERS=true node dist/bin/ethers https://ultron-dev.io 8516",
     "ultron:mainnet": "cross-env-shell EVM_CALL_INTERLEAVE_BLOCKS=0 ETHERS_FORCE_EIP_155=true ETHERS_ESTIMATE_GAS_PRICE=true ETHERS_ESTIMATE_GAS_LIMIT=true ETHERS_MOCK_FILTERS=true node dist/bin/ethers https://ultron-rpc.net/ 9516"
   },
