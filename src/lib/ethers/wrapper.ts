@@ -214,9 +214,9 @@ class WalletWrapper {
    */
   async getAccounts (): Promise<string[]> {
     let accounts: string[] = []
-    this.wallets.forEach(async (wallet: Wallet) =>
-      accounts.push(await wallet.getAddress())
-    )
+    for (const index in this.wallets) {
+      accounts.push(await this.wallets[index].getAddress())
+    }
     return accounts
   }
 
@@ -387,7 +387,9 @@ class WalletWrapper {
     if (this.ethGasPriceFactor) {
       return (await this.getGasPrice()).toHexString()
     } else {
-      ;(await this.provider.getGasPrice()).toHexString()
+      const gp: BigNumber = BigNumber.from(await this.provider.getGasPrice())
+      console.log(`0x${gp.toNumber().toString(16)}`)
+      return `0x${gp.toNumber().toString(16)}`
     }
   }
 
@@ -496,7 +498,7 @@ class WalletWrapper {
 
     // Return transaction hash:
     const res = await this.provider.sendTransaction(signedTx)
-    logger.debug({ socket, message: `<= ${res}` })
+    logger.debug({ socket, message: `<= ${JSON.stringify(res)}` })
     return res.hash
   }
 }
