@@ -124,7 +124,7 @@ if (process.env.ETHERS_FORCE_EIP_1559) {
 }
 
 // Optional: if true, will apply ETHERS_GAS_PRICE_FACTOR to eth_gasPrice calls
-let eth_gas_price_factor: boolean = true
+let eth_gas_price_factor: boolean = gas_price_factor > 1.0
 if (process.env.ETHERS_ETH_GAS_PRICE_FACTOR) {
   eth_gas_price_factor = JSON.parse(process.env.ETHERS_ETH_GAS_PRICE_FACTOR)
 }
