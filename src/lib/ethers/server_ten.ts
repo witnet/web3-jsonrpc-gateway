@@ -110,6 +110,44 @@ class TenWalletMiddlewareServer extends WalletMiddlewareServer {
         }
         delete this.seedPhrase;
       }
+      // For each private key, connect addtional wallet to the provider and check whether it's already registered:
+      if (this.privateKeys && Array.isArray(this.privateKeys) && this.privateKeys.length > 0) {
+        for (let ix = 0; ix < this.privateKeys?.length; ix ++) {
+          const wallet = new Wallet(this.privateKeys[ix], this.wrapper.provider)
+          this.wrapper.wallets.push(wallet)
+          const address = await wallet.getAddress()  
+          const response = await axios.get(`${this.providerEndpoint}/query/address?token=${this.encryptionToken}&a=${address}`)
+          if (!response.data.status) {
+            const signature = await wallet._signTypedData(
+              {
+                name: "Ten",
+                version: "1.0",
+                chainId: this.wrapper.provider.network.chainId,
+              }, {
+                Authentication: [
+                  { name: "Encryption Token", type: "address" },
+                ],
+              }, {
+                "Encryption Token": this.encryptionToken
+              }
+            );
+            const response = await axios.post(
+              `${this.providerEndpoint}/authenticate/?token=${this.encryptionToken}`, 
+              `{ "address": "${address}", "signature": "${signature}" }`
+            )
+            if (response.data !== "success") {
+              console.error(`Unable to authenticate address ${address} into endpoint ${this.providerEndpoint}:`)
+              console.error("Error:", response.data)
+            }
+          }
+          traceKeyValue(`Wallet #${ix}`, [
+            ['Address', address],
+            ['Balance', await wallet.getBalance()],
+            ['Nonce  ', await wallet.getTransactionCount()]
+          ])
+        }
+        delete this.privateKeys
+      }
     } catch (e) {
       console.error(
         'Cannot get the HTTP server running !!!'
