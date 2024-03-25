@@ -1,12 +1,4 @@
-import {
-  Account,
-  Conflux,
-  EpochNumber,
-  EPOCH_LABEL,
-  Status as ConfluxStatus,
-  Transaction,
-  TransactionConfig as TransactionOption
-} from 'js-conflux-sdk'
+import { Conflux, Transaction, CONST } from 'js-conflux-sdk'
 
 import { logger, SocketParams } from '../Logger'
 
@@ -16,10 +8,9 @@ import { logger, SocketParams } from '../Logger'
  */
 
 export class WalletWrapper {
-  accounts: Account[]
   conflux: Conflux
   defaultGas: BigInt
-  epochLabel: EpochNumber
+  epochLabel: CONST.EPOCH_NUMBER
   estimateGasPrice: boolean
   interleaveEpochs: number
   lastKnownEpochNumber: number
@@ -36,13 +27,12 @@ export class WalletWrapper {
   ) {
     this.networkId = networkId
     this.defaultGas = defaultGas
-    this.epochLabel = <EPOCH_LABEL>epochLabel
+    this.epochLabel = <CONST.EPOCH_NUMBER>epochLabel
     this.estimateGasPrice = estimateGasPrice
     this.interleaveEpochs = interleaveEpochs
     this.conflux = conflux
-    this.accounts = []
     privateKeys.forEach(privateKey => {
-      this.accounts.push(this.conflux.wallet.addPrivateKey(privateKey))
+      this.conflux.wallet.addPrivateKey(privateKey)
     })
     this.lastKnownEpochNumber = 0
   }
@@ -54,8 +44,8 @@ export class WalletWrapper {
    * @returns
    */
   async call (
-    tx: TransactionOption,
-    epoch: EpochNumber,
+    tx: Transaction,
+    epoch: number | string,
     socket: SocketParams
   ): Promise<any> {
     epoch = await this.checkRollbacks(socket)
@@ -127,7 +117,7 @@ export class WalletWrapper {
    * Use Conflux SDK to process `eth_estimateGas`, while making response ETH compliant
    */
   async estimateGas (
-    params: TransactionOption,
+    params: Transaction,
     _socket: SocketParams
   ): Promise<any> {
     let res: any = await this.conflux.estimateGasAndCollateral(params)
@@ -137,10 +127,8 @@ export class WalletWrapper {
   /**
    * Gets Account interaction object of given address, if available.
    */
-  getAccount (address: string): Account | undefined {
-    return this.accounts.find(
-      account => account.toString().toLowerCase() === address.toLowerCase()
-    )
+  getAccount (address: string): any | undefined {
+    this.conflux.getAccount(address)
   }
 
   /**
@@ -155,7 +143,7 @@ export class WalletWrapper {
    */
   getAccounts () {
     let accounts: string[] = []
-    this.conflux.wallet.forEach(key => accounts.push(key.address))
+    this.conflux.wallet.forEach((key: any) => accounts.push(key.address))
     return accounts
   }
 
@@ -190,9 +178,7 @@ export class WalletWrapper {
    */
   async getSyncingStatus (socket: SocketParams): Promise<any> {
     try {
-      const status: ConfluxStatus = <ConfluxStatus>(
-        await this.conflux.getStatus()
-      )
+      const status: any = await this.conflux.getStatus()
       await logger.debug({ socket, message: `<<< ${JSON.stringify(status)}` })
       return {
         startingBlock: '0x' + status.latestCheckpoint.toString(16),
@@ -208,7 +194,7 @@ export class WalletWrapper {
    * Uninstall eth_client filter (mock).
    */
   async uninstallEthFilter (
-    params: TransactionOption,
+    params: Transaction,
     socket: SocketParams
   ): Promise<boolean> {
     await logger.verbose({ socket, message: `> ${params}` })
@@ -249,7 +235,7 @@ export class WalletWrapper {
    * @remark Return type is made `any` here because the result needs to be a String, not a `Record`.
    */
   async processTransaction (
-    params: TransactionOption,
+    params: Transaction,
     socket: SocketParams
   ): Promise<any> {
     let gasPrice: number | string
@@ -346,32 +332,7 @@ export class WalletWrapper {
     })
     logger.verbose({ socket, message: `> Chain id: ${payload.chainId}` })
 
-    // Sign transaction:
-    const account: Account | undefined = await this.getAccount(params.from)
-    const tx: Transaction | undefined = await account?.signTransaction(payload)
-    if (!tx) {
-      let reason = `No private key available as to sign messages from '${params.from}'`
-      throw {
-        reason,
-        body: {
-          error: {
-            code: -32000,
-            message: reason
-          }
-        }
-      }
-    }
-
-    // Trace signed transaction:
-    const serialized = tx.serialize()
-    await logger.log({
-      level: 'debug',
-      socket,
-      message: `>>> ${serialized} <<<`
-    })
-
-    // Serialize and send signed transaction:
-    return this.conflux.sendRawTransaction(serialized)
+    return this.conflux.sendTransaction(payload)
   }
 
   /**
