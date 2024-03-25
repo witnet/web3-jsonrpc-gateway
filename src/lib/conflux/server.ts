@@ -2,7 +2,7 @@ import express, { Express } from 'express'
 import cors from 'cors'
 import {
   Conflux,
-  TransactionConfig as TransactionOption,
+  Transaction,
   format as confluxFormat
 } from 'js-conflux-sdk'
 import { ethers } from 'ethers'
@@ -427,7 +427,7 @@ export class WalletMiddlewareServer {
    * Translate to Conflux the values of `from` and `tx` fields
    *   within passed Transaction object.
    */
-  translateEthAddressesInTransaction (tx: TransactionOption) {
+  translateEthAddressesInTransaction (tx: Transaction) {
     if (tx.from) tx.from = this.translateEthAddress(tx.from)
     if (tx.to) tx.to = this.translateEthAddress(tx.to)
     return tx
