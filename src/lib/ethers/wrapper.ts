@@ -385,7 +385,7 @@ class WalletWrapper {
     _params: TransactionParams
   ): Promise<any> {
     if (this.ethGasPriceFactor) {
-      return (await this.getGasPrice()).toHexString()
+      return "0x" + (await this.getGasPrice()).toNumber().toString(16)
     } else {
       const gp: BigNumber = BigNumber.from(await this.provider.getGasPrice())
       console.log(`0x${gp.toNumber().toString(16)}`)
