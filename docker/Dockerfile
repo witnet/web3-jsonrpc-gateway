@@ -1,4 +1,4 @@
-FROM node:14-alpine3.12
+FROM node:20-alpine3.12
 
 # Install dependencies not included in the base image
 RUN apk update
