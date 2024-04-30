@@ -19,8 +19,7 @@
     "w3gw-ten": "dist/bin/ethers/ten.js"
   },
   "scripts": {
-    "ci": "yarn build && yarn test",
-    "test": "jest --passWithNoTests",
+    "ci": "yarn build",
     "lint": "prettier-standard --format",
     "build": "tsc --build src",
     "prepare": "yarn build",
@@ -110,7 +109,6 @@
     "@types/express": "^4.17.11",
     "@types/node": "^20.3.1",
     "body-parser": "1.19.0",
-    "jest": "^27.0.1",
     "js-conflux-sdk": "^2.3.0",
     "prettier-standard": "^16.4.1",
     "tslint": "^6.1.3",
