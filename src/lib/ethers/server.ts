@@ -182,12 +182,12 @@ class WalletMiddlewareServer {
             (exception.error && exception.error.body
               ? exception.error.body
               : {
-                  error: {
-                    code: exception.code || -32099,
-                    message: `"${message}"`,
-                    data: exception.data
-                  }
-                })
+                error: {
+                  code: exception.code || -32099,
+                  message: `"${message}"`,
+                  data: exception.data
+                }
+              })
           body = typeof body !== 'string' ? JSON.stringify(body) : body
           try {
             response = { ...header, error: JSON.parse(body).error }
@@ -237,7 +237,8 @@ class WalletMiddlewareServer {
     try {
       // initialize the RPC provider
       await this.wrapper.provider.ready
-      let network: ethers.providers.Network = await this.wrapper.provider.detectNetwork()
+      let network: ethers.providers.Network =
+        await this.wrapper.provider.detectNetwork()
       if (network) {
         traceKeyValue('Network', [
           ['Network id', network.chainId],
@@ -247,26 +248,33 @@ class WalletMiddlewareServer {
       }
 
       // Connect seed phrase wallet addresses to the rpc provider:
-      let wix = 0;
+      let wix = 0
       if (this.seedPhrase) {
-        for (let ix = 0; ix < this.seedPhraseWallets || 0; ix ++) {
-          const wallet = Wallet.fromMnemonic(this.seedPhrase, `m/44'/60'/0'/0/${ix}`).connect(this.wrapper.provider)
+        for (let ix = 0; ix < this.seedPhraseWallets || 0; ix++) {
+          const wallet = Wallet.fromMnemonic(
+            this.seedPhrase,
+            `m/44'/60'/0'/0/${ix}`
+          ).connect(this.wrapper.provider)
           this.wrapper.wallets.push(wallet)
-          await this.traceWallet(wix ++, wallet)
+          await this.traceWallet(wix++, wallet)
         }
         delete this.seedPhrase
       }
       // Connect seed phrase wallet addresses to the rpc provider:
-      if (this.privateKeys && Array.isArray(this.privateKeys) && this.privateKeys.length > 0) {
-        for (let ix = 0; ix < this.privateKeys?.length; ix ++) {
+      if (
+        this.privateKeys &&
+        Array.isArray(this.privateKeys) &&
+        this.privateKeys.length > 0
+      ) {
+        for (let ix = 0; ix < this.privateKeys?.length; ix++) {
           const wallet = new Wallet(this.privateKeys[ix], this.wrapper.provider)
           this.wrapper.wallets.push(wallet)
-          await this.traceWallet(wix ++, wallet)
+          await this.traceWallet(wix++, wallet)
         }
         delete this.privateKeys
       }
     } catch (e) {
-      console.error('Cannot get the HTTP server running !!!');
+      console.error('Cannot get the HTTP server running !!!')
       console.error(e)
       process.exit(-1)
     }

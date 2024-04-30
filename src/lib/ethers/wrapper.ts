@@ -373,10 +373,8 @@ class WalletWrapper {
     if (params.gas) {
       params.gas = ''
     }
-    const tx: ethers.providers.TransactionRequest = await this.composeTransaction(
-      socket,
-      params
-    )
+    const tx: ethers.providers.TransactionRequest =
+      await this.composeTransaction(socket, params)
     return tx.gasLimit || this.defaultGasLimit
   }
 
@@ -385,7 +383,7 @@ class WalletWrapper {
     _params: TransactionParams
   ): Promise<any> {
     if (this.ethGasPriceFactor) {
-      return "0x" + (await this.getGasPrice()).toNumber().toString(16)
+      return '0x' + (await this.getGasPrice()).toNumber().toString(16)
     } else {
       const gp: BigNumber = BigNumber.from(await this.provider.getGasPrice())
       console.log(`0x${gp.toNumber().toString(16)}`)

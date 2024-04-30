@@ -27,19 +27,19 @@ if (process.argv.length >= 4) {
 }
 
 // Optional: try to read TEN_GATEWAY_ENCRYPTION_TOKEN from CLI or the environment
-let encryption_token = ""
+let encryption_token = ''
 if (process.argv.length >= 5) {
-    encryption_token = process.argv[4]
+  encryption_token = process.argv[4]
 } else if (process.env.TEN_GATEWAY_ENCRYPTION_TOKEN) {
-    encryption_token = process.env.TEN_GATEWAY_ENCRYPTION_TOKEN
+  encryption_token = process.env.TEN_GATEWAY_ENCRYPTION_TOKEN
 }
 
 // Mandatory: The seed phrase to use for the server's own wrapped wallet, in BIP-39 mnemonics format.
-const seed_phrase = process.env.W3GW_SEED_PHRASE || ""
-const private_keys = JSON.parse(process.env.W3GW_PRIVATE_KEYS || "[]")
+const seed_phrase = process.env.W3GW_SEED_PHRASE || ''
+const private_keys = JSON.parse(process.env.W3GW_PRIVATE_KEYS || '[]')
 if (
-  seed_phrase === ""
-    && (!Array.isArray(private_keys) || private_keys.length == 0)
+  seed_phrase === '' &&
+  (!Array.isArray(private_keys) || private_keys.length == 0)
 ) {
   console.info(
     '\n\x1b[1;37mError: No mnemonic phrase nor private keys were provided. Please, set either the \x1b[1;33mW3GW_SEED_PHRASE\x1b[37m or the \x1b[33mW3GW_PRIVATE_KEYS\x1b[37m variables, or both.\x1b[0m'
@@ -143,7 +143,7 @@ new TenWalletMiddlewareServer(
   private_keys,
   interleave_blocks,
   gas_price,
-  gas_limit,  
+  gas_limit,
   estimate_gas_limit,
   estimate_gas_price,
   always_synced,
@@ -152,7 +152,7 @@ new TenWalletMiddlewareServer(
   gas_limit_factor,
   force_eip_155,
   force_eip_1559,
-  eth_gas_price_factor,
+  eth_gas_price_factor
 )
   .initialize()
   .listen(port)

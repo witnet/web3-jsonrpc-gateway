@@ -9,7 +9,6 @@ import { WalletMiddlewareServer } from './server'
  * provider, e.g. Infura.
  */
 class TenWalletMiddlewareServer extends WalletMiddlewareServer {
-  
   encryptionToken: string
   providerEndpoint: string
 
@@ -33,13 +32,13 @@ class TenWalletMiddlewareServer extends WalletMiddlewareServer {
     eth_gas_price_factor: boolean
   ) {
     super(
-      seed_phrase, 
-      seed_phrase_wallets, 
-      private_keys, 
-      interleave_blocks, 
-      gas_price, 
-      gas_limit, 
-      estimate_gas_limit, 
+      seed_phrase,
+      seed_phrase_wallets,
+      private_keys,
+      interleave_blocks,
+      gas_price,
+      gas_limit,
+      estimate_gas_limit,
       estimate_gas_price,
       always_synced,
       mock_filters,
@@ -48,7 +47,7 @@ class TenWalletMiddlewareServer extends WalletMiddlewareServer {
       force_eip_155,
       force_eip_1559,
       eth_gas_price_factor
-    );
+    )
     this.encryptionToken = encryption_token
     this.providerEndpoint = provider_endpoint
     return this
@@ -60,46 +59,55 @@ class TenWalletMiddlewareServer extends WalletMiddlewareServer {
   async listen (port: number, hostname?: string) {
     try {
       // Join the Ten Gateway by asking for an encryption token
-      if (!this.encryptionToken || this.encryptionToken === "") {
+      if (!this.encryptionToken || this.encryptionToken === '') {
         const response = await axios.get(`${this.providerEndpoint}/join/`)
         this.encryptionToken = response.data
       }
       // initialize the RPC provider
-      this.wrapper.provider = await new ethers.providers.StaticJsonRpcProvider(`${this.providerEndpoint}/?token=${this.encryptionToken}`)
+      this.wrapper.provider = await new ethers.providers.StaticJsonRpcProvider(
+        `${this.providerEndpoint}/?token=${this.encryptionToken}`
+      )
       await this.wrapper.provider.ready
-      traceKeyValue("Provider", [
-        [ "Endpoint", this.providerEndpoint], 
-        [ "Encryption", this.encryptionToken ], 
-        [ "Chain id", this.wrapper.provider.network.chainId]]
-      );
+      traceKeyValue('Provider', [
+        ['Endpoint', this.providerEndpoint],
+        ['Encryption', this.encryptionToken],
+        ['Chain id', this.wrapper.provider.network.chainId]
+      ])
       // For each seed phrase wallet address, connect to the provider and check whether it's already registered:
       if (this.seedPhrase) {
-        for (let ix = 0; ix < this.seedPhraseWallets; ix ++) {
-          const wallet = Wallet.fromMnemonic(this.seedPhrase, `m/44'/60'/0'/0/${ix}`).connect(this.wrapper.provider)
+        for (let ix = 0; ix < this.seedPhraseWallets; ix++) {
+          const wallet = Wallet.fromMnemonic(
+            this.seedPhrase,
+            `m/44'/60'/0'/0/${ix}`
+          ).connect(this.wrapper.provider)
           this.wrapper.wallets.push(wallet)
-          const address = await wallet.getAddress()  
-          const response = await axios.get(`${this.providerEndpoint}/query/address?token=${this.encryptionToken}&a=${address}`)
+          const address = await wallet.getAddress()
+          const response = await axios.get(
+            `${this.providerEndpoint}/query/address?token=${this.encryptionToken}&a=${address}`
+          )
           if (!response.data.status) {
             const signature = await wallet._signTypedData(
               {
-                name: "Ten",
-                version: "1.0",
-                chainId: this.wrapper.provider.network.chainId,
-              }, {
-                Authentication: [
-                  { name: "Encryption Token", type: "address" },
-                ],
-              }, {
-                "Encryption Token": this.encryptionToken
+                name: 'Ten',
+                version: '1.0',
+                chainId: this.wrapper.provider.network.chainId
+              },
+              {
+                Authentication: [{ name: 'Encryption Token', type: 'address' }]
+              },
+              {
+                'Encryption Token': this.encryptionToken
               }
-            );
+            )
             const response = await axios.post(
-              `${this.providerEndpoint}/authenticate/?token=${this.encryptionToken}`, 
+              `${this.providerEndpoint}/authenticate/?token=${this.encryptionToken}`,
               `{ "address": "${address}", "signature": "${signature}" }`
             )
-            if (response.data !== "success") {
-              console.error(`Unable to authenticate address ${address} into endpoint ${this.providerEndpoint}:`)
-              console.error("Error:", response.data)
+            if (response.data !== 'success') {
+              console.error(
+                `Unable to authenticate address ${address} into endpoint ${this.providerEndpoint}:`
+              )
+              console.error('Error:', response.data)
             }
           }
           traceKeyValue(`Wallet #${ix}`, [
@@ -108,36 +116,44 @@ class TenWalletMiddlewareServer extends WalletMiddlewareServer {
             ['Nonce  ', await wallet.getTransactionCount()]
           ])
         }
-        delete this.seedPhrase;
+        delete this.seedPhrase
       }
       // For each private key, connect addtional wallet to the provider and check whether it's already registered:
-      if (this.privateKeys && Array.isArray(this.privateKeys) && this.privateKeys.length > 0) {
-        for (let ix = 0; ix < this.privateKeys?.length; ix ++) {
+      if (
+        this.privateKeys &&
+        Array.isArray(this.privateKeys) &&
+        this.privateKeys.length > 0
+      ) {
+        for (let ix = 0; ix < this.privateKeys?.length; ix++) {
           const wallet = new Wallet(this.privateKeys[ix], this.wrapper.provider)
           this.wrapper.wallets.push(wallet)
-          const address = await wallet.getAddress()  
-          const response = await axios.get(`${this.providerEndpoint}/query/address?token=${this.encryptionToken}&a=${address}`)
+          const address = await wallet.getAddress()
+          const response = await axios.get(
+            `${this.providerEndpoint}/query/address?token=${this.encryptionToken}&a=${address}`
+          )
           if (!response.data.status) {
             const signature = await wallet._signTypedData(
               {
-                name: "Ten",
-                version: "1.0",
-                chainId: this.wrapper.provider.network.chainId,
-              }, {
-                Authentication: [
-                  { name: "Encryption Token", type: "address" },
-                ],
-              }, {
-                "Encryption Token": this.encryptionToken
+                name: 'Ten',
+                version: '1.0',
+                chainId: this.wrapper.provider.network.chainId
+              },
+              {
+                Authentication: [{ name: 'Encryption Token', type: 'address' }]
+              },
+              {
+                'Encryption Token': this.encryptionToken
               }
-            );
+            )
             const response = await axios.post(
-              `${this.providerEndpoint}/authenticate/?token=${this.encryptionToken}`, 
+              `${this.providerEndpoint}/authenticate/?token=${this.encryptionToken}`,
               `{ "address": "${address}", "signature": "${signature}" }`
             )
-            if (response.data !== "success") {
-              console.error(`Unable to authenticate address ${address} into endpoint ${this.providerEndpoint}:`)
-              console.error("Error:", response.data)
+            if (response.data !== 'success') {
+              console.error(
+                `Unable to authenticate address ${address} into endpoint ${this.providerEndpoint}:`
+              )
+              console.error('Error:', response.data)
             }
           }
           traceKeyValue(`Wallet #${ix}`, [
@@ -149,9 +165,7 @@ class TenWalletMiddlewareServer extends WalletMiddlewareServer {
         delete this.privateKeys
       }
     } catch (e) {
-      console.error(
-        'Cannot get the HTTP server running !!!'
-      )
+      console.error('Cannot get the HTTP server running !!!')
       console.error(e)
       process.exit(-1)
     }

@@ -29,11 +29,11 @@ if (process.argv.length >= 4) {
 }
 
 // Mandatory: The seed phrase to use for the server's own wrapped wallet, in BIP-39 mnemonics format.
-const seed_phrase = process.env.W3GW_SEED_PHRASE || ""
-const private_keys = JSON.parse(process.env.W3GW_PRIVATE_KEYS || "[]")
+const seed_phrase = process.env.W3GW_SEED_PHRASE || ''
+const private_keys = JSON.parse(process.env.W3GW_PRIVATE_KEYS || '[]')
 if (
-  seed_phrase === ""
-    && (!Array.isArray(private_keys) || private_keys.length == 0)
+  seed_phrase === '' &&
+  (!Array.isArray(private_keys) || private_keys.length == 0)
 ) {
   console.info(
     '\n\x1b[1;37mError: No mnemonic phrase nor private keys were provided. Please, set either the \x1b[1;33mW3GW_SEED_PHRASE\x1b[37m or the \x1b[33mW3GW_PRIVATE_KEYS\x1b[37m variables, or both.\x1b[0m'
@@ -121,7 +121,7 @@ if (process.env.ETHERS_FORCE_EIP_1559) {
 }
 
 // Optional: if true, will apply ETHERS_GAS_PRICE_FACTOR to eth_gasPrice calls
-let eth_gas_price_factor: boolean = gas_price_factor > 1.0 
+let eth_gas_price_factor: boolean = gas_price_factor > 1.0
 if (process.env.ETHERS_ETH_GAS_PRICE_FACTOR) {
   eth_gas_price_factor = JSON.parse(process.env.ETHERS_ETH_GAS_PRICE_FACTOR)
 }
@@ -143,7 +143,7 @@ new WalletMiddlewareServer(
   private_keys,
   interleave_blocks,
   gas_price,
-  gas_limit,  
+  gas_limit,
   estimate_gas_limit,
   estimate_gas_price,
   always_synced,
@@ -153,7 +153,7 @@ new WalletMiddlewareServer(
   force_eip_155,
   force_eip_1559,
   eth_gas_price_factor,
-  destinationProvider,
+  destinationProvider
 )
   .initialize()
   .listen(port)

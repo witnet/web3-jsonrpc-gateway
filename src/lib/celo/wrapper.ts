@@ -120,9 +120,11 @@ class WalletWrapper {
     })
     logger.verbose({
       socket,
-      message: `> Value:     ${BigInt(tx.value ?? 0)
-        .toString()
-        .replace(/\B(?=(\d{3})+(?!\d))/g, ',') || 0} wei`
+      message: `> Value:     ${
+        BigInt(tx.value ?? 0)
+          .toString()
+          .replace(/\B(?=(\d{3})+(?!\d))/g, ',') || 0
+      } wei`
     })
     logger.verbose({
       socket,

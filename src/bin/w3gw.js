@@ -3,13 +3,18 @@ require('dotenv').config()
 const execSync = require('child_process').execSync
 const scripts = require('../../package.json').scripts
 
-console.info(`WEB3 JSON ETH/RPC GATEWAY v${require('../../package.json')?.version}`)
+console.info(
+  `WEB3 JSON ETH/RPC GATEWAY v${require('../../package.json')?.version}`
+)
 
 if (process.argv.length >= 3) {
   // search for network and launch gateway, if found
   let ecosystem
   for (var key in scripts) {
-    if (key.indexOf(':') > -1 && key.toLowerCase() === process.argv[2].toLowerCase()) {
+    if (
+      key.indexOf(':') > -1 &&
+      key.toLowerCase() === process.argv[2].toLowerCase()
+    ) {
       if (process.env.W3GW_SEED_PHRASE || process.env.W3GW_PRIVATE_KEYS) {
         var cmdline = scripts[key].split(' ')
         // substitute "node path/to/bin" to "npx w3gw-bin"
@@ -83,7 +88,11 @@ if (process.argv.length >= 3) {
         process.exit(0)
       } else {
         console.info()
-        console.info('\x1b[1;37mCannot launch gateway on\x1b[1;32m', key, '\x1b[1;37m!!\x1b[0m')
+        console.info(
+          '\x1b[1;37mCannot launch gateway on\x1b[1;32m',
+          key,
+          '\x1b[1;37m!!\x1b[0m'
+        )
         console.info(
           '\nPlease, setup the \x1b[33mW3GW_SEED_PHRASE\x1b[0m environment variable, or add it to the .env file!'
         )
@@ -100,9 +109,9 @@ if (process.argv.length >= 3) {
   // if parameter matched a known ecosystem, list available network within it
   if (ecosystem) {
     const header = `SUPPORTED NETWORKS IN '${ecosystem.toUpperCase()}'`
-    console.info("\x1b[1;37m")
+    console.info('\x1b[1;37m')
     console.info(header)
-    console.info('='.repeat(header.length), "\x1b[0m")
+    console.info('='.repeat(header.length), '\x1b[0m')
     for (var key in scripts) {
       if (key.split(':')[0].toLowerCase() === ecosystem) {
         console.info('  ', `\x1b[1;32m${key}\x1b[0m`)
@@ -110,10 +119,14 @@ if (process.argv.length >= 3) {
     }
     process.exit(0)
   } else {
-    if (process.argv[2].indexOf(":") > -1) {
-      console.info(`\n\x1b[1;37mUnknown network: \x1b[1;31m${process.argv[2].toUpperCase()}\x1b[0m`)
+    if (process.argv[2].indexOf(':') > -1) {
+      console.info(
+        `\n\x1b[1;37mUnknown network: \x1b[1;31m${process.argv[2].toUpperCase()}\x1b[0m`
+      )
     } else {
-      console.info(`\n\x1b[1;37mUnknown ecosystem: \x1b[1;31m${process.argv[2].toUpperCase()}\x1b[0m`)
+      console.info(
+        `\n\x1b[1;37mUnknown ecosystem: \x1b[1;31m${process.argv[2].toUpperCase()}\x1b[0m`
+      )
     }
   }
 }
@@ -123,7 +136,7 @@ console.info(
   '  \x1b[1;37m',
   '$ npx w3gw',
   '\x1b[1;33m[<ecosystem>[:<network>] [custom-rpc-provider-url]]',
-  "\x1b[0m"
+  '\x1b[0m'
 )
 if (!process.env.W3GW_SEED_PHRASE) {
   console.info()
@@ -146,9 +159,7 @@ if (!process.env.W3GW_SEED_PHRASE) {
 }
 if (!process.env.W3GW_PROVIDER_URL) {
   console.info()
-  console.info(
-    'Optionally, you can specify a custom endpoint by setting:'
-  )
+  console.info('Optionally, you can specify a custom endpoint by setting:')
   console.info()
   console.info(
     '  ',
@@ -168,10 +179,10 @@ for (var key in scripts) {
   }
 }
 if (ecosystems.length > 0) {
-  console.info("\x1b[1;37m")
+  console.info('\x1b[1;37m')
   const header = 'SUPPORTED ECOSYSTEMS'
   console.info(header)
-  console.info('='.repeat(header.length), "\x1b[0m")
+  console.info('='.repeat(header.length), '\x1b[0m')
   for (var index in ecosystems) {
     console.info('  ', `\x1b[1;32m${ecosystems[index]}\x1b[0m`)
   }

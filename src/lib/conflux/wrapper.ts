@@ -116,10 +116,7 @@ export class WalletWrapper {
   /**
    * Use Conflux SDK to process `eth_estimateGas`, while making response ETH compliant
    */
-  async estimateGas (
-    params: Transaction,
-    _socket: SocketParams
-  ): Promise<any> {
+  async estimateGas (params: Transaction, _socket: SocketParams): Promise<any> {
     let res: any = await this.conflux.estimateGasAndCollateral(params)
     return '0x' + res.gasLimit.toString(16)
   }

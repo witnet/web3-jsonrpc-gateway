@@ -30,8 +30,8 @@ if (!network) {
 }
 
 // Mandatory: The seed phrase to use for the server's own wrapped wallet, in BIP-39 mnemonics format.
-const seed_phrase = process.env.W3GW_SEED_PHRASE || ""
-const private_keys = JSON.parse(process.env.W3GW_PRIVATE_KEYS || "")
+const seed_phrase = process.env.W3GW_SEED_PHRASE || ''
+const private_keys = JSON.parse(process.env.W3GW_PRIVATE_KEYS || '')
 if (!seed_phrase && !private_keys) {
   console.info(
     '\n\x1b[1;37mError: No mnemonic phrase nor private keys were provided. Please, set either the \x1b[1;33mW3GW_SEED_PHRASE\x1b[37m or the \x1b[33mW3GW_PRIVATE_KEYS\x1b[37m variables, or both.\x1b[0m'
@@ -112,7 +112,7 @@ new WalletMiddlewareServer(
   false, // force EIP-155 txs
   false, // force EIP-1559 txs
   false, // eth gas price factor
-  destinationProvider,
+  destinationProvider
 )
   .initialize()
   .listen(port)

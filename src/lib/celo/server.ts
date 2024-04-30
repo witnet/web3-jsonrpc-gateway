@@ -142,12 +142,12 @@ export class WalletMiddlewareServer {
             (exception.error && exception.error.body
               ? exception.error.body
               : {
-                  error: {
-                    code: exception.code || -32099,
-                    message: `"${message}"`,
-                    data: exception.data
-                  }
-                })
+                error: {
+                  code: exception.code || -32099,
+                  message: `"${message}"`,
+                  data: exception.data
+                }
+              })
           body = typeof body !== 'string' ? JSON.stringify(body) : body
           try {
             response = { ...header, error: JSON.parse(body).error }
@@ -229,8 +229,9 @@ export class WalletMiddlewareServer {
     })
 
     console.log(
-      `Listening on ${hostname ||
-        '0.0.0.0'}:${port} [${logger.level.toUpperCase()}]\n`
+      `Listening on ${
+        hostname || '0.0.0.0'
+      }:${port} [${logger.level.toUpperCase()}]\n`
     )
     this.expressServer.listen(port, hostname || '0.0.0.0')
     return this
