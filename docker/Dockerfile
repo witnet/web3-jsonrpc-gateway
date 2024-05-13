@@ -1,4 +1,4 @@
-FROM node:20-alpine3.12
+FROM node:16-alpine3.15
 
 # Install dependencies not included in the base image
 RUN apk update
@@ -16,7 +16,8 @@ COPY . /data
 
 # Navigate to the nodejs root package, install dependencies and build the project
 WORKDIR /data
-RUN npm install yarn
+RUN corepack enable
+RUN corepack prepare yarn@3.0.1 --activate
 RUN yarn
 RUN yarn build
 RUN chmod +x dist/bin/*
