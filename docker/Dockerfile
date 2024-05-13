@@ -21,7 +21,6 @@ RUN corepack prepare yarn@3.0.1 --activate
 RUN yarn
 RUN yarn build
 RUN chmod +x dist/bin/*
-RUN yarn link
 
 # Set the entrypoint and main command
 # Runs the default Infura gateway, but CMD can be overriden when running a container so it runs the reactions monitor server
