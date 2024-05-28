@@ -170,6 +170,10 @@ export class WalletWrapper {
     return this.networkId
   }
 
+  async processChainId(): Promise<any> {
+    return "0x" + this.networkId.toString(16)
+  }
+
   /**
    * Get syncing status from provider.
    */

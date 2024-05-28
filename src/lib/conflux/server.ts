@@ -80,7 +80,7 @@ export class WalletMiddlewareServer {
       eth_estimateGas: this.wrapper.estimateGas,
       cfx_sendTransaction: this.wrapper.processTransaction,
       eth_accounts: this.wrapper.getAccounts,
-      eth_chainId: this.wrapper.getNetworkId,
+      eth_chainId: this.wrapper.processChainId,
       eth_getFilterChanges: this.wrapper.getEthFilterChanges,
       eth_newBlockFilter: this.wrapper.createEthBlockFilter,
       eth_sendTransaction: this.wrapper.processTransaction,
