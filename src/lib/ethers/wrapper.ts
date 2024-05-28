@@ -72,7 +72,7 @@ class WalletWrapper {
   ): Promise<ethers.providers.TransactionRequest> {
     // Compose actual transaction:
     let tx: ethers.providers.TransactionRequest = {
-      from: params.from,
+      from: params.from ? ethers.utils.getAddress(params.from) : undefined,
       to: params.to,
       value: params.value,
       data: params.data,
