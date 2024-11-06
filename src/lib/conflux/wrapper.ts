@@ -173,8 +173,8 @@ export class WalletWrapper {
     return this.networkId
   }
 
-  async processChainId(): Promise<any> {
-    return "0x" + this.networkId.toString(16)
+  async processChainId (): Promise<any> {
+    return '0x' + this.networkId.toString(16)
   }
 
   /**
@@ -183,19 +183,18 @@ export class WalletWrapper {
   async getSyncingStatus (socket: SocketParams): Promise<any> {
     if (this.alwaysSynced) {
       return false
-    
-    } else try {
-      const status: any = await this.conflux.getStatus()
-      await logger.debug({ socket, message: `<<< ${JSON.stringify(status)}` })
-      return {
-        startingBlock: '0x' + status.latestCheckpoint.toString(16),
-        currentBlock: '0x' + status.latestConfirmed.toString(16),
-        highestBlock: '0x' + status.epochNumber.toString(16)
+    } else
+      try {
+        const status: any = await this.conflux.getStatus()
+        await logger.debug({ socket, message: `<<< ${JSON.stringify(status)}` })
+        return {
+          startingBlock: '0x' + status.latestCheckpoint.toString(16),
+          currentBlock: '0x' + status.latestConfirmed.toString(16),
+          highestBlock: '0x' + status.epochNumber.toString(16)
+        }
+      } catch (_e) {
+        return false
       }
-    
-    } catch (_e) {
-      return false
-    }
   }
 
   /**

@@ -15,7 +15,6 @@ This repository is released automatically in [DockerHub](https://github.com/witn
 - Push a new tag.
 - [Publish](https://github.com/witnet/web3-jsonrpc-gateway/releases/new) a new release.
 
-
 ## Running a single server instance, depending on destination provider type:
 
 ### Infura as destination provider:
