@@ -75,6 +75,11 @@ const estimateGasPrice: boolean = JSON.parse(
 // Optional: Epoch number tag to be used as default value on those RPC methods that may require it.
 const epochLabel = process.env.CONFLUX_DEFAULT_EPOCH_LABEL || 'latest_finalized'
 
+// Optional: if `true`, let provider estimate gas price before signing the transaction
+const alwaysSynced: boolean = JSON.parse(
+  process.env.CONFLUX_ALWAYS_SYNCED || 'true'
+)
+
 console.log('='.repeat(120))
 console.log(
   `${packageData.name} v${packageData.version} (js-conflux-sdk: ${packageData.devDependencies['js-conflux-sdk']})`
@@ -89,7 +94,8 @@ new WalletMiddlewareServer(
   defaultGasLimit,
   defaultGasPrice,
   estimateGasPrice,
-  epochLabel
+  epochLabel,
+  alwaysSynced
 )
   .initialize()
   .listen(port)

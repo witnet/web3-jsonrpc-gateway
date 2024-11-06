@@ -50,7 +50,8 @@ export class WalletMiddlewareServer {
     defaultGas: BigInt,
     defaultGasPrice: number,
     estimateGasPrice: boolean,
-    epochLabel: string
+    epochLabel: string,
+    alwaysSynced: boolean
   ) {
     this.expressServer = express()
 
@@ -61,6 +62,7 @@ export class WalletMiddlewareServer {
       defaultGas,
       estimateGasPrice,
       epochLabel,
+      alwaysSynced,
       new Conflux({ url, networkId, defaultGasPrice })
     )
 

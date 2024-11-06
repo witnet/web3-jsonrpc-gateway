@@ -9,6 +9,7 @@ import { logger, SocketParams } from '../Logger'
 
 export class WalletWrapper {
   conflux: Conflux
+  alwaysSynced: boolean
   defaultGas: BigInt
   epochLabel: CONST.EPOCH_NUMBER
   estimateGasPrice: boolean
@@ -23,6 +24,7 @@ export class WalletWrapper {
     defaultGas: BigInt,
     estimateGasPrice: boolean,
     epochLabel: string,
+    alwaysSynced: boolean,
     conflux: Conflux
   ) {
     this.networkId = networkId
@@ -30,6 +32,7 @@ export class WalletWrapper {
     this.epochLabel = <CONST.EPOCH_NUMBER>epochLabel
     this.estimateGasPrice = estimateGasPrice
     this.interleaveEpochs = interleaveEpochs
+    this.alwaysSynced = alwaysSynced
     this.conflux = conflux
     privateKeys.forEach(privateKey => {
       this.conflux.wallet.addPrivateKey(privateKey)
@@ -178,7 +181,10 @@ export class WalletWrapper {
    * Get syncing status from provider.
    */
   async getSyncingStatus (socket: SocketParams): Promise<any> {
-    try {
+    if (this.alwaysSynced) {
+      return false
+    
+    } else try {
       const status: any = await this.conflux.getStatus()
       await logger.debug({ socket, message: `<<< ${JSON.stringify(status)}` })
       return {
@@ -186,6 +192,7 @@ export class WalletWrapper {
         currentBlock: '0x' + status.latestConfirmed.toString(16),
         highestBlock: '0x' + status.epochNumber.toString(16)
       }
+    
     } catch (_e) {
       return false
     }
