@@ -8,6 +8,14 @@ A Web3 JSON-RPC provider gateway that handles accounts on its own using Ethers.j
 yarn build
 ```
 
+## Release
+
+This repository is released automatically in [DockerHub](https://github.com/witnet/web3-jsonrpc-gateway/blob/main/.github/workflows/docker-publish.yml) and [npm](https://github.com/witnet/web3-jsonrpc-gateway/blob/main/.github/workflows/npm-publish.yml) using GitHub actions when a new release is detected in the repository. To release:
+
+- Push a new tag.
+- [Publish](https://github.com/witnet/web3-jsonrpc-gateway/releases/new) a new release.
+
+
 ## Running a single server instance, depending on destination provider type:
 
 ### Infura as destination provider:
@@ -32,28 +40,7 @@ Optional environment variables:
 - `W3GW_LOG_LEVEL`: max log level to be traced, can be any of the following: `error`, `warn`, `info`, `http`, `verbose`, `debug`, `silly`. If not specified, `verbose` will apply.
 - `W3GW_SEED_PHRASE_WALLETS`: number of wallet addresses to be handled by the gateway, derived from path '`m/44'/60'/0'/0/*`'.
 
-### Celo-compatible destination providers:
-
-```console
-node dist/bin/celo
-```
-
-Required environment variables:
-
-- `W3GW_PORT`: listening port for the server. Can also be passed from command-line as first parameter.
-- `W3GW_NETWORK`: Celo providers currently supports: `44787` for testnet, and `42220` for mainnet.
-- `W3GW_PROVIDER_URL`: actual URL of the Web3 JSON-RPC provider.
-- `W3GW_PRIVATE_KEYS`: array of private keys to be used for signing transactions.
-
-Optional environment variables:
-
-- `CELO_FEE_CURRENCY`: ERC-20 token address to be used for paying transaction gas. Native CELO will be used if none specified.
-- `CELO_GAS_LIMIT_FACTOR`: factor by which the provider-estimated gas limit will be multiplied, before signing transactions.
-- `CELO_GAS_PRICE_FACTOR`: factor by which the provider-estimated gas price minimum will be multiplied, before signing transactions.
-- `CELO_GAS_PRICE_MAX`: maximum gas price the gateway is allowed to bid when signing transactions.
-- `EVM_CALL_INTERLEAVE_BLOCKS`: number of blocks before latest knwon upon which EVM read-only calls will be bound to; this variable defaults to zero.
-
-### Conflux-compatible destination providers:
+### Conflux Core compatible destination providers:
 
 ```console
 node ./dist/bin/conflux
@@ -115,7 +102,7 @@ Optional environment variables:
 - `W3GW_NETWORK`: the network name to connect with.
 - `W3GW_SEED_PHRASE_WALLETS`: number of wallet addresses to be handled by the gateway, derived from path '`m/44'/60'/0'/0/*`'.
 - `W3GW_LOG_LEVEL`: max log level to be traced, can be any of the following: `error`, `warn`, `info`, `http`, `verbose`, `debug`, `silly`. If not specified, `verbose` will apply.
-- `ETHERS_ALWAYS_SYNCED`: if set to `true`, the gateway will intercept calls to `eth_syncing` as to return `false` in all cases..
+- `ETHERS_ALWAYS_SYNCED`: if set to `true`, the gateway will intercept calls to `eth_syncing` as to return `false` in all cases.
 - `ETHERS_ESTIMATE_GAS_LIMIT`: if set to `true`, the provider will be asked to estimate the gas limit, before signing the transaction; if the provider-estimated gas limit is greater than `ETHERS_GAS_LIMIT`, the transaction will be rejected by the gateway.
 - `ETHERS_ESTIMATE_GAS_PRICE`: if set to `true`, the provider will be asked to estimate the gas price, before signing the transaction; if the provider-estimated gas price is greater than `ETHERS_GAS_PRICE`, the transaction will be rejected by the gateway.
 - `ETHERS_GAS_LIMIT`: default gas limit, if not specified by the client; or maximum gas limit threshold if either estimated by the provider, or provided by the client.
