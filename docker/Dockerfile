@@ -1,11 +1,10 @@
-FROM node:16-alpine3.15
+FROM node:20-bookworm
+
+ARG TARGETPLATFORM
 
 # Install dependencies not included in the base image
-RUN apk update
-RUN apk upgrade
-RUN apk --no-cache add bash ca-certificates curl
-RUN apk add --no-cache git
-RUN apk add --no-cache openssh-client
+RUN apt update && apt upgrade -y
+RUN apt install bash ca-certificates curl git openssh-client
 
 # Update CA certificates
 RUN update-ca-certificates
@@ -16,10 +15,24 @@ COPY . /data
 
 # Navigate to the nodejs root package, install dependencies and build the project
 WORKDIR /data
-RUN corepack enable
-RUN corepack prepare yarn@3.0.1 --activate
-RUN yarn
-RUN yarn build
+RUN corepack enable && corepack prepare yarn@3.0.1 --activate
+
+# Subroutine for arm64 platform
+RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
+        echo "Current platform linux/amd64"; \
+        yarn; \
+        yarn build; \
+    elif [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
+        echo "Current platform linux/arm64"; \
+        apt install build-essential; \
+        yarn global add node-gyp; \
+        yarn; \
+        yarn build; \
+    else \
+        echo "Unsupported platform: $TARGETPLATFORM"; \
+        exit 1; \
+    fi
+
 RUN chmod +x dist/bin/*
 
 # Set the entrypoint and main command
