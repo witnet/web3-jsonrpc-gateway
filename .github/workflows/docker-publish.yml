@@ -23,12 +23,6 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ github.repository }}
-
       - name: Copy Dockerfile to the root of the repository
         shell: bash
         run: cp ./docker/Dockerfile .
@@ -38,5 +32,5 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: witnet/web3-jsonrpc-gateway:${{ github.ref_name }}
           platforms: linux/amd64,linux/arm64
