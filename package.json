@@ -127,5 +127,6 @@
     "graphql-request": "^6.1.0",
     "json-rpc-2.0": "~1.7.0",
     "winston": "~3.13.0"
-  }
+  },
+  "packageManager": "yarn@4.5.3"
 }

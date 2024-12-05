@@ -15,7 +15,7 @@ COPY . /data
 
 # Navigate to the nodejs root package, install dependencies and build the project
 WORKDIR /data
-RUN corepack enable && corepack prepare yarn@3.0.1 --activate
+RUN corepack enable && corepack prepare yarn@4.5.3 --activate
 
 # Subroutine for arm64 platform
 RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
