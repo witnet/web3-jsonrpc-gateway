@@ -35,6 +35,9 @@ RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
 
 RUN chmod +x dist/bin/*
 
+# remove development dependencies
+RUN npm prune --production
+
 # Set the entrypoint and main command
 # Runs the default Infura gateway, but CMD can be overriden when running a container so it runs the reactions monitor server
 ENTRYPOINT ["npx"]
