@@ -10,13 +10,11 @@
     "README.md"
   ],
   "bin": {
-    "w3gw": "dist/bin/w3gw.js",
-    "w3gw-celo": "dist/bin/celo/index.js",
-    "w3gw-conflux": "dist/bin/conflux/index.js",
-    "w3gw-ethers": "dist/bin/ethers/index.js",
-    "w3gw-infura": "dist/bin/ethers/infura.js",
-    "w3gw-reef": "dist/bin/reef/index.js",
-    "w3gw-ten": "dist/bin/ethers/ten.js"
+    "ethrpc": "dist/bin/ethrpc.js",
+    "ethrpc-conflux": "dist/bin/conflux/index.js",
+    "ethrpc-ethers": "dist/bin/ethers/index.js",
+    "ethrpc-infura": "dist/bin/ethers/infura.js",
+    "ethrpc-reef": "dist/bin/reef/index.js"
   },
   "scripts": {
     "ci": "yarn build",
