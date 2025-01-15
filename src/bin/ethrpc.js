@@ -4,7 +4,7 @@ const execSync = require('child_process').execSync
 const scripts = require('../../package.json').scripts
 
 console.info(
-  `WEB3 JSON ETH/RPC GATEWAY v${require('../../package.json')?.version}`
+  `ETHRPC GATEWAY v${require('../../package.json')?.version}`
 )
 
 if (process.argv.length >= 3) {
@@ -15,29 +15,29 @@ if (process.argv.length >= 3) {
       key.indexOf(':') > -1 &&
       key.toLowerCase() === process.argv[2].toLowerCase()
     ) {
-      if (process.env.W3GW_SEED_PHRASE || process.env.W3GW_PRIVATE_KEYS) {
+      if (process.env.ETHRPC_SEED_PHRASE || process.env.ETHRPC_PRIVATE_KEYS) {
         var cmdline = scripts[key].split(' ')
-        // substitute "node path/to/bin" to "npx w3gw-bin"
+        // substitute "node path/to/bin" to "npx ethrpc-bin"
         var index = cmdline.findIndex(item => item === 'node')
         if (index > -1) cmdline[index] = 'npx'
         index = cmdline.findIndex(item => item.startsWith('dist/bin'))
         if (index > -1)
-          cmdline[index] = `w3gw-${cmdline[index].split('/').slice(-1)}`
-        // replace all references to $W3GW_PROVIDER_URL
+          cmdline[index] = `ethrpc-${cmdline[index].split('/').slice(-1)}`
+        // replace all references to $ETHRPC_PROVIDER_URL
         cmdline = cmdline.map(item => {
-          if (item.indexOf('$W3GW_PROVIDER_KEY') > -1) {
-            if (!process.env.W3GW_PROVIDER_KEY) {
+          if (item.indexOf('$ETHRPC_PROVIDER_KEY') > -1) {
+            if (!process.env.ETHRPC_PROVIDER_KEY) {
               console.info()
               console.info(
                 'Cannot launch',
                 key,
-                'gateway: the W3GW_PROVIDER_KEY envar must be set!'
+                'gateway: the ETHRPC_PROVIDER_KEY envar must be set!'
               )
               process.exit(0)
             }
             return item.replaceAll(
-              '$W3GW_PROVIDER_KEY',
-              process.env.W3GW_PROVIDER_KEY
+              '$ETHRPC_PROVIDER_KEY',
+              process.env.ETHRPC_PROVIDER_KEY
             )
           } else {
             return item
@@ -46,8 +46,8 @@ if (process.argv.length >= 3) {
         if (process.argv.length >= 4) {
           // a specific JSONRPC provider has been specified in the command line:
           cmdline[cmdline.length - 2] = process.argv[3]
-          if (process.env.W3GW_PORT) {
-            cmdline[cmdline.length - 1] = process.env.W3GW_PORT
+          if (process.env.ETHRPC_PORT) {
+            cmdline[cmdline.length - 1] = process.env.ETHRPC_PORT
           }
           // invoke subprocess
           execSync(
@@ -56,11 +56,11 @@ if (process.argv.length >= 3) {
               .concat(process.argv.slice(4).join(' ')),
             { stdio: 'inherit' }
           )
-        } else if (process.env.W3GW_PROVIDER_URL) {
-          // the W3GW_PROVIDER_URL variable is set
-          cmdline[cmdline.length - 2] = process.env.W3GW_PROVIDER_URL
-          if (process.env.W3GW_PORT) {
-            cmdline[cmdline.length - 1] = process.env.W3GW_PORT
+        } else if (process.env.ETHRPC_PROVIDER_URL) {
+          // the ETHRPC_PROVIDER_URL variable is set
+          cmdline[cmdline.length - 2] = process.env.ETHRPC_PROVIDER_URL
+          if (process.env.ETHRPC_PORT) {
+            cmdline[cmdline.length - 1] = process.env.ETHRPC_PORT
           }
           execSync(
             'yarn '
@@ -68,9 +68,9 @@ if (process.argv.length >= 3) {
               .concat(process.argv.slice(3).join(' ')),
             { stdio: 'inherit' }
           )
-        } else if (process.env.W3GW_PORT) {
-          // the W3GW_PORT variable is set while W3GW_PROVIDER_URL is not
-          cmdline[cmdline.length - 1] = process.env.W3GW_PORT
+        } else if (process.env.ETHRPC_PORT) {
+          // the ETHRPC_PORT variable is set while ETHRPC_PROVIDER_URL is not
+          cmdline[cmdline.length - 1] = process.env.ETHRPC_PORT
           execSync(
             'yarn '
               .concat(cmdline.join(' '), ' ')
@@ -94,9 +94,9 @@ if (process.argv.length >= 3) {
           '\x1b[1;37m!!\x1b[0m'
         )
         console.info(
-          '\nPlease, setup the \x1b[33mW3GW_SEED_PHRASE\x1b[0m environment variable, or add it to the .env file!'
+          '\nPlease, setup the \x1b[33mETHRPC_PRIVATE_KEYS\x1b[0m environment variable, or add it to the .env file!\n'
         )
-        process.exit(1)
+        process.exit(0)
       }
     } else if (
       key.indexOf(':') &&
@@ -134,11 +134,11 @@ console.info('\n\x1b[1;37mUsage:\x1b[0m')
 console.info()
 console.info(
   '  \x1b[1;37m',
-  '$ npx w3gw',
+  '$ npx ethrpc',
   '\x1b[1;33m[<ecosystem>[:<network>] [custom-rpc-provider-url]]',
   '\x1b[0m'
 )
-if (!process.env.W3GW_SEED_PHRASE) {
+if (!process.env.ETHRPC_SEED_PHRASE) {
   console.info()
   console.info(
     'At least one of the following env variables must be previously set (or included within an .env file):'
@@ -146,24 +146,24 @@ if (!process.env.W3GW_SEED_PHRASE) {
   console.info()
   console.info(
     '  ',
-    '\x1b[33mW3GW_PRIVATE_KEYS\x1b[0m',
+    '\x1b[33mETHRPC_PRIVATE_KEYS\x1b[0m',
     '\t=>',
     'An array of one or more private keys from which wallet addresses will be derived.'
   )
   console.info(
     '  ',
-    '\x1b[33mW3GW_SEED_PHRASE\x1b[0m',
+    '\x1b[33mETHRPC_SEED_PHRASE\x1b[0m',
     '\t=>',
     'Secret phrase from which wallet addresses will be derived.'
   )
 }
-if (!process.env.W3GW_PROVIDER_URL) {
+if (!process.env.ETHRPC_PROVIDER_URL) {
   console.info()
   console.info('Optionally, you can specify a custom endpoint by setting:')
   console.info()
   console.info(
     '  ',
-    '\x1b[33mW3GW_PROVIDER_URL\x1b[0m',
+    '\x1b[33mETHRPC_PROVIDER_URL\x1b[0m',
     '\t=>',
     'The JSON ETH/RPC provider to connect to.'
   )

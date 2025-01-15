@@ -31,7 +31,7 @@ const logFormat = printf(
 )
 
 export const logger = createLogger({
-  level: process.env.W3GW_LOG_LEVEL || 'verbose',
+  level: process.env.ETHRPC_LOG_LEVEL || 'verbose',
   format: combine(timestamp(), logFormat),
   transports: [new transports.Console()]
 })
