@@ -14,7 +14,8 @@
     "ethrpc-conflux": "dist/bin/conflux/index.js",
     "ethrpc-ethers": "dist/bin/ethers/index.js",
     "ethrpc-infura": "dist/bin/ethers/infura.js",
-    "ethrpc-reef": "dist/bin/reef/index.js"
+    "ethrpc-reef": "dist/bin/reef/index.js",
+    "ethrpc-zksync": "dist/bin/ethers/zksync.js"
   },
   "scripts": {
     "ci": "yarn build",
