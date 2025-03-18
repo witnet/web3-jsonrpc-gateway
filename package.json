@@ -126,7 +126,8 @@
     "graphql": "^16.8.1",
     "graphql-request": "^7.1.2",
     "json-rpc-2.0": "~1.7.0",
-    "winston": "^3.17.0"
+    "winston": "^3.17.0",
+    "zksync-ethers": "^5.10.0"
   },
   "packageManager": "yarn@4.5.3"
 }
