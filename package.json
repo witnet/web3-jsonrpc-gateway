@@ -1,5 +1,5 @@
 {
-  "name": "ethrpc",
+  "name": "ethrpc-gateway",
   "version": "2.1.0-beta.0",
   "description": "A Web3 provider that handles accounts on its own but delegates chain queries to a 3rd party service",
   "main": "dist/bin/ethrpc.js",

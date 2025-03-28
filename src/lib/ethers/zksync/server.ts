@@ -106,13 +106,9 @@ class WalletMiddlewareServer {
 
         let handlers: { [K: string]: any } = {
           eth_accounts: this.wrapper.getAccounts,
-          // eth_call: this.wrapper.processEthCall,
-          // eth_chainId: this.wrapper.getNetwork,
           eth_estimateGas: this.wrapper.processEthEstimateGas,
           eth_gasPrice: this.wrapper.processEthGasPrice,
-          // eth_getBlockByNumber: this.wrapper.getBlockByNumber,
           eth_sendTransaction: this.wrapper.processTransaction,
-          // eth_sign: this.wrapper.processEthSignMessage
         }
         if (this.alwaysSynced) {
           handlers = {

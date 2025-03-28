@@ -97,14 +97,6 @@ class WalletWrapper {
       logger.verbose({ socket, message: `> ChainId:   ${tx.chainId}` })
     }
 
-    // // Complete tx type, if necessary:
-    // if (this.forceType2Txs) {
-    //   tx.type = 2
-    // }
-    // if (tx.type) {
-    //   logger.verbose({ socket, message: `> Type:      ${tx.type}` })
-    // }
-
     // Complete tx gas price, if necessary:
     if (params.from && !params.gasPrice) {
       tx.gasPrice = (await this.getGasPrice()).toHexString()
