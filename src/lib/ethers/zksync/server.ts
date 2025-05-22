@@ -18,7 +18,7 @@ class WalletMiddlewareServer {
   seedPhraseWallets: number
   wrapper: WalletWrapper
 
-  constructor (
+  constructor(
     seed_phrase: string,
     seed_phrase_wallets: number,
     private_keys: string[],
@@ -83,141 +83,146 @@ class WalletMiddlewareServer {
    * Initializes the Express server, configures CORS, and passes requests back and forth between the Express server and
    * the `JsonRpcEngine`.
    */
-  initialize () {
+  initialize() {
     this.expressServer.use(cors())
     this.expressServer.use(express.json())
 
     this.expressServer.post(
       '*',
       async (req: express.Request, res: express.Response) => {
-        const request = req.body
+        const body = req.body
         const socket = {
           clientAddr: req.connection.remoteAddress,
           clientPort: req.connection.remotePort,
-          clientId: request.id,
+          clientId: body.id,
           serverId: this.wrapper.provider._nextId
         }
 
-        logger.log({
-          level: 'info',
-          socket,
-          message: `>> ${request.method}`
-        })
+        const requests = Array.isArray(body) ? [ ...body ] : [ body ]
+        await Promise.all(requests.map(async request => {
+          logger.log({
+            level: 'info',
+            socket,
+            message: `>> ${request.method}`
+          })
 
-        let handlers: { [K: string]: any } = {
-          eth_accounts: this.wrapper.getAccounts,
-          eth_estimateGas: this.wrapper.processEthEstimateGas,
-          eth_gasPrice: this.wrapper.processEthGasPrice,
-          eth_sendTransaction: this.wrapper.processTransaction,
-        }
-        if (this.alwaysSynced) {
-          handlers = {
-            ...handlers,
-            eth_syncing: () => false
+          let handlers: { [K: string]: any } = {
+            eth_accounts: this.wrapper.getAccounts,
+            eth_estimateGas: this.wrapper.processEthEstimateGas,
+            eth_gasPrice: this.wrapper.processEthGasPrice,
+            eth_sendTransaction: this.wrapper.processTransaction,
           }
-        }
-        if (this.mockFilters) {
-          handlers = {
-            ...handlers,
-            eth_getFilterChanges: this.wrapper.mockEthFilterChanges,
-            eth_newBlockFilter: () => '0x1'
+          if (this.alwaysSynced) {
+            handlers = {
+              ...handlers,
+              eth_syncing: () => false
+            }
           }
-        }
+          if (this.mockFilters) {
+            handlers = {
+              ...handlers,
+              eth_getFilterChanges: this.wrapper.mockEthFilterChanges,
+              eth_newBlockFilter: () => '0x1'
+            }
+          }
 
-        const header = {
-          jsonrpc: request.jsonrpc,
-          id: request.id
-        }
-
-        let response: {
-          id: number
-          jsonrpc: string
-          result?: string
-          error?: string
-        }
-        let result
-        try {
-          if (request.method in handlers) {
-            result = await handlers[request.method].bind(this.wrapper)(
-              socket,
-              ...(request.params || [])
-            )
-          } else {
-            result = await this.wrapper.provider.send(
-              request.method,
-              request.params
-            )
+          const header = {
+            jsonrpc: request.jsonrpc,
+            id: request.id
           }
-          response = { ...header, result }
-        } catch (exception: any) {
-          if (!exception.code) {
-            // if no error code is specified,
-            //   assume the provider is actually reporting an execution error:
-            exception = {
-              reason: exception.toString(),
-              body: {
-                error: {
-                  code: -32015,
-                  message: exception.data
-                    ? 'Execution error'
-                    : JSON.stringify(exception),
-                  data: exception.data
+
+          let response: {
+            id: number
+            jsonrpc: string
+            result?: string
+            error?: string
+          }
+          let result
+          try {
+            if (request.method in handlers) {
+              result = await handlers[request.method].bind(this.wrapper)(
+                socket,
+                ...(request.params || [])
+              )
+            } else {
+              result = await this.wrapper.provider.send(
+                request.method,
+                request.params
+              )
+            }
+            response = { ...header, result }
+          } catch (exception: any) {
+            if (!exception.code) {
+              // if no error code is specified,
+              //   assume the provider is actually reporting an execution error:
+              exception = {
+                reason: exception.toString(),
+                body: {
+                  error: {
+                    code: -32015,
+                    message: exception.data
+                      ? 'Execution error'
+                      : JSON.stringify(exception),
+                    data: exception.data
+                  }
                 }
               }
             }
-          }
-          const message =
-            exception.reason ||
-            (exception.error && exception.error.reason) ||
-            exception ||
-            'null exception'
-          let body =
-            exception.body ||
-            (exception.error && exception.error.body
-              ? exception.error.body
-              : {
-                error: {
-                  code: exception.code || -32099,
-                  message: `"${message}"`,
-                  data: exception.data
-                }
+            const message =
+              exception.reason ||
+              (exception.error && exception.error.reason) ||
+              exception ||
+              'null exception'
+            let body =
+              exception.body ||
+              (exception.error && exception.error.body
+                ? exception.error.body
+                : {
+                  error: {
+                    code: exception.code || -32099,
+                    message: `"${message}"`,
+                    data: exception.data
+                  }
+                })
+            body = typeof body !== 'string' ? JSON.stringify(body) : body
+            try {
+              response = { ...header, error: JSON.parse(body).error }
+            } catch (e) {
+              logger.log({
+                level: 'error',
+                socket,
+                message: `<= Invalid JSON: ${body}`
               })
-          body = typeof body !== 'string' ? JSON.stringify(body) : body
-          try {
-            response = { ...header, error: JSON.parse(body).error }
-          } catch (e) {
-            logger.log({
-              level: 'error',
-              socket,
-              message: `<= Invalid JSON: ${body}`
-            })
-            response = {
-              ...header,
-              error: `{ "code": -32700, "message": "Invalid JSON response" }`
+              response = {
+                ...header,
+                error: `{ "code": -32700, "message": "Invalid JSON response" }`
+              }
             }
           }
-        }
-        if (response.error) {
-          logger.log({
-            level: 'warn',
-            socket,
-            message: `<= Error: ${JSON.stringify(response.error)}`
-          })
-        } else {
-          logger.log({
-            level: 'http',
-            socket,
-            message: `<< ${JSON.stringify(result)}`
-          })
-        }
-        res.status(200).json(response)
-      }
+          if (response.error) {
+            logger.log({
+              level: 'warn',
+              socket,
+              message: `<= Error: ${JSON.stringify(response.error)}`
+            })
+          } else {
+            logger.log({
+              level: 'http',
+              socket,
+              message: `<< ${JSON.stringify(result)}`
+            })
+          }
+          return response
+        })).then((responses: any[]) => {
+          res.status(200).json(responses)
+        })
+      },
     )
     return this
   }
 
-  async traceWallet (index: number, wallet: Wallet) {
-    traceKeyValue(`Wallet #${index}`, [
+  async traceWallet(index: number, wallet: Wallet) {
+    traceKeyValue(`Signer #${index}`, [
       ['Address', await wallet.getAddress()],
       ['Balance', await wallet.getBalance()],
       ['Nonce  ', await wallet.getTransactionCount()]
@@ -227,7 +232,7 @@ class WalletMiddlewareServer {
   /**
    * Tells the Express server to start listening.
    */
-  async listen (port: number, hostname?: string) {
+  async listen(port: number, hostname?: string) {
     try {
       // initialize the RPC provider
       await this.wrapper.provider.ready

@@ -110,7 +110,7 @@ class TenWalletMiddlewareServer extends WalletMiddlewareServer {
               console.error('Error:', response.data)
             }
           }
-          traceKeyValue(`Wallet #${ix}`, [
+          traceKeyValue(`Signer #${ix}`, [
             ['Address', address],
             ['Balance', await wallet.getBalance()],
             ['Nonce  ', await wallet.getTransactionCount()]
@@ -156,7 +156,7 @@ class TenWalletMiddlewareServer extends WalletMiddlewareServer {
               console.error('Error:', response.data)
             }
           }
-          traceKeyValue(`Wallet #${ix}`, [
+          traceKeyValue(`Signer #${ix}`, [
             ['Address', address],
             ['Balance', await wallet.getBalance()],
             ['Nonce  ', await wallet.getTransactionCount()]
