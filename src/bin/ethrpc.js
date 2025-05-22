@@ -43,48 +43,21 @@ if (process.argv.length >= 3) {
             return item
           }
         })
-        if (process.argv.length >= 4) {
-          // a specific JSONRPC provider has been specified in the command line:
-          cmdline[cmdline.length - 2] = process.argv[3]
-          if (process.env.ETHRPC_PORT) {
-            cmdline[cmdline.length - 1] = process.env.ETHRPC_PORT
-          }
-          // invoke subprocess
-          execSync(
-            'yarn '
-              .concat(cmdline.join(' '), ' ')
-              .concat(process.argv.slice(4).join(' ')),
-            { stdio: 'inherit' }
-          )
-        } else if (process.env.ETHRPC_PROVIDER_URL) {
-          // the ETHRPC_PROVIDER_URL variable is set
-          cmdline[cmdline.length - 2] = process.env.ETHRPC_PROVIDER_URL
-          if (process.env.ETHRPC_PORT) {
-            cmdline[cmdline.length - 1] = process.env.ETHRPC_PORT
-          }
-          execSync(
-            'yarn '
-              .concat(cmdline.join(' '), ' ')
-              .concat(process.argv.slice(3).join(' ')),
-            { stdio: 'inherit' }
-          )
-        } else if (process.env.ETHRPC_PORT) {
-          // the ETHRPC_PORT variable is set while ETHRPC_PROVIDER_URL is not
-          cmdline[cmdline.length - 1] = process.env.ETHRPC_PORT
-          execSync(
-            'yarn '
-              .concat(cmdline.join(' '), ' ')
-              .concat(process.argv.slice(3).join(' ')),
-            { stdio: 'inherit' }
-          )
-        } else {
-          execSync(
-            'yarn '
-              .concat(cmdline.join(' '), ' ')
-              .concat(process.argv.slice(3).join(' ')),
-            { stdio: 'inherit' }
-          )
+        if (process.env.ETHRPC_PORT || process.argv.length >= 4) {
+          cmdline[cmdline.length - 1] = process.argv[3] || process.env.ETHRPC_PORT
+          process.argv.splice(3, 1)
         }
+        if (process.env.ETHRPC_PROVIDER_URL || process.argv.length >= 4) {
+          cmdline[cmdline.length - 2] = process.argv[4] || process.env.ETHRPC_PROVIDER_URL
+          process.argv.splice(3, 1)
+        }
+        // invoke subprocess
+        execSync(
+          'npx '
+            .concat(cmdline.join(' '), ' ')
+            .concat(process.argv.slice(3).join(' ')),
+          { stdio: 'inherit' }
+        )
         process.exit(0)
       } else {
         console.info()
@@ -135,7 +108,7 @@ console.info()
 console.info(
   '  \x1b[1;37m',
   '$ npx ethrpc',
-  '\x1b[1;33m[<ecosystem>[:<network>] [custom-rpc-provider-url]]',
+  '\x1b[1;33m[<ECOSYSTEM>[:<NETWORK>] [<PORT> [<REMOTE_PROVIDER_URL]]',
   '\x1b[0m'
 )
 if (!process.env.ETHRPC_SEED_PHRASE) {
