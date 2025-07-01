@@ -156,10 +156,10 @@ class WalletWrapper {
     }
 
     // Complete tx maxFeePerGas, if necessary:
-    if (params.maxFeePerGas) {
-      tx.maxFeePerGas = params.maxFeePerGas
-    } else if (this.forceType2Txs) {
-      tx.maxFeePerGas = tx.gasPrice
+    if (this.forceType2Txs) {
+      tx.maxFeePerGas = params?.maxFeePerGas || tx?.gasPrice
+    } else {
+      delete tx.maxFeePerGas
     }
     if (tx.maxFeePerGas) {
       logger.verbose({
@@ -169,10 +169,11 @@ class WalletWrapper {
     }
 
     // Complete tx maxPriorityFeePerGas, if necesarry:
-    if (params.maxPriorityFeePerGas) {
-      tx.maxPriorityFeePerGas = params.maxPriorityFeePerGas
-    } else if (this.forceType2Txs) {
-      tx.maxPriorityFeePerGas = tx.gasPrice
+    if (this.forceType2Txs) {
+      tx.maxPriorityFeePerGas = params.maxPriorityFeePerGas || tx.gasPrice
+      delete tx.gasPrice
+    } else {
+      delete tx.maxPriorityFeePerGas
     }
     if (tx.maxPriorityFeePerGas) {
       logger.verbose({
@@ -180,7 +181,6 @@ class WalletWrapper {
         message: `> Max priority fee per gas: ${tx.maxPriorityFeePerGas}`
       })
     }
-
     // Return tx object
     return tx
   }

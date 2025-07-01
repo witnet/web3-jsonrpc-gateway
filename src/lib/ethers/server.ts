@@ -116,7 +116,7 @@ class WalletMiddlewareServer {
             eth_gasPrice: this.wrapper.processEthGasPrice,
             eth_getBlockByNumber: this.wrapper.getBlockByNumber,
             eth_sendTransaction: this.wrapper.processTransaction,
-            eth_sign: this.wrapper.processEthSignMessage
+            eth_sign: this.wrapper.processEthSignMessage,
           }
           if (this.alwaysSynced) {
             handlers = {
