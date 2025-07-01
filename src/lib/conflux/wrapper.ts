@@ -274,7 +274,7 @@ export class WalletWrapper {
     }
 
     const epoch: BigInt =
-      BigInt(await this.conflux.getEpochNumber()) + BigInt(100)
+      BigInt(await this.conflux.getEpochNumber()) - BigInt(1)
     const nonce: number = parseInt(
       (await this.conflux.getNextNonce(params.from)).toString()
     )
@@ -335,7 +335,7 @@ export class WalletWrapper {
     })
     logger.verbose({
       socket,
-      message: `> Epoch number: ${payload.epochHeight}`
+      message: `> Epoch height: ${payload.epochHeight}`
     })
     logger.verbose({ socket, message: `> Chain id: ${payload.chainId}` })
 
