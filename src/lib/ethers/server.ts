@@ -220,7 +220,11 @@ class WalletMiddlewareServer {
           }
           return response
         })).then((responses: any[]) => {
-          res.status(200).json(responses)
+          if (responses.length === 1) {
+            res.status(200).json(...responses)
+          } else {
+            res.status(200).json(responses)
+          }
         })
       },
     )
