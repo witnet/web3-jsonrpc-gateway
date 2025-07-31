@@ -4,7 +4,7 @@ const execSync = require('child_process').execSync
 const scripts = require('../../package.json').scripts
 
 console.info(
-  `ETHRPC GATEWAY v${require('../../package.json')?.version}`
+  `ETH/RPC GATEWAY v${require('../../package.json')?.version}`
 )
 
 if (process.argv.length >= 3) {
