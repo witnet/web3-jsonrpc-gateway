@@ -1,8 +1,11 @@
 {
   "name": "ethrpc-gateway",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "description": "A Web3 provider that handles accounts on its own but delegates chain queries to a 3rd party service",
-  "main": "dist/bin/ethrpc.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/witnet/ethrpc-gateway"
+  },
   "files": [
     "dist/**",
     "package.json",
@@ -17,6 +20,7 @@
     "ethrpc-reef": "dist/bin/reef/index.js",
     "ethrpc-zksync": "dist/bin/ethers/zksync.js"
   },
+  "main": "dist/bin/ethrpc.js",
   "scripts": {
     "ci": "yarn build",
     "lint": "prettier-standard --format",
@@ -89,10 +93,6 @@
     "worldchain:sepolia": "cross-env-shell ETHRPC_CALL_INTERLEAVE_BLOCKS=0 ETHRPC_ETHERS_FORCE_EIP_155=true ETHRPC_ETHERS_ESTIMATE_GAS_PRICE=true ETHRPC_ETHERS_ESTIMATE_GAS_LIMIT=true ETHRPC_ETHERS_GAS_LIMIT_FACTOR=1.5 ETHRPC_ETHERS_GAS_LIMIT=10000000 ETHRPC_ETHERS_GAS_PRICE=25000000000 ETHRPC_ETHERS_GAS_PRICE_FACTOR=1.1 ETHRPC_ETHERS_MOCK_FILTERS=true node dist/bin/ethers https://worldchain-sepolia.g.alchemy.com/public 8501",
     "zksync:sepolia": "cross-env-shell ETHRPC_CALL_INTERLEAVE_BLOCKS=0 ETHRPC_LOG_DEVEL=debug ETHRPC_ETHERS_FORCE_EIP_155=true ETHRPC_ETHERS_ESTIMATE_GAS_PRICE=true ETHRPC_ETHERS_ESTIMATE_GAS_LIMIT=true ETHRPC_ETHERS_MOCK_FILTERS=true node dist/bin/ethers/zksync https://sepolia.era.zksync.dev 8499"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/witnet/web3-jsonrpc-gateway.git"
-  },
   "keywords": [
     "ethereum",
     "json-rpc",
@@ -109,16 +109,15 @@
   "homepage": "https://github.com/witnet/web3-jsonrpc-gateway#readme",
   "devDependencies": {
     "@ksmithut/prettier-standard": "^0.2.0",
-    "@reef-defi/evm-provider": "^1.0.11",
     "@types/cors": "^2.8.10",
     "@types/express": "^4.17.11",
     "@types/node": "^22.10.2",
     "body-parser": "2.0.2",
-    "js-conflux-sdk": "^2.3.0",
     "typescript": "^5.4.5",
     "yarn": "^2.4.3"
   },
   "dependencies": {
+    "@reef-defi/evm-provider": "^1.0.11",
     "axios": "^1.6.8",
     "cors": "2.8.5",
     "cross-env": "^7.0.3",
@@ -127,6 +126,7 @@
     "express": "4.21.0",
     "graphql": "^16.8.1",
     "graphql-request": "^6.1.0",
+    "js-conflux-sdk": "^2.3.0",
     "json-rpc-2.0": "~1.7.0",
     "winston": "^3.17.0",
     "zksync-ethers": "^5.10.0"
