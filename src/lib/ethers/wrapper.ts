@@ -132,9 +132,10 @@ class WalletWrapper {
     }
 
     // Complete tx gas limit, if necessary:
-    if (params.from && !params.gas) {
+    if (!params?.gas) {
       tx.gasLimit = (await this.getGasLimit(tx)).toHexString()
-    } else if (params.gas) {
+    
+    } else {
       tx.gasLimit = params.gas
       if (
         BigNumber.from(tx.gasLimit).gt(BigNumber.from(this.defaultGasLimit))
@@ -151,6 +152,7 @@ class WalletWrapper {
         }
       }
     }
+    
     if (tx.gasLimit) {
       logger.verbose({ socket, message: `> Gas limit: ${tx.gasLimit}` })
     }
@@ -370,11 +372,10 @@ class WalletWrapper {
     params: TransactionParams
   ): Promise<any> {
     // avoid some providers to just echo input gas limit
-    if (params.gas) {
-      params.gas = ''
-    }
-    const tx: ethers.providers.TransactionRequest =
-      await this.composeTransaction(socket, params)
+    if (params.gas) delete params.gas;
+    // compose as to estimate gas:
+    const tx: ethers.providers.TransactionRequest = await this.composeTransaction(socket, params)
+    // return estimated or default gas limit
     return tx.gasLimit || this.defaultGasLimit
   }
 
